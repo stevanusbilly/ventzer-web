@@ -1,0 +1,95 @@
+.landing-hero {
+	padding: 170px 0 100px;
+	background: #f9f7ff;
+}
+
+.landing-hero__container {
+	width: 90%;
+	max-width: 1240px;
+	margin: auto;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 70px;
+}
+
+.landing-hero__content {
+	flex: 1;
+}
+
+.landing-hero__badge {
+	display: inline-block;
+	padding: 10px 20px;
+	border-radius: 50px;
+	background: #efe7ff;
+	color: #7c3aed;
+	font-weight: 600;
+	margin-bottom: 24px;
+}
+
+.landing-hero__content h1 {
+	font-size: 62px;
+	line-height: 1.15;
+	margin: 0 0 25px;
+	color: #232323;
+}
+
+.landing-hero__content p {
+	font-size: 18px;
+	color: #666;
+	line-height: 1.8;
+	max-width: 540px;
+}
+
+.landing-hero__buttons {
+	display: flex;
+	gap: 18px;
+	margin-top: 40px;
+}
+
+.btn-primary {
+	padding: 15px 34px;
+	background: #8b5cf6;
+	color: #fff;
+	text-decoration: none;
+	border-radius: 50px;
+	font-weight: 600;
+}
+
+.btn-outline {
+	padding: 15px 34px;
+	border: 2px solid #8b5cf6;
+	color: #8b5cf6;
+	text-decoration: none;
+	border-radius: 50px;
+	font-weight: 600;
+}
+
+.landing-hero__image {
+	flex: 1;
+}
+
+.landing-hero__image img {
+	width: 100%;
+	display: block;
+}
+
+@media (max-width: 992px) {
+	.landing-hero {
+		padding-top: 130px;
+	}
+
+	.landing-hero__container {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.landing-hero__content h1 {
+		font-size: 42px;
+	}
+
+	.landing-hero__buttons {
+		justify-content: center;
+	}
+}

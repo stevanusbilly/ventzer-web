@@ -1,0 +1,107 @@
+.dashboard-showcase {
+	padding: 140px 0;
+
+	background: #f8f9ff;
+}
+
+.dashboard-header {
+	text-align: center;
+
+	margin-bottom: 70px;
+}
+
+.dashboard-header h2 {
+	font-size: 52px;
+
+	margin: 20px 0;
+}
+
+.dashboard-header p {
+	max-width: 700px;
+
+	margin: auto;
+
+	color: #666;
+
+	line-height: 1.8;
+}
+
+.dashboard-preview {
+	position: relative;
+
+	max-width: 1100px;
+
+	margin: auto;
+}
+
+.dashboard-preview img {
+	width: 100%;
+
+	border-radius: 30px;
+
+	display: block;
+
+	box-shadow: 0 40px 100px rgba(0, 0, 0, 0.15);
+}
+
+.floating-card {
+	position: absolute;
+
+	background: white;
+
+	padding: 18px 25px;
+
+	border-radius: 18px;
+
+	box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+
+	min-width: 170px;
+}
+
+.floating-card h4 {
+	margin-bottom: 8px;
+
+	font-size: 15px;
+}
+
+.floating-card span {
+	color: #7c3aed;
+
+	font-size: 24px;
+
+	font-weight: bold;
+}
+
+.top-left {
+	top: 40px;
+
+	left: -50px;
+}
+
+.top-right {
+	top: 50px;
+
+	right: -50px;
+}
+
+.bottom-left {
+	bottom: 40px;
+
+	left: -60px;
+}
+
+.bottom-right {
+	bottom: 50px;
+
+	right: -60px;
+}
+
+@media (max-width: 992px) {
+	.floating-card {
+		display: none;
+	}
+
+	.dashboard-header h2 {
+		font-size: 40px;
+	}
+}

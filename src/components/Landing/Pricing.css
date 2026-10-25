@@ -1,0 +1,55 @@
+.landing-pricing {
+	padding: 120px 0;
+	background: #f8f9fd;
+	text-align: center;
+}
+
+.pricing-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 30px;
+	margin-top: 60px;
+}
+
+.pricing-card {
+	background: #fff;
+	padding: 45px;
+	border-radius: 24px;
+	position: relative;
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.pricing-card.active {
+	background: #7c3aed;
+	color: #fff;
+	transform: scale(1.05);
+}
+
+.badge {
+	position: absolute;
+	top: -15px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #ffb400;
+	padding: 8px 18px;
+	border-radius: 30px;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.pricing-card ul {
+	margin-top: 25px;
+	text-align: left;
+	line-height: 2;
+	padding-left: 20px;
+}
+
+@media (max-width: 992px) {
+	.pricing-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.pricing-card.active {
+		transform: none;
+	}
+}

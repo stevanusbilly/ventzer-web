@@ -1,0 +1,91 @@
+/* Custom styles for the Event Invitation System */
+
+/* Form dialogs */
+.guest-form-dialog .p-dialog-content,
+.bulk-upload-dialog .p-dialog-content {
+  padding-bottom: 2rem;
+}
+
+/* Data table improvements */
+.p-datatable .p-datatable-thead > tr > th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Card styles */
+.p-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.p-card .p-card-title {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Button styles */
+.p-button {
+  font-weight: 500;
+}
+
+/* Form styles */
+.p-fluid .field {
+  margin-bottom: 1.5rem;
+}
+
+.p-fluid .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .p-datatable .p-datatable-thead > tr > th,
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.5rem;
+  }
+  
+  .p-dialog {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+}
+
+/* Check-in page specific styles */
+.checkin-container {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recent-checkins-card {
+  height: 100%;
+}
+
+/* QR Scanner Styles */
+.qr-scanner-dialog .p-dialog-content {
+  padding: 1rem;
+}
+
+.qr-scanner-dialog .p-dialog-header {
+  padding: 1rem 1rem 0.5rem 1rem;
+}
+
+/* Camera input group */
+.p-inputgroup button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Scanner container */
+#qr-scanner-container {
+  position: relative;
+}
+
+#qr-scanner-container video {
+  border-radius: 8px;
+  max-height: 300px;
+}

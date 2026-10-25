@@ -1,0 +1,78 @@
+import api from "./api";
+import { Guest } from "../types";
+
+export interface GuestListParams {
+	q?: string;
+	phone?: string;
+	rsvpStatus?: string;
+}
+
+export const guestService = {
+	getAll: async (params?: GuestListParams & { eventId?: number }): Promise<Guest[]> => {
+		const response = await api.get<Guest[]>("/guests", { params });
+		return response.data;
+	},
+	getByEvent: async (
+		eventId: number,
+		params?: GuestListParams,
+	): Promise<Guest[]> => {
+		const response = await api.get<Guest[]>(`/guests/event/${eventId}`, {
+			params,
+		});
+		return response.data;
+	},
+	getCount: async (eventId?: number): Promise<{ count: number }> => {
+		const response = await api.get<{ count: number }>("/guests/getCount", {
+			params: eventId ? { eventId } : undefined,
+		});
+		return response.data;
+	},
+	add: async (
+		eventId: number,
+		guestData: Omit<Guest, "id" | "qrToken" | "eventId">,
+	): Promise<Guest> => {
+		const response = await api.post<{ guest: Guest }>(
+			`/guests/${eventId}`,
+			guestData,
+		);
+		return response.data.guest;
+	},
+	update: async (
+		guestId: number,
+		eventId: number,
+		guestData: Partial<Guest>,
+	): Promise<Guest> => {
+		const response = await api.put<{ guest: Guest }>(
+			`/guests/${guestId}/${eventId}`,
+			guestData,
+		);
+		return response.data.guest;
+	},
+	delete: (id: number): Promise<void> => {
+		return api.delete(`/guests/${id}`);
+	},
+	regenerateToken: async (id: number): Promise<{ token: string }> => {
+		const response = await api.post<{ token: string }>(
+			`/guests/${id}/regen-token`,
+		);
+		return response.data;
+	},
+	getQRCode: async (id: number): Promise<Blob> => {
+		const response = await api.get(`/guests/${id}/qr.png`, {
+			responseType: "blob",
+		});
+		return response.data;
+	},
+	bulkUpload: (
+		eventId: number,
+		file: File,
+	): Promise<{ imported: number; skipped?: { row: number; reason: string }[] }> => {
+		const formData = new FormData();
+		formData.append("file", file);
+		return api
+			.post(`/guests/bulk/${eventId}`, formData, {
+				headers: { "Content-Type": "multipart/form-data" },
+			})
+			.then((response) => response.data);
+	},
+};

@@ -1,0 +1,369 @@
+3/* =========================================================
+   WEDDING INVITATION
+   ========================================================= */
+
+.wedding-invitation {
+	--cover-font: Georgia, 'Times New Roman', serif;
+
+	position: relative;
+
+	width: 100%;
+	min-height: 100vh;
+
+	overflow-x: hidden;
+
+	background: #111;
+}
+
+/* =========================================================
+   LOCK SCROLL SAAT COVER MASIH TERBUKA
+   ========================================================= */
+
+body:has(.wedding-invitation:not(.opened)) {
+	overflow: hidden;
+}
+
+/* =========================================================
+   COVER
+   ========================================================= */
+
+.wedding-cover {
+	position: fixed;
+
+	z-index: 9999;
+
+	inset: 0;
+
+	width: 100vw;
+	height: 100vh;
+
+	overflow: hidden;
+
+	transform: translate3d(0, 0, 0);
+
+	transition: transform 1.15s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Saat Open Invitation ditekan */
+
+.wedding-invitation.opened .wedding-cover {
+	transform: translate3d(0, -100vh, 0);
+
+	pointer-events: none;
+}
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.wedding-cover__background {
+	position: absolute;
+
+	inset: 0;
+
+	width: 100%;
+	height: 100%;
+
+	background-repeat: no-repeat;
+
+	background-position: center center;
+
+	background-size: cover;
+
+	transform: scale(1.001);
+}
+
+/* =========================================================
+   DARK OVERLAY
+   ========================================================= */
+
+.wedding-cover__overlay {
+	position: absolute;
+
+	inset: 0;
+
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 0, 0, 0.3) 0%,
+		rgba(0, 0, 0, 0.27) 38%,
+		rgba(0, 0, 0, 0.42) 57%,
+		rgba(0, 0, 0, 0.91) 100%
+	);
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.wedding-cover__content {
+	position: absolute;
+
+	inset: 0;
+
+	width: 100%;
+	height: 100%;
+
+	color: white;
+
+	font-family: var(--cover-font);
+
+	text-align: center;
+}
+
+/* =========================================================
+   TEXT ATAS
+   ========================================================= */
+
+.wedding-cover__guest {
+	position: absolute;
+
+	top: 28.2%;
+	left: 50%;
+
+	width: max-content;
+
+	transform: translateX(-50%);
+
+	text-align: center;
+
+	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.guest-title {
+	font-size: clamp(18px, 1.35vw, 25px);
+
+	line-height: 1.25;
+
+	font-weight: 400;
+}
+
+.guest-subtitle {
+	margin-top: 17px;
+
+	font-size: clamp(18px, 1.35vw, 25px);
+
+	line-height: 1.25;
+
+	font-weight: 400;
+}
+
+/* =========================================================
+   NAMA MEMPELAI
+   ========================================================= */
+
+.wedding-cover__couple {
+	position: absolute;
+
+	top: 50.3%;
+	left: 50%;
+
+	width: max-content;
+
+	max-width: calc(100% - 30px);
+
+	transform: translateX(-50%);
+
+	text-align: center;
+
+	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
+.couple-label {
+	margin-bottom: 2px;
+
+	font-size: clamp(18px, 1.35vw, 25px);
+
+	line-height: 1.25;
+
+	font-weight: 400;
+}
+
+.wedding-cover__couple h1 {
+	margin: 0;
+
+	font-size: clamp(40px, 3vw, 58px);
+
+	line-height: 1.08;
+
+	font-weight: 400;
+
+	letter-spacing: -1.2px;
+}
+
+.wedding-cover__couple h1 span {
+	display: inline-block;
+
+	margin: 0 5px;
+}
+
+/* =========================================================
+   OPEN INVITATION
+   ========================================================= */
+
+.wedding-cover__button {
+	position: absolute;
+
+	top: 65%;
+
+	left: 50%;
+
+	width: min(71.2vw, 1303px);
+
+	min-width: 280px;
+
+	height: 45px;
+
+	transform: translateX(-50%);
+
+	display: flex;
+
+	align-items: center;
+
+	justify-content: center;
+
+	gap: 8px;
+
+	padding: 0;
+
+	border: 0;
+
+	border-radius: 4px;
+
+	background: rgba(255, 255, 255, 0.96);
+
+	color: #111;
+
+	font-family: var(--cover-font);
+
+	font-size: clamp(17px, 1.3vw, 23px);
+
+	font-weight: 400;
+
+	cursor: pointer;
+
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+
+	transition:
+		background 0.2s ease,
+		box-shadow 0.2s ease,
+		transform 0.2s ease;
+}
+
+.wedding-cover__button:hover {
+	background: #fff;
+
+	box-shadow: 0 5px 18px rgba(0, 0, 0, 0.24);
+
+	transform: translateX(-50%) translateY(-1px);
+}
+
+.wedding-cover__button:active {
+	transform: translateX(-50%);
+}
+
+.wedding-cover__envelope {
+	display: inline-flex;
+
+	align-items: center;
+
+	justify-content: center;
+
+	width: 23px;
+
+	height: 23px;
+
+	font-family: Arial, sans-serif;
+
+	font-size: 21px;
+}
+
+/* =========================================================
+   CONTENT SETELAH COVER
+   ========================================================= */
+
+.wedding-main {
+	position: relative;
+
+	min-height: 100vh;
+
+	background: #f7f3eb;
+
+	font-family: var(--cover-font);
+}
+
+/* =========================================================
+   TABLET / MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+	.wedding-cover__background {
+		background-position: 53% center;
+	}
+
+	.wedding-cover__guest {
+		top: 27%;
+	}
+
+	.guest-title,
+	.guest-subtitle {
+		font-size: 18px;
+	}
+
+	.guest-subtitle {
+		margin-top: 14px;
+	}
+
+	.wedding-cover__couple {
+		top: 49%;
+	}
+
+	.couple-label {
+		font-size: 17px;
+	}
+
+	.wedding-cover__couple h1 {
+		font-size: clamp(36px, 10vw, 48px);
+
+		white-space: nowrap;
+	}
+
+	.wedding-cover__button {
+		top: 65%;
+
+		width: calc(100vw - 42px);
+
+		min-width: 0;
+
+		height: 46px;
+
+		font-size: 18px;
+	}
+}
+
+/* =========================================================
+   HP KECIL
+   ========================================================= */
+
+@media (max-width: 480px) {
+	.wedding-cover__background {
+		background-position: 54% center;
+	}
+
+	.wedding-cover__guest {
+		top: 26%;
+	}
+
+	.wedding-cover__couple {
+		top: 48%;
+	}
+
+	.wedding-cover__couple h1 {
+		font-size: 38px;
+	}
+
+	.wedding-cover__button {
+		top: 65%;
+
+		width: calc(100vw - 28px);
+	}
+}

@@ -1,0 +1,24 @@
+:root {
+	/* Color */
+	--primary: #7c3aed;
+	--primary-hover: #6d28d9;
+	--secondary: #ec4899;
+	--success: #10b981;
+	--warning: #f59e0b;
+	--danger: #ef4444;
+	--text: #111827;
+	--text-secondary: #6b7280;
+	--border: #e5e7eb;
+	--background: #f8fafc;
+	--white: #ffffff;
+
+	/* Layout */
+	--container-width: 1240px;
+	--section-padding: 120px;
+	--radius: 20px;
+
+	/* Shadow */
+	--shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 15px 35px rgba(0, 0, 0, 0.08);
+	--shadow-lg: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
