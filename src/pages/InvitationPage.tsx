@@ -8,7 +8,7 @@ import { Message } from "primereact/message";
 import { Tag } from "primereact/tag";
 import { invitationService } from "../services/invitationService";
 import { InvitationData } from "../types";
-import { getApiErrorMessage } from "../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../utils/apiError";
 
 const InvitationPage: React.FC = () => {
 	const { eventId, token } = useParams<{ eventId: string; token: string }>();
@@ -51,11 +51,18 @@ const InvitationPage: React.FC = () => {
 		setError("");
 		setSuccess("");
 		try {
-			await invitationService.submitRsvp(Number(eventId), token, {
+			const data = await invitationService.submitRsvp(Number(eventId), token, {
 				kehadiran,
 				jumlahKehadiran: kehadiran === 1 ? jumlah : 0,
 			});
-			setSuccess(kehadiran === 1 ? "Terima kasih, kehadiran Anda tercatat." : "Terima kasih atas konfirmasinya.");
+			setSuccess(
+				getApiSuccessMessage(
+					data,
+					kehadiran === 1
+						? "Terima kasih, kehadiran Anda tercatat."
+						: "Terima kasih atas konfirmasinya.",
+				),
+			);
 			await load();
 		} catch (err) {
 			setError(getApiErrorMessage(err, "Gagal menyimpan RSVP"));
@@ -69,11 +76,15 @@ const InvitationPage: React.FC = () => {
 		setSubmitting(true);
 		setError("");
 		try {
-			await invitationService.submitMessage(Number(eventId), token, {
-				message: message.trim(),
-			});
+			const data = await invitationService.submitMessage(
+				Number(eventId),
+				token,
+				{
+					message: message.trim(),
+				},
+			);
 			setMessage("");
-			setSuccess("Ucapan Anda berhasil dikirim.");
+			setSuccess(getApiSuccessMessage(data, "Ucapan Anda berhasil dikirim."));
 			await load();
 		} catch (err) {
 			setError(getApiErrorMessage(err, "Gagal mengirim ucapan"));

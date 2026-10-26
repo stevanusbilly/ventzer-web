@@ -30,29 +30,32 @@ export const guestService = {
 	add: async (
 		eventId: number,
 		guestData: Omit<Guest, "id" | "qrToken" | "eventId">,
-	): Promise<Guest> => {
-		const response = await api.post<{ guest: Guest }>(
+	): Promise<{ message?: string; guest: Guest }> => {
+		const response = await api.post<{ message?: string; guest: Guest }>(
 			`/guests/${eventId}`,
 			guestData,
 		);
-		return response.data.guest;
+		return response.data;
 	},
 	update: async (
 		guestId: number,
 		eventId: number,
 		guestData: Partial<Guest>,
-	): Promise<Guest> => {
-		const response = await api.put<{ guest: Guest }>(
+	): Promise<{ message?: string; guest: Guest }> => {
+		const response = await api.put<{ message?: string; guest: Guest }>(
 			`/guests/${guestId}/${eventId}`,
 			guestData,
 		);
-		return response.data.guest;
+		return response.data;
 	},
-	delete: (id: number): Promise<void> => {
-		return api.delete(`/guests/${id}`);
+	delete: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(`/guests/${id}`);
+		return response.data;
 	},
-	regenerateToken: async (id: number): Promise<{ token: string }> => {
-		const response = await api.post<{ token: string }>(
+	regenerateToken: async (
+		id: number,
+	): Promise<{ message?: string; token: string }> => {
+		const response = await api.post<{ message?: string; token: string }>(
 			`/guests/${id}/regen-token`,
 		);
 		return response.data;

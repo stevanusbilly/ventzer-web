@@ -5,11 +5,11 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { templateService } from "../../services/templateService";
 import { Template } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface TemplateFormProps {
 	template: Template | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -26,12 +26,15 @@ const TemplateForm: React.FC<TemplateFormProps> = ({ template, onSuccess, onHide
 		setError("");
 
 		try {
-			if (template) {
-				await templateService.upd(template.id, formData);
-			} else {
-				await templateService.ins(formData);
-			}
-			onSuccess();
+			const result = template
+				? await templateService.upd(template.id, formData)
+				: await templateService.ins(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					template ? "Template diperbarui" : "Template ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan template"));
 		} finally {

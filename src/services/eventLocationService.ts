@@ -27,7 +27,10 @@ export const eventLocationService = {
 			.put<EventLocation>(`/event_location/${id}`, eventData);
 		return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/event_location/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/event_location/${id}`,
+		);
+		return response.data;
 	},
 };

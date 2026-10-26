@@ -21,7 +21,6 @@ import InvitationPage from "./pages/InvitationPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
 import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
-import WeddingList from "./components/Wedding/WeddingList";
 import EventLocationList from "./components/EventLocation/EventLocationList";
 import EventPhotoList from "./components/EventPhoto/EventPhotoList";
 import EventTableList from "./components/EventTable/EventTableList";
@@ -132,18 +131,6 @@ const AppContent: React.FC = () => (
 					<AppLayout>
 						<CheckIn />
 					</AppLayout>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
-			path="/wedding"
-			element={
-				<ProtectedRoute>
-					<RoleRoute roles={["admin", "panitia"]}>
-						<AppLayout>
-							<WeddingList />
-						</AppLayout>
-					</RoleRoute>
 				</ProtectedRoute>
 			}
 		/>

@@ -8,6 +8,7 @@ import { userService } from "../../services/userService";
 import { useRef } from "react";
 import UserForm from "./UserForm";
 import { User } from "../../types";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const UserList: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([]);
@@ -24,8 +25,8 @@ const UserList: React.FC = () => {
 		try {
 			const response = await userService.list();
 			setUsers(response);
-		} catch (error) {
-			showError("Failed to load users");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat user"));
 		} finally {
 			setLoading(false);
 		}
@@ -72,20 +73,22 @@ const UserList: React.FC = () => {
 		});
 	};
 
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadUsers();
+	};
+
 	const deleteUser = async (id: number): Promise<void> => {
 		try {
-			await userService.del(id);
-			showSuccess("User deleted successfully");
+			const data = await userService.del(id);
+			showSuccess(getApiSuccessMessage(data, "User dihapus"));
 			loadUsers();
-		} catch (error) {
-			showError("Failed to delete user");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus user"));
 		}
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadUsers();
-	};
 
 	const actionBodyUser = (rowData: User): React.ReactNode => {
 		return (
@@ -156,7 +159,7 @@ const UserList: React.FC = () => {
 			{showForm && (
 				<UserForm
 					user={selectedUser}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

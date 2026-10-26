@@ -7,11 +7,11 @@ import { Checkbox } from "primereact/checkbox";
 import { Message } from "primereact/message";
 import { userService } from "../../services/userService";
 import { User } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface UserFormProps {
 	user: User | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -36,12 +36,15 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSuccess, onHide }) => {
 		setError("");
 
 		try {
-			if (user) {
-				await userService.upd(user.id, formData);
-			} else {
-				await userService.ins(formData);
-			}
-			onSuccess();
+			const result = user
+				? await userService.upd(user.id, formData)
+				: await userService.ins(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					user ? "User diperbarui" : "User ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan user"));
 		} finally {

@@ -12,7 +12,7 @@ import { confirmDialog } from "primereact/confirmdialog";
 import { eventTableGuestService } from "../../services/eventTableGuestService";
 import { guestService } from "../../services/guestService";
 import { EventTable, EventTableGuest, Guest } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventTableGuestDialogProps {
 	visible: boolean;
@@ -58,8 +58,8 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 			]);
 			setTableGuests(guestsRes);
 			setAvailableGuests(eventGuestsRes);
-		} catch (error) {
-			showError("Failed to load table guests");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat tamu meja"));
 		} finally {
 			setLoading(false);
 		}
@@ -114,12 +114,14 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 			icon: "pi pi-exclamation-triangle",
 			accept: async () => {
 				try {
-					await eventTableGuestService.del(item.id);
-					showSuccess("Guest removed from table successfully");
+					const data = await eventTableGuestService.del(item.id);
+					showSuccess(
+						getApiSuccessMessage(data, "Tamu dihapus dari meja"),
+					);
 					loadData();
 					onSuccess();
-				} catch (error) {
-					showError("Failed to delete table guest");
+				} catch (error: unknown) {
+					showError(getApiErrorMessage(error, "Gagal menghapus tamu meja"));
 				}
 			},
 		});
@@ -144,15 +146,15 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 
 		try {
 			if (selectedTableGuest) {
-				await eventTableGuestService.upd(selectedTableGuest.id, {
+				const data = await eventTableGuestService.upd(selectedTableGuest.id, {
 					eventId: eventTable.eventId,
 					tableId: eventTable.id,
 					guestId: formData.guestId,
 					jumlah: Number(formData.jumlah),
 				});
-				showSuccess("Table guest updated successfully");
+				showSuccess(getApiSuccessMessage(data, "Tamu meja diperbarui"));
 			} else {
-				await eventTableGuestService.ins({
+				const data = await eventTableGuestService.ins({
 					eventId: eventTable.eventId,
 					tableId: eventTable.id,
 					guestId: formData.guestId,
@@ -161,7 +163,7 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 					tableName: eventTable.kategori,
 					guestName: "",
 				});
-				showSuccess("Guest assigned to table successfully");
+				showSuccess(getApiSuccessMessage(data, "Tamu ditugaskan ke meja"));
 			}
 			setShowForm(false);
 			loadData();

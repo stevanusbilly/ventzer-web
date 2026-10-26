@@ -20,7 +20,10 @@ export const categoryPhotoService = {
 			.put<CategoryPhoto>(`/category_photo/${id}`, eventData);
 		return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/category_photo/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/category_photo/${id}`,
+		);
+		return response.data;
 	},
 };

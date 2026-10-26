@@ -10,11 +10,11 @@ import { eventService } from "../../services/eventService";
 import { Event, Gift } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import moment from 'moment';
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface GiftFormProps {
 	gift: Gift | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -55,12 +55,15 @@ const GiftForm: React.FC<GiftFormProps> = ({ gift, onSuccess, onHide }) => {
 		setError("");
 
 		try {
-			if (gift) {
-				await giftService.upd(gift.id, formData);
-			} else {
-				await giftService.ins(formData);
-			}
-			onSuccess();
+			const result = gift
+				? await giftService.upd(gift.id, formData)
+				: await giftService.ins(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					gift ? "Hadiah diperbarui" : "Hadiah ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan hadiah"));
 		} finally {

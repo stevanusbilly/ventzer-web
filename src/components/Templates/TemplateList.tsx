@@ -8,6 +8,7 @@ import { templateService } from "../../services/templateService";
 import { useRef } from "react";
 import TemplateForm from "./TemplateForm";
 import { Template } from "../../types";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const TemplateList: React.FC = () => {
 	const [templates, setTemplates] = useState<Template[]>([]);
@@ -24,8 +25,8 @@ const TemplateList: React.FC = () => {
 		try {
 			const response = await templateService.list();
 			setTemplates(response);
-		} catch (error) {
-			showError("Failed to load templates");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat template"));
 		} finally {
 			setLoading(false);
 		}
@@ -72,19 +73,20 @@ const TemplateList: React.FC = () => {
 		});
 	};
 
-	const deleteTemplate = async (id: number): Promise<void> => {
-		try {
-			await templateService.del(id);
-			showSuccess("Template deleted successfully");
-			loadTemplates();
-		} catch (error) {
-			showError("Failed to delete template");
-		}
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadTemplates();
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadTemplates();
+	const deleteTemplate = async (id: number): Promise<void> => {
+		try {
+			const data = await templateService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Template dihapus"));
+			loadTemplates();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus template"));
+		}
 	};
 
 	const actionBodyTemplate = (rowData: Template): React.ReactNode => {
@@ -135,7 +137,7 @@ const TemplateList: React.FC = () => {
 			{showForm && (
 				<TemplateForm
 					template={selectedTemplate}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

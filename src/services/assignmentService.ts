@@ -2,8 +2,14 @@ import api from "./api";
 import { AssignedEventsResponse } from "../types";
 
 export const assignmentService = {
-	assignUserToEvent: (eventId: number, userId: number): Promise<void> => {
-		return api.post(`/assignments/events/${eventId}/users/${userId}`);
+	assignUserToEvent: async (
+		eventId: number,
+		userId: number,
+	): Promise<{ message?: string }> => {
+		const response = await api.post<{ message?: string }>(
+			`/assignments/events/${eventId}/users/${userId}`,
+		);
+		return response.data;
 	},
 	getEventAssignments: async (
 		eventId: number,
@@ -19,7 +25,13 @@ export const assignmentService = {
 		);
 		return response.data;
 	},
-	removeUserFromEvent: (eventId: number, userId: number): Promise<void> => {
-		return api.delete(`/assignments/events/${eventId}/users/${userId}`);
+	removeUserFromEvent: async (
+		eventId: number,
+		userId: number,
+	): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/assignments/events/${eventId}/users/${userId}`,
+		);
+		return response.data;
 	},
 };

@@ -10,11 +10,11 @@ import { eventService } from "../../services/eventService";
 import { Event, EventLocation } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import moment from 'moment';
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventLocationFormProps {
 	eventLocation: EventLocation | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -60,12 +60,15 @@ const EventLocationForm: React.FC<EventLocationFormProps> = ({ eventLocation, on
 		setError("");
 
 		try {
-			if (eventLocation) {
-				await eventLocationService.upd(eventLocation.id, formData);
-			} else {
-				await eventLocationService.ins(formData);
-			}
-			onSuccess();
+			const result = eventLocation
+				? await eventLocationService.upd(eventLocation.id, formData)
+				: await eventLocationService.ins(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					eventLocation ? "Lokasi diperbarui" : "Lokasi ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan lokasi"));
 		} finally {

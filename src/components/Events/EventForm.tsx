@@ -10,11 +10,11 @@ import { eventService } from "../../services/eventService";
 import { templateService } from "../../services/templateService";
 import { userService } from "../../services/userService";
 import { Event, Template, User } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventFormProps {
 	event: Event | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -40,12 +40,15 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSuccess, onHide }) => {
 		setLoading(true);
 
 		try {
-			if (event) {
-				await eventService.update(event.id, formData);
-			} else {
-				await eventService.create(formData);
-			}
-			onSuccess();
+			const result = event
+				? await eventService.update(event.id, formData)
+				: await eventService.create(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					event ? "Event diperbarui" : "Event ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan event"));
 		} finally {

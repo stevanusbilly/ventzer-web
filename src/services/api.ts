@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { normalizeAxiosError } from "../utils/apiError";
 
 const API_BASE_URL =
 	process.env.REACT_APP_API_URL || "http://localhost:3000/api";
@@ -21,7 +22,8 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
 	(response: AxiosResponse) => response,
-	(error) => {
+	async (error) => {
+		await normalizeAxiosError(error);
 		const hadToken = !!localStorage.getItem("token");
 		if (error.response?.status === 401 && hadToken) {
 			localStorage.removeItem("token");

@@ -8,11 +8,11 @@ import { eventService } from "../../services/eventService";
 import { Guest, Event } from "../../types";
 import { Message } from "primereact/message";
 import { useAuth } from "../../contexts/AuthContext";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface GuestFormProps {
 	guest: Guest | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -40,7 +40,9 @@ const GuestForm: React.FC<GuestFormProps> = ({ guest, onSuccess, onHide }) => {
 				setFormData((prev) => ({ ...prev, eventId: response[0].id }));
 			}
 		};
-		loadEvents().catch(() => setError("Gagal memuat daftar event"));
+		loadEvents().catch((err: unknown) =>
+			setError(getApiErrorMessage(err, "Gagal memuat daftar event")),
+		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -49,12 +51,15 @@ const GuestForm: React.FC<GuestFormProps> = ({ guest, onSuccess, onHide }) => {
 		setLoading(true);
 		setError("");
 		try {
-			if (guest) {
-				await guestService.update(guest.id, formData.eventId, formData);
-			} else {
-				await guestService.add(formData.eventId, formData);
-			}
-			onSuccess();
+			const result = guest
+				? await guestService.update(guest.id, formData.eventId, formData)
+				: await guestService.add(formData.eventId, formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					guest ? "Tamu diperbarui" : "Tamu ditambahkan",
+				),
+			);
 		} catch (err) {
 			setError(getApiErrorMessage(err, "Gagal menyimpan tamu"));
 		} finally {

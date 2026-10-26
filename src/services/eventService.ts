@@ -22,17 +22,27 @@ export const eventService = {
 		const response = await api.get<EventSummary>(`/events/${id}/summary`);
 		return response.data;
 	},
-	create: async (eventData: Omit<Event, "id">): Promise<{ id: number }> => {
-		const response = await api.post<{ data: { id: number } }>(
-			"/events",
+	create: async (
+		eventData: Omit<Event, "id">,
+	): Promise<{ message?: string; data: { id: number } }> => {
+		const response = await api.post<{
+			message?: string;
+			data: { id: number };
+		}>("/events", eventData);
+		return response.data;
+	},
+	update: async (
+		id: number,
+		eventData: Partial<Event>,
+	): Promise<{ message?: string }> => {
+		const response = await api.put<{ message?: string }>(
+			`/events/${id}`,
 			eventData,
 		);
-		return response.data.data ?? { id: 0 };
+		return response.data;
 	},
-	update: async (id: number, eventData: Partial<Event>): Promise<void> => {
-		await api.put(`/events/${id}`, eventData);
-	},
-	delete: (id: number): Promise<void> => {
-		return api.delete(`/events/${id}`);
+	delete: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(`/events/${id}`);
+		return response.data;
 	},
 };

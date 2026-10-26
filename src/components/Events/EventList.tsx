@@ -8,14 +8,17 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { eventService } from "../../services/eventService";
 import EventForm from "./EventForm";
 import EventAssignmentDialog from "./EventAssignmentDialog";
+import WeddingForm from "../Wedding/WeddingForm";
 import { Event } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const EventList: React.FC = () => {
 	const [events, setEvents] = useState<Event[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [showForm, setShowForm] = useState(false);
 	const [showAssignment, setShowAssignment] = useState(false);
+	const [showWedding, setShowWedding] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 	const { user, isAdmin, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
@@ -32,8 +35,8 @@ const EventList: React.FC = () => {
 					? await eventService.getAll()
 					: await eventService.getByUser(user?.id || 0);
 			setEvents(response);
-		} catch {
-			showError("Gagal memuat event");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -47,27 +50,50 @@ const EventList: React.FC = () => {
 		toast.current?.show({ severity: "success", summary: "Berhasil", detail: message, life: 3000 });
 	};
 
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadEvents();
+	};
+
+	const handleWeddingSuccess = (message: string): void => {
+		setShowWedding(false);
+		showSuccess(message);
+	};
+
 	const deleteEvent = async (id: number): Promise<void> => {
 		try {
-			await eventService.delete(id);
-			showSuccess("Event dihapus");
+			const data = await eventService.delete(id);
+			showSuccess(getApiSuccessMessage(data, "Event dihapus"));
 			loadEvents();
-		} catch {
-			showError("Gagal menghapus event");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus event"));
 		}
 	};
 
 	const actionBodyTemplate = (rowData: Event): React.ReactNode => (
 		<div className="flex gap-1">
 			{canMutate && (
-				<Button
-					icon="pi pi-pencil"
-					className="p-button-rounded p-button-success p-button-text"
-					onClick={() => {
-						setSelectedEvent(rowData);
-						setShowForm(true);
-					}}
-				/>
+				<>
+					<Button
+						icon="pi pi-pencil"
+						className="p-button-rounded p-button-success p-button-text"
+						tooltip="Edit event"
+						onClick={() => {
+							setSelectedEvent(rowData);
+							setShowForm(true);
+						}}
+					/>
+					<Button
+						icon="pi pi-heart"
+						className="p-button-rounded p-button-help p-button-text"
+						tooltip="Data wedding"
+						onClick={() => {
+							setSelectedEvent(rowData);
+							setShowWedding(true);
+						}}
+					/>
+				</>
 			)}
 			<Button
 				icon="pi pi-calendar"
@@ -140,10 +166,7 @@ const EventList: React.FC = () => {
 			{showForm && (
 				<EventForm
 					event={selectedEvent}
-					onSuccess={() => {
-						setShowForm(false);
-						loadEvents();
-					}}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}
@@ -152,6 +175,13 @@ const EventList: React.FC = () => {
 					event={selectedEvent}
 					visible={showAssignment}
 					onHide={() => setShowAssignment(false)}
+				/>
+			)}
+			{showWedding && selectedEvent && (
+				<WeddingForm
+					event={selectedEvent}
+					onSuccess={handleWeddingSuccess}
+					onHide={() => setShowWedding(false)}
 				/>
 			)}
 		</div>

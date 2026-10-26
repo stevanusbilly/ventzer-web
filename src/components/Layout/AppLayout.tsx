@@ -27,7 +27,6 @@ const ALL_NAV: NavItem[] = [
 	},
 	{ label: "Templates", icon: "pi pi-list", path: "/templates", roles: ["admin"] },
 	{ label: "Events", icon: "pi pi-calendar", path: "/events" },
-	{ label: "Wedding", icon: "pi pi-building", path: "/wedding", roles: ["admin", "panitia"] },
 	{ label: "Location", icon: "pi pi-map-marker", path: "/event_location", roles: ["admin", "panitia"] },
 	{ label: "Photo", icon: "pi pi-image", path: "/event_photo", roles: ["admin", "panitia"] },
 	{ label: "Guests", icon: "pi pi-users", path: "/guests" },

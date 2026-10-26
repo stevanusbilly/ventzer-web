@@ -15,7 +15,7 @@ import BulkUpload from "./BulkUpload";
 import { Guest, Event } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { buildInvitationUrl } from "../../utils/invitationLink";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const RSVP_OPTIONS = [
 	{ label: "Semua status", value: "" },
@@ -56,8 +56,8 @@ const GuestList: React.FC = () => {
 			};
 			const response = await guestService.getByEvent(selectedFilterEvent, params);
 			setGuests(response);
-		} catch {
-			showError("Gagal memuat tamu");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat tamu"));
 		} finally {
 			setLoading(false);
 		}
@@ -70,8 +70,8 @@ const GuestList: React.FC = () => {
 					? await eventService.getAll()
 					: await eventService.getByUser(user?.id || 0);
 			setEvents(response);
-		} catch {
-			showError("Gagal memuat event");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		}
 	};
 
@@ -90,8 +90,8 @@ const GuestList: React.FC = () => {
 			icon: "pi pi-exclamation-triangle",
 			accept: async () => {
 				try {
-					await guestService.delete(guest.id);
-					showSuccess("Tamu dihapus");
+					const data = await guestService.delete(guest.id);
+					showSuccess(getApiSuccessMessage(data, "Tamu dihapus"));
 					loadGuests();
 				} catch (err) {
 					showError(getApiErrorMessage(err, "Gagal menghapus tamu"));
@@ -102,8 +102,8 @@ const GuestList: React.FC = () => {
 
 	const handleRegenerateToken = async (guest: Guest): Promise<void> => {
 		try {
-			await guestService.regenerateToken(guest.id);
-			showSuccess("Token QR diperbarui");
+			const data = await guestService.regenerateToken(guest.id);
+			showSuccess(getApiSuccessMessage(data, "Token QR diperbarui"));
 			loadGuests();
 		} catch (err) {
 			showError(getApiErrorMessage(err, "Gagal regenerate token"));
@@ -119,8 +119,8 @@ const GuestList: React.FC = () => {
 			link.download = `qr-${guest.name}.png`;
 			link.click();
 			link.remove();
-		} catch {
-			showError("Gagal unduh QR");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal unduh QR"));
 		}
 	};
 
@@ -132,6 +132,17 @@ const GuestList: React.FC = () => {
 		} catch {
 			showError(link);
 		}
+	};
+
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadGuests();
+	};
+
+	const handleBulkUploadSuccess = (): void => {
+		setShowBulkUpload(false);
+		loadGuests();
 	};
 
 	const handleExport = async (): Promise<void> => {
@@ -286,19 +297,13 @@ const GuestList: React.FC = () => {
 			{showForm && (
 				<GuestForm
 					guest={selectedGuest}
-					onSuccess={() => {
-						setShowForm(false);
-						loadGuests();
-					}}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}
 			{showBulkUpload && (
 				<BulkUpload
-					onSuccess={() => {
-						setShowBulkUpload(false);
-						loadGuests();
-					}}
+					onSuccess={handleBulkUploadSuccess}
 					onHide={() => setShowBulkUpload(false)}
 				/>
 			)}

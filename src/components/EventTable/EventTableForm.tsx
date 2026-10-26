@@ -11,11 +11,11 @@ import { eventService } from "../../services/eventService";
 import { Event, EventTable } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import moment from 'moment';
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventTableFormProps {
 	eventTable: EventTable | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -58,12 +58,15 @@ const EventTableForm: React.FC<EventTableFormProps> = ({ eventTable, onSuccess, 
 		setError("");
 
 		try {
-			if (eventTable) {
-				await eventTableService.upd(eventTable.id, formData);
-			} else {
-				await eventTableService.ins(formData);
-			}
-			onSuccess();
+			const result = eventTable
+				? await eventTableService.upd(eventTable.id, formData)
+				: await eventTableService.ins(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					eventTable ? "Meja diperbarui" : "Meja ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan meja"));
 		} finally {

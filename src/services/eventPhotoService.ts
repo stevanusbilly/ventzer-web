@@ -112,7 +112,10 @@ export const eventPhotoService = {
 		);
 		return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/event_photo/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/event_photo/${id}`,
+		);
+		return response.data;
 	},
 };

@@ -11,11 +11,11 @@ import { eventService } from "../../services/eventService";
 import { categoryPhotoService } from "../../services/categoryPhotoService";
 import { CategoryPhoto, Event, EventPhoto } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventPhotoFormProps {
 	eventPhoto: EventPhoto | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -146,12 +146,15 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 				data.append("pathImage", formData.pathImage || "");
 			}
 
-			if (eventPhoto) {
-				await eventPhotoService.upd(eventPhoto.id, data);
-			} else {
-				await eventPhotoService.ins(data);
-			}
-			onSuccess();
+			const result = eventPhoto
+				? await eventPhotoService.upd(eventPhoto.id, data)
+				: await eventPhotoService.ins(data);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					eventPhoto ? "Foto diperbarui" : "Foto ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan foto"));
 		} finally {

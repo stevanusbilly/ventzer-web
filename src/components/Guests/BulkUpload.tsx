@@ -7,7 +7,7 @@ import { Toast } from "primereact/toast";
 import { guestService } from "../../services/guestService";
 import { eventService } from "../../services/eventService";
 import { Event } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface BulkUploadProps {
 	onSuccess: () => void;
@@ -29,8 +29,8 @@ const BulkUpload: React.FC<BulkUploadProps> = ({ onSuccess, onHide }) => {
 		try {
 			const response = await eventService.getAll();
 			setEvents(response);
-		} catch (error) {
-			console.error("Failed to load events:", error);
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		}
 	};
 
@@ -56,9 +56,8 @@ const BulkUpload: React.FC<BulkUploadProps> = ({ onSuccess, onHide }) => {
 
 		try {
 			const result = await guestService.bulkUpload(selectedEvent, file);
-			const skipped = result.skipped?.length || 0;
 			showSuccess(
-				`Berhasil import ${result.imported} tamu${skipped ? `, ${skipped} baris dilewati` : ""}`,
+				getApiSuccessMessage(result, "Upload tamu berhasil"),
 			);
 			onSuccess();
 			if (fileUploadRef.current) {

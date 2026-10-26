@@ -12,6 +12,7 @@ import EventTableForm from "./EventTableForm";
 import EventTableGuestDialog from "./EventTableGuestDialog";
 import { Event, EventTable } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const EventTableList: React.FC = () => {
 	const [eventTable, setEventTable] = useState<EventTable[]>([]);
@@ -37,8 +38,8 @@ const EventTableList: React.FC = () => {
 		try {
 			const response = await eventTableService.getByEvent(selectedFilterEvent);
 			setEventTable(response);
-		} catch (error) {
-			showError("Failed to load table");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat meja"));
 		} finally {
 			setLoading(false);
 		}
@@ -54,8 +55,8 @@ const EventTableList: React.FC = () => {
 			}
 			setEvents(response);
 			loadEventTable();
-		} catch (error) {
-			showError("Failed to load events");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -102,19 +103,20 @@ const EventTableList: React.FC = () => {
 		});
 	};
 
-	const deleteEventTable = async (id: number): Promise<void> => {
-		try {
-			await eventTableService.del(id);
-			showSuccess("Table deleted successfully");
-			loadEventTable();
-		} catch (error) {
-			showError("Failed to delete table");
-		}
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadEventTable();
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadEventTable();
+	const deleteEventTable = async (id: number): Promise<void> => {
+		try {
+			const data = await eventTableService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Meja dihapus"));
+			loadEventTable();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus meja"));
+		}
 	};
 
 	const handleManageGuests = (table: EventTable): void => {
@@ -240,7 +242,7 @@ const EventTableList: React.FC = () => {
 			{showForm && (
 				<EventTableForm
 					eventTable={selectedEventTable}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

@@ -11,6 +11,7 @@ import { useRef } from "react";
 import EventLocationForm from "./EventLocationForm";
 import { Event, EventLocation } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const EventLocationList: React.FC = () => {
 	const [eventLocation, setEventLocation] = useState<EventLocation[]>([]);
@@ -34,8 +35,8 @@ const EventLocationList: React.FC = () => {
 		try {
 			const response = await eventLocationService.getByEvent(selectedFilterEvent);
 			setEventLocation(response);
-		} catch (error) {
-			showError("Failed to load location");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat lokasi"));
 		} finally {
 			setLoading(false);
 		}
@@ -51,8 +52,8 @@ const EventLocationList: React.FC = () => {
 			}
 			setEvents(response);
 			loadEventLocation();
-		} catch (error) {
-			showError("Failed to load events");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -99,19 +100,20 @@ const EventLocationList: React.FC = () => {
 		});
 	};
 
-	const deleteEventLocation = async (id: number): Promise<void> => {
-		try {
-			await eventLocationService.del(id);
-			showSuccess("Location deleted successfully");
-			loadEventLocation();
-		} catch (error) {
-			showError("Failed to delete location");
-		}
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadEventLocation();
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadEventLocation();
+	const deleteEventLocation = async (id: number): Promise<void> => {
+		try {
+			const data = await eventLocationService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Lokasi dihapus"));
+			loadEventLocation();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus lokasi"));
+		}
 	};
 
 	const actionBodyEventLocation = (rowData: EventLocation): React.ReactNode => {
@@ -235,7 +237,7 @@ const EventLocationList: React.FC = () => {
 			{showForm && (
 				<EventLocationForm
 					eventLocation={selectedEventLocation}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

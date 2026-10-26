@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { Toast } from "primereact/toast";
 import { assignmentService } from "../../services/assignmentService";
 import { userService } from "../../services/userService";
 import { User, Event } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventAssignmentDialogProps {
 	event: Event;
@@ -25,6 +26,7 @@ const EventAssignmentDialog: React.FC<EventAssignmentDialogProps> = ({
 	const [assignments, setAssignments] = useState<any[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const toast = useRef<Toast>(null);
 
 	const load = async (): Promise<void> => {
 		setLoading(true);
@@ -50,10 +52,24 @@ const EventAssignmentDialog: React.FC<EventAssignmentDialogProps> = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [visible, event.id]);
 
+	const showSuccess = (message: string): void => {
+		toast.current?.show({
+			severity: "success",
+			summary: "Berhasil",
+			detail: message,
+			life: 3000,
+		});
+	};
+
 	const handleAssign = async (): Promise<void> => {
 		if (!selectedUserId) return;
 		try {
-			await assignmentService.assignUserToEvent(event.id, selectedUserId);
+			setError("");
+			const data = await assignmentService.assignUserToEvent(
+				event.id,
+				selectedUserId,
+			);
+			showSuccess(getApiSuccessMessage(data, "Panitia berhasil ditugaskan"));
 			setSelectedUserId(null);
 			await load();
 		} catch (err) {
@@ -63,7 +79,12 @@ const EventAssignmentDialog: React.FC<EventAssignmentDialogProps> = ({
 
 	const handleRemove = async (userId: number): Promise<void> => {
 		try {
-			await assignmentService.removeUserFromEvent(event.id, userId);
+			setError("");
+			const data = await assignmentService.removeUserFromEvent(
+				event.id,
+				userId,
+			);
+			showSuccess(getApiSuccessMessage(data, "Panitia dihapus dari event"));
 			await load();
 		} catch (err) {
 			setError(getApiErrorMessage(err, "Gagal menghapus assignment"));
@@ -71,6 +92,8 @@ const EventAssignmentDialog: React.FC<EventAssignmentDialogProps> = ({
 	};
 
 	return (
+		<>
+			<Toast ref={toast} />
 		<Dialog
 			header={`Panitia — ${event.name}`}
 			visible={visible}
@@ -111,6 +134,7 @@ const EventAssignmentDialog: React.FC<EventAssignmentDialogProps> = ({
 				/>
 			</DataTable>
 		</Dialog>
+		</>
 	);
 };
 

@@ -20,7 +20,8 @@ export const templateService = {
 			.put<Template>(`/templates/${id}`, eventData);
 		return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/templates/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(`/templates/${id}`);
+		return response.data;
 	},
 };

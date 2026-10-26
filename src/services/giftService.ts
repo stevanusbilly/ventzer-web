@@ -27,7 +27,8 @@ export const giftService = {
 			.put<Gift>(`/gift/${id}`, eventData);
 		return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/gift/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(`/gift/${id}`);
+		return response.data;
 	},
 };

@@ -8,6 +8,7 @@ import { categoryPhotoService } from "../../services/categoryPhotoService";
 import { useRef } from "react";
 import CategoryPhotoForm from "./CategoryPhotoForm";
 import { CategoryPhoto } from "../../types";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const CategoryPhotoList: React.FC = () => {
 	const [categoryPhoto, setCategoryPhoto] = useState<CategoryPhoto[]>([]);
@@ -24,8 +25,8 @@ const CategoryPhotoList: React.FC = () => {
 		try {
 			const response = await categoryPhotoService.list();
 			setCategoryPhoto(response);
-		} catch (error) {
-			showError("Failed to load Category Photo");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat kategori foto"));
 		} finally {
 			setLoading(false);
 		}
@@ -72,19 +73,20 @@ const CategoryPhotoList: React.FC = () => {
 		});
 	};
 
-	const deleteCategoryPhoto = async (id: number): Promise<void> => {
-		try {
-			await categoryPhotoService.del(id);
-			showSuccess("Category Photo deleted successfully");
-			loadCategoryPhoto();
-		} catch (error) {
-			showError("Failed to delete Category Photo");
-		}
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadCategoryPhoto();
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadCategoryPhoto();
+	const deleteCategoryPhoto = async (id: number): Promise<void> => {
+		try {
+			const data = await categoryPhotoService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Kategori foto dihapus"));
+			loadCategoryPhoto();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus kategori foto"));
+		}
 	};
 
 	const actionBodyCategoryPhoto = (rowData: CategoryPhoto): React.ReactNode => {
@@ -135,7 +137,7 @@ const CategoryPhotoList: React.FC = () => {
 			{showForm && (
 				<CategoryPhotoForm
 					categoryPhoto={selectedCategoryPhoto}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

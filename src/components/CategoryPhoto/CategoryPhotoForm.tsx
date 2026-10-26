@@ -5,11 +5,11 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { categoryPhotoService } from "../../services/categoryPhotoService";
 import { CategoryPhoto } from "../../types";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface CategoryPhotoFormProps {
 	categoryPhoto: CategoryPhoto | null;
-	onSuccess: () => void;
+	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
@@ -26,12 +26,15 @@ const TemplateForm: React.FC<CategoryPhotoFormProps> = ({ categoryPhoto, onSucce
 		setError("");
 
 		try {
-			if (categoryPhoto) {
-				await categoryPhotoService.upd(categoryPhoto.id, formData);
-			} else {
-				await categoryPhotoService.ins(formData);
-			}
-			onSuccess();
+			const result = categoryPhoto
+				? await categoryPhotoService.upd(categoryPhoto.id, formData)
+				: await categoryPhotoService.ins(formData);
+			onSuccess(
+				getApiSuccessMessage(
+					result,
+					categoryPhoto ? "Kategori foto diperbarui" : "Kategori foto ditambahkan",
+				),
+			);
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan kategori foto"));
 		} finally {

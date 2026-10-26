@@ -19,7 +19,8 @@ export const userService = {
             .put<User>(`/users/${id}`, userData);
         return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/users/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(`/users/${id}`);
+		return response.data;
 	},
 };

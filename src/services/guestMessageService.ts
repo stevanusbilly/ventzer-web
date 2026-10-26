@@ -29,7 +29,10 @@ export const guestMessageService = {
 	): Promise<void> => {
 		await api.put(`/guest_message/${id}`, payload);
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/guest_message/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/guest_message/${id}`,
+		);
+		return response.data;
 	},
 };

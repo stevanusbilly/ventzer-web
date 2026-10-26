@@ -15,7 +15,7 @@ import { eventSettingService } from "../../services/eventSettingService";
 import { useRef } from "react";
 import { Event, EventSetting } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const EventSettingList: React.FC = () => {
 	const [events, setEvents] = useState<Event[]>([]);
@@ -73,8 +73,8 @@ const EventSettingList: React.FC = () => {
 				handleChange("eventId", response[0].id)
 				setSelectedFilterEvent(response[0].id);
 			};
-		} catch (error) {
-			showError("Failed to load events");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -127,8 +127,9 @@ const EventSettingList: React.FC = () => {
 		setLoading(true);
 
 		try {
-			await eventSettingService.ins(formData);
-			showSuccess("Data saved successfully");
+			const data = await eventSettingService.ins(formData);
+			showSuccess(getApiSuccessMessage(data, "Pengaturan event disimpan"));
+			loadWedding();
 		} catch (error: unknown) {
 			setError(getApiErrorMessage(error, "Gagal menyimpan pengaturan"));
 		} finally {

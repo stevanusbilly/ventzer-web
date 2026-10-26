@@ -24,11 +24,12 @@ export const invitationService = {
 		eventId: number,
 		token: string,
 		payload: { kehadiran: 1 | 2; jumlahKehadiran?: number },
-	): Promise<void> => {
-		await publicApi.post(
+	): Promise<{ message?: string }> => {
+		const response = await publicApi.post<{ message?: string }>(
 			`/invitation/${eventId}/${encodeURIComponent(token)}/rsvp`,
 			payload,
 		);
+		return response.data;
 	},
 
 	submitMessage: async (
@@ -39,10 +40,11 @@ export const invitationService = {
 			kehadiran?: 1 | 2;
 			jumlahKehadiran?: number;
 		},
-	): Promise<void> => {
-		await publicApi.post(
+	): Promise<{ message?: string }> => {
+		const response = await publicApi.post<{ message?: string }>(
 			`/invitation/${eventId}/${encodeURIComponent(token)}/message`,
 			payload,
 		);
+		return response.data;
 	},
 };

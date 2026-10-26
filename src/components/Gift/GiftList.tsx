@@ -11,6 +11,7 @@ import { useRef } from "react";
 import GiftForm from "./GiftForm";
 import { Event, Gift } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const GiftList: React.FC = () => {
 	const [gift, setGift] = useState<Gift[]>([]);
@@ -34,8 +35,8 @@ const GiftList: React.FC = () => {
 		try {
 			const response = await giftService.getByEvent(selectedFilterEvent);
 			setGift(response);
-		} catch (error) {
-			showError("Failed to load gift");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat hadiah"));
 		} finally {
 			setLoading(false);
 		}
@@ -51,8 +52,8 @@ const GiftList: React.FC = () => {
 			}
 			setEvents(response);
 			loadGift();
-		} catch (error) {
-			showError("Failed to load events");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -99,19 +100,20 @@ const GiftList: React.FC = () => {
 		});
 	};
 
-	const deleteGift = async (id: number): Promise<void> => {
-		try {
-			await giftService.del(id);
-			showSuccess("Gift deleted successfully");
-			loadGift();
-		} catch (error) {
-			showError("Failed to delete gift");
-		}
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadGift();
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadGift();
+	const deleteGift = async (id: number): Promise<void> => {
+		try {
+			const data = await giftService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Hadiah dihapus"));
+			loadGift();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus hadiah"));
+		}
 	};
 
 	const actionBodyGift = (rowData: Gift): React.ReactNode => {
@@ -207,7 +209,7 @@ const GiftList: React.FC = () => {
 			{showForm && (
 				<GiftForm
 					gift={selectedGift}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

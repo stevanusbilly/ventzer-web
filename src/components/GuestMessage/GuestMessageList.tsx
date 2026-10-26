@@ -10,6 +10,7 @@ import { eventService } from "../../services/eventService";
 import { useRef } from "react";
 import { Event, GuestMessage } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const GuestMessageList: React.FC = () => {
 	const [guestMessage, setGuestMessage] = useState<GuestMessage[]>([]);
@@ -31,8 +32,8 @@ const GuestMessageList: React.FC = () => {
 		try {
 			const response = await guestMessageService.getByEvent(selectedFilterEvent);
 			setGuestMessage(response);
-		} catch (error) {
-			showError("Failed to load message");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat ucapan"));
 		} finally {
 			setLoading(false);
 		}
@@ -48,8 +49,8 @@ const GuestMessageList: React.FC = () => {
 			}
 			setEvents(response);
 			loadGuestMessage();
-		} catch (error) {
-			showError("Failed to load events");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -88,11 +89,11 @@ const GuestMessageList: React.FC = () => {
 
 	const deleteGuestMessage = async (id: number): Promise<void> => {
 		try {
-			await guestMessageService.del(id);
-			showSuccess("Guest Message deleted successfully");
+			const data = await guestMessageService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Ucapan dihapus"));
 			loadGuestMessage();
-		} catch (error) {
-			showError("Failed to delete message");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus ucapan"));
 		}
 	};
 

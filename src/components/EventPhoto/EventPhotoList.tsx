@@ -12,6 +12,7 @@ import EventPhotoForm from "./EventPhotoForm";
 import { Event, EventPhoto } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { Image } from "primereact/image";
+import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const EventPhotoList: React.FC = () => {
 	const [eventPhoto, setEventPhoto] = useState<EventPhoto[]>([]);
@@ -35,8 +36,8 @@ const EventPhotoList: React.FC = () => {
 		try {
 			const response = await eventPhotoService.getByEvent(selectedFilterEvent);
 			setEventPhoto(response);
-		} catch (error) {
-			showError("Failed to load photo");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat foto"));
 		} finally {
 			setLoading(false);
 		}
@@ -52,8 +53,8 @@ const EventPhotoList: React.FC = () => {
 			}
 			setEvents(response);
 			loadEventPhoto();
-		} catch (error) {
-			showError("Failed to load events");
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
 			setLoading(false);
 		}
@@ -100,19 +101,20 @@ const EventPhotoList: React.FC = () => {
 		});
 	};
 
-	const deleteEventPhoto = async (id: number): Promise<void> => {
-		try {
-			await eventPhotoService.del(id);
-			showSuccess("photo deleted successfully");
-			loadEventPhoto();
-		} catch (error) {
-			showError("Failed to delete photo");
-		}
+	const handleFormSuccess = (message: string): void => {
+		setShowForm(false);
+		showSuccess(message);
+		loadEventPhoto();
 	};
 
-	const handleFormSubmit = (): void => {
-		setShowForm(false);
-		loadEventPhoto();
+	const deleteEventPhoto = async (id: number): Promise<void> => {
+		try {
+			const data = await eventPhotoService.del(id);
+			showSuccess(getApiSuccessMessage(data, "Foto dihapus"));
+			loadEventPhoto();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal menghapus foto"));
+		}
 	};
 
 	const imageBodyTemplate = (rowData: EventPhoto): React.ReactNode => {
@@ -258,7 +260,7 @@ const EventPhotoList: React.FC = () => {
 			{showForm && (
 				<EventPhotoForm
 					eventPhoto={selectedEventPhoto}
-					onSuccess={handleFormSubmit}
+					onSuccess={handleFormSuccess}
 					onHide={() => setShowForm(false)}
 				/>
 			)}

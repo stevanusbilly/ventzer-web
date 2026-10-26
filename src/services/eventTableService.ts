@@ -24,7 +24,10 @@ export const eventTableService = {
 			.put<EventTable>(`/event_table/${id}`, eventData);
 		return response.data;
 	},
-	del: (id: number): Promise<void> => {
-		return api.delete(`/event_table/${id}`);
+	del: async (id: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/event_table/${id}`,
+		);
+		return response.data;
 	},
 };
