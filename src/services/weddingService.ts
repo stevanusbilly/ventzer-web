@@ -15,4 +15,10 @@ export const weddingService = {
 			.post<Wedding>("/wedding", eventData);
 		return response.data;
 	},
+	delByEvent: async (eventId: number): Promise<{ message?: string }> => {
+		const response = await api.delete<{ message?: string }>(
+			`/wedding/event/${eventId}`,
+		);
+		return response.data;
+	},
 };

@@ -23,4 +23,20 @@ export const userService = {
 		const response = await api.delete<{ message?: string }>(`/users/${id}`);
 		return response.data;
 	},
+	getMe: async (): Promise<User> => {
+		const response = await api.get<User>("/users/me");
+		return response.data;
+	},
+	updMe: async (payload: {
+		name: string;
+		email?: string;
+		change_password?: number;
+		password?: string;
+	}): Promise<{ message?: string; user: User }> => {
+		const response = await api.put<{ message?: string; user: User }>(
+			"/users/me",
+			payload,
+		);
+		return response.data;
+	},
 };

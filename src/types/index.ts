@@ -106,6 +106,7 @@ export interface GuestMessage {
 	guestId: number;
 	guestName: string;
 	message: string;
+	published?: number;
 	createdAt?: string;
 }
 
@@ -150,7 +151,7 @@ export interface Guest {
 	rsvpStatus: "pending" | "accepted" | "declined";
 	rsvpAt?: string | null;
 	rsvpJumlah?: number | null;
-	qrToken: string;
+	qrToken?: string;
 	checkedIn?: string | null;
 	checkedInAt?: string | null;
 }

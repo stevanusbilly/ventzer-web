@@ -34,7 +34,7 @@ const GuestList: React.FC = () => {
 	const [showForm, setShowForm] = useState(false);
 	const [showBulkUpload, setShowBulkUpload] = useState(false);
 	const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
-	const { user, canMutate, isAdmin } = useAuth();
+	const { user, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
 
 	useEffect(() => {
@@ -125,6 +125,10 @@ const GuestList: React.FC = () => {
 	};
 
 	const handleCopyLink = async (guest: Guest): Promise<void> => {
+		if (!guest.qrToken) {
+			showError("Token undangan tidak tersedia");
+			return;
+		}
 		const link = buildInvitationUrl(guest.eventId, guest.qrToken);
 		try {
 			await navigator.clipboard.writeText(link);
@@ -174,14 +178,7 @@ const GuestList: React.FC = () => {
 
 	const actionBodyTemplate = (rowData: Guest): React.ReactNode => {
 		if (!canMutate) {
-			return (
-				<Button
-					icon="pi pi-link"
-					className="p-button-rounded p-button-text"
-					onClick={() => handleCopyLink(rowData)}
-					tooltip="Salin link undangan"
-				/>
-			);
+			return null;
 		}
 		return (
 			<div className="flex gap-1 flex-wrap">
@@ -203,13 +200,11 @@ const GuestList: React.FC = () => {
 					className="p-button-rounded p-button-help p-button-text"
 					onClick={() => handleDownloadQR(rowData)}
 				/>
-				{isAdmin && (
-					<Button
-						icon="pi pi-refresh"
-						className="p-button-rounded p-button-info p-button-text"
-						onClick={() => handleRegenerateToken(rowData)}
-					/>
-				)}
+				<Button
+					icon="pi pi-refresh"
+					className="p-button-rounded p-button-info p-button-text"
+					onClick={() => handleRegenerateToken(rowData)}
+				/>
 				<Button
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger p-button-text"
@@ -276,12 +271,12 @@ const GuestList: React.FC = () => {
 			</div>
 
 			<DataTable value={guests} loading={loading} paginator rows={10} emptyMessage="Tidak ada tamu">
-				<Column field="name" header="Nama" sortable />
-				<Column field="email" header="Email" />
-				<Column field="phone" header="Telepon" />
-				<Column field="eventName" header="Event" />
-				<Column field="rsvpStatus" header="RSVP" body={statusBodyTemplate} />
-				<Column field="rsvpJumlah" header="Jumlah" />
+				<Column field="name" header="Nama" sortable filter />
+				<Column field="email" header="Email" sortable filter />
+				<Column field="phone" header="Telepon" sortable filter />
+				<Column field="eventName" header="Event" sortable filter />
+				<Column field="rsvpStatus" header="RSVP" sortable filter body={statusBodyTemplate} />
+				<Column field="rsvpJumlah" header="Jumlah" sortable filter />
 				<Column
 					field="checkedIn"
 					header="Check-in"
@@ -290,8 +285,11 @@ const GuestList: React.FC = () => {
 							? new Date(row.checkedIn).toLocaleString("id-ID")
 							: "-"
 					}
+					sortable
 				/>
-				<Column body={actionBodyTemplate} header="Aksi" style={{ width: "14rem" }} />
+				{canMutate && (
+					<Column body={actionBodyTemplate} header="Aksi" style={{ width: "14rem" }} />
+				)}
 			</DataTable>
 
 			{showForm && (

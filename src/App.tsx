@@ -21,8 +21,6 @@ import InvitationPage from "./pages/InvitationPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
 import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
-import EventLocationList from "./components/EventLocation/EventLocationList";
-import EventPhotoList from "./components/EventPhoto/EventPhotoList";
 import EventTableList from "./components/EventTable/EventTableList";
 import GiftList from "./components/Gift/GiftList";
 import GuestMessageList from "./components/GuestMessage/GuestMessageList";
@@ -88,11 +86,9 @@ const AppContent: React.FC = () => (
 			path="/templates"
 			element={
 				<ProtectedRoute>
-					<RoleRoute roles={["admin"]}>
-						<AppLayout>
-							<TemplateList />
-						</AppLayout>
-					</RoleRoute>
+					<AppLayout>
+						<TemplateList />
+					</AppLayout>
 				</ProtectedRoute>
 			}
 		/>
@@ -135,38 +131,12 @@ const AppContent: React.FC = () => (
 			}
 		/>
 		<Route
-			path="/event_location"
-			element={
-				<ProtectedRoute>
-					<RoleRoute roles={["admin", "panitia"]}>
-						<AppLayout>
-							<EventLocationList />
-						</AppLayout>
-					</RoleRoute>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
-			path="/event_photo"
-			element={
-				<ProtectedRoute>
-					<RoleRoute roles={["admin", "panitia"]}>
-						<AppLayout>
-							<EventPhotoList />
-						</AppLayout>
-					</RoleRoute>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
 			path="/event_table"
 			element={
 				<ProtectedRoute>
-					<RoleRoute roles={["admin", "panitia"]}>
-						<AppLayout>
-							<EventTableList />
-						</AppLayout>
-					</RoleRoute>
+					<AppLayout>
+						<EventTableList />
+					</AppLayout>
 				</ProtectedRoute>
 			}
 		/>
@@ -174,11 +144,9 @@ const AppContent: React.FC = () => (
 			path="/gift"
 			element={
 				<ProtectedRoute>
-					<RoleRoute roles={["admin", "panitia"]}>
-						<AppLayout>
-							<GiftList />
-						</AppLayout>
-					</RoleRoute>
+					<AppLayout>
+						<GiftList />
+					</AppLayout>
 				</ProtectedRoute>
 			}
 		/>
@@ -196,11 +164,9 @@ const AppContent: React.FC = () => (
 			path="/event_setting"
 			element={
 				<ProtectedRoute>
-					<RoleRoute roles={["admin", "panitia"]}>
-						<AppLayout>
-							<EventSettingList />
-						</AppLayout>
-					</RoleRoute>
+					<AppLayout>
+						<EventSettingList />
+					</AppLayout>
 				</ProtectedRoute>
 			}
 		/>

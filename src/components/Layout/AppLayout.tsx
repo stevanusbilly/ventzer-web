@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import ProfileDialog from "./ProfileDialog";
 
 interface AppLayoutProps {
 	children: ReactNode;
@@ -25,20 +26,19 @@ const ALL_NAV: NavItem[] = [
 		path: "/category_photo",
 		roles: ["admin"],
 	},
-	{ label: "Templates", icon: "pi pi-list", path: "/templates", roles: ["admin"] },
+	{ label: "Templates", icon: "pi pi-list", path: "/templates" },
 	{ label: "Events", icon: "pi pi-calendar", path: "/events" },
-	{ label: "Location", icon: "pi pi-map-marker", path: "/event_location", roles: ["admin", "panitia"] },
-	{ label: "Photo", icon: "pi pi-image", path: "/event_photo", roles: ["admin", "panitia"] },
 	{ label: "Guests", icon: "pi pi-users", path: "/guests" },
 	{ label: "Guest Message", icon: "pi pi-envelope", path: "/guest_message" },
-	{ label: "Gift", icon: "pi pi-gift", path: "/gift", roles: ["admin", "panitia"] },
-	{ label: "Table", icon: "pi pi-clone", path: "/event_table", roles: ["admin", "panitia"] },
-	{ label: "Check-in", icon: "pi pi-check-circle", path: "/checkin", roles: ["admin", "panitia"] },
-	{ label: "Setting", icon: "pi pi-info-circle", path: "/event_setting", roles: ["admin", "panitia"] },
+	{ label: "Gift", icon: "pi pi-gift", path: "/gift" },
+	{ label: "Table", icon: "pi pi-clone", path: "/event_table" },
+	{ label: "Check-in", icon: "pi pi-check-circle", path: "/checkin" },
+	{ label: "Setting", icon: "pi pi-info-circle", path: "/event_setting" },
 ];
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 	const [visible, setVisible] = useState(false);
+	const [showProfile, setShowProfile] = useState(false);
 	const { user, logout, isAuthenticated } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -92,6 +92,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 						</div>
 					</div>
 					<Button
+						label="Profil"
+						icon="pi pi-user-edit"
+						outlined
+						className="w-full mb-2"
+						onClick={() => {
+							setShowProfile(true);
+							setVisible(false);
+						}}
+					/>
+					<Button
 						label="Keluar"
 						icon="pi pi-sign-out"
 						severity="danger"
@@ -125,6 +135,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 				</header>
 				<main className="p-4 flex-1">{children}</main>
 			</div>
+			<ProfileDialog visible={showProfile} onHide={() => setShowProfile(false)} />
 		</div>
 	);
 };

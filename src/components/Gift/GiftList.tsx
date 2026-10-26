@@ -20,7 +20,7 @@ const GiftList: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [showForm, setShowForm] = useState<boolean>(false);
 	const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
-	const { user } = useAuth();
+	const { user, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
 
 	useEffect(() => {
@@ -117,6 +117,9 @@ const GiftList: React.FC = () => {
 	};
 
 	const actionBodyGift = (rowData: Gift): React.ReactNode => {
+		if (!canMutate) {
+			return null;
+		}
 		return (
 			<div className="flex gap-1">
 				<Button
@@ -163,7 +166,9 @@ const GiftList: React.FC = () => {
 							filter
 						/>
 					</div>
-					<Button label="Create Gift" icon="pi pi-plus" onClick={handleInsert} />
+					{canMutate && (
+						<Button label="Create Gift" icon="pi pi-plus" onClick={handleInsert} />
+					)}
 				</div>
 			</div>
 
@@ -203,7 +208,7 @@ const GiftList: React.FC = () => {
 					filter
 					filterPlaceholder="Search by Provider"
 				/>
-				<Column body={actionBodyGift} header="Actions" />
+				{canMutate && <Column body={actionBodyGift} header="Actions" />}
 			</DataTable>
 
 			{showForm && (

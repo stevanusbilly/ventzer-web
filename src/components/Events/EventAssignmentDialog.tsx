@@ -119,9 +119,9 @@ const EventAssignmentDialog: React.FC<EventAssignmentDialogProps> = ({
 				<Button label="Assign" icon="pi pi-user-plus" onClick={handleAssign} />
 			</div>
 			<DataTable value={assignments} loading={loading} emptyMessage="Belum ada panitia">
-				<Column field="name" header="Nama" />
-				<Column field="email" header="Email" />
-				<Column field="role" header="Role" />
+				<Column field="name" header="Nama" sortable filter />
+				<Column field="email" header="Email" sortable filter />
+				<Column field="role" header="Role" sortable filter />
 				<Column
 					header=""
 					body={(row) => (

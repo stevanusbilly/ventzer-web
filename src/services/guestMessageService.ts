@@ -35,4 +35,14 @@ export const guestMessageService = {
 		);
 		return response.data;
 	},
+	setPublished: async (
+		id: number,
+		published: number,
+	): Promise<{ message?: string; published: number }> => {
+		const response = await api.patch<{ message?: string; published: number }>(
+			`/guest_message/${id}/publish`,
+			{ published },
+		);
+		return response.data;
+	},
 };

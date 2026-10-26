@@ -16,9 +16,11 @@ interface AuthContextType {
 		credentials: LoginCredentials,
 	) => Promise<{ success: boolean; message?: string }>;
 	logout: () => void;
+	updateUser: (next: User) => void;
 	isAuthenticated: boolean;
 	canMutate: boolean;
 	isAdmin: boolean;
+	isViewer: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,18 +83,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		setUser(null);
 	};
 
+	const updateUser = (next: User): void => {
+		setUser(next);
+		localStorage.setItem("userData", JSON.stringify(next));
+	};
+
 	const role = user?.role;
 	const canMutate = role === "admin" || role === "panitia";
 	const isAdmin = role === "admin";
+	const isViewer = role === "viewer";
 
 	const value: AuthContextType = {
 		user,
 		token,
 		login,
 		logout,
+		updateUser,
 		isAuthenticated: !!user,
 		canMutate,
 		isAdmin,
+		isViewer,
 	};
 
 	return (

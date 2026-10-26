@@ -20,7 +20,7 @@ import {
 import { getApiErrorMessage } from "../../utils/apiError";
 
 const CheckIn: React.FC = () => {
-	const { user, canMutate } = useAuth();
+	const { user, canMutate, isAdmin } = useAuth();
 	const [token, setToken] = useState("");
 	const [eventId, setEventId] = useState(0);
 	const [events, setEvents] = useState<Event[]>([]);
@@ -133,6 +133,23 @@ const CheckIn: React.FC = () => {
 		await handleCheckIn(token);
 	};
 
+	const handleUndo = async (row: Guest): Promise<void> => {
+		if (!isAdmin || !eventId) return;
+		try {
+			const data = await checkinService.undo(row.id, eventId);
+			setMessage({
+				type: "success",
+				text: data.message || `Check-in ${row.name} dibatalkan`,
+			});
+			loadRecentCheckIns();
+		} catch (error: unknown) {
+			setMessage({
+				type: "error",
+				text: getApiErrorMessage(error, "Gagal membatalkan check-in"),
+			});
+		}
+	};
+
 	const handleScanSuccess = async (decodedText: string): Promise<void> => {
 		setShowScanner(false);
 		const scannedEventId = extractEventIdFromScan(decodedText);
@@ -151,20 +168,18 @@ const CheckIn: React.FC = () => {
 		return <Tag value={rowData.rsvpStatus} severity={severity} />;
 	};
 
-	if (!canMutate) {
-		return (
-			<Message
-				severity="warn"
-				text="Akun viewer hanya dapat melihat data. Check-in memerlukan role panitia atau admin."
-				className="w-full"
-			/>
-		);
-	}
-
 	return (
 		<div className="card">
 			<h2>Guest Check-in</h2>
+			{!canMutate && (
+				<Message
+					severity="info"
+					text="Akun viewer hanya melihat ringkasan check-in."
+					className="w-full mb-3"
+				/>
+			)}
 			<div className="grid">
+				{canMutate && (
 				<div className="col-12 md:col-6">
 					<Card className="mt-3">
 						{message && (
@@ -217,8 +232,23 @@ const CheckIn: React.FC = () => {
 						</form>
 					</Card>
 				</div>
-				<div className="col-12 md:col-6">
+				)}
+				<div className={canMutate ? "col-12 md:col-6" : "col-12"}>
 					<Card title="Check-in Terbaru" className="mt-3">
+						<div className="field mb-3">
+							<label htmlFor="summaryEvent">Event</label>
+							<Dropdown
+								id="summaryEvent"
+								value={eventId}
+								options={events.map((event) => ({
+									label: event.name,
+									value: event.id,
+								}))}
+								onChange={(e: DropdownChangeEvent) => setEventId(e.value)}
+								className="w-full"
+								placeholder="Pilih event"
+							/>
+						</div>
 						<DataTable value={recentCheckIns} emptyMessage="Belum ada check-in">
 							<Column field="name" header="Nama" />
 							<Column field="rsvpStatus" header="RSVP" body={statusBodyTemplate} />
@@ -231,6 +261,21 @@ const CheckIn: React.FC = () => {
 										: "-"
 								}
 							/>
+							{isAdmin && (
+								<Column
+									header="Aksi"
+									body={(row: Guest) =>
+										row.checkedIn ? (
+											<Button
+												icon="pi pi-replay"
+												className="p-button-rounded p-button-warning p-button-text"
+												tooltip="Batalkan check-in"
+												onClick={() => handleUndo(row)}
+											/>
+										) : null
+									}
+								/>
+							)}
 						</DataTable>
 					</Card>
 				</div>

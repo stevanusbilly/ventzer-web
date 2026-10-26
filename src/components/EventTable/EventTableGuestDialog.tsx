@@ -12,6 +12,7 @@ import { confirmDialog } from "primereact/confirmdialog";
 import { eventTableGuestService } from "../../services/eventTableGuestService";
 import { guestService } from "../../services/guestService";
 import { EventTable, EventTableGuest, Guest } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventTableGuestDialogProps {
@@ -27,6 +28,7 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 	onHide,
 	onSuccess,
 }) => {
+	const { canMutate } = useAuth();
 	const [tableGuests, setTableGuests] = useState<EventTableGuest[]>([]);
 	const [availableGuests, setAvailableGuests] = useState<Guest[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -183,6 +185,9 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 	const sisaKursi = jumlahKursi - totalJumlahGuests;
 
 	const actionBodyTemplate = (rowData: EventTableGuest): React.ReactNode => {
+		if (!canMutate) {
+			return null;
+		}
 		return (
 			<div className="flex gap-1">
 				<Button
@@ -230,12 +235,14 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 							/>
 						</div>
 					</div>
+					{canMutate && (
 					<Button
 						label="Add Guest to Table"
 						icon="pi pi-plus"
 						className="p-button-primary p-button-sm"
 						onClick={handleOpenAddForm}
 					/>
+					)}
 				</div>
 			</div>
 
@@ -255,7 +262,9 @@ const EventTableGuestDialog: React.FC<EventTableGuestDialogProps> = ({
 				/>
 				<Column field="guestName" header="Guest Name" sortable />
 				<Column field="jumlah" header="Jumlah" sortable style={{ width: "8rem" }} />
-				<Column body={actionBodyTemplate} header="Actions" style={{ width: "8rem" }} />
+				{canMutate && (
+					<Column body={actionBodyTemplate} header="Actions" style={{ width: "8rem" }} />
+				)}
 			</DataTable>
 
 			{/* Sub-Dialog: Add / Edit Table Guest */}

@@ -8,6 +8,7 @@ import { templateService } from "../../services/templateService";
 import { useRef } from "react";
 import TemplateForm from "./TemplateForm";
 import { Template } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const TemplateList: React.FC = () => {
@@ -15,6 +16,7 @@ const TemplateList: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [showForm, setShowForm] = useState<boolean>(false);
 	const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+	const { isAdmin } = useAuth();
 	const toast = useRef<Toast>(null);
 
 	useEffect(() => {
@@ -90,6 +92,9 @@ const TemplateList: React.FC = () => {
 	};
 
 	const actionBodyTemplate = (rowData: Template): React.ReactNode => {
+		if (!isAdmin) {
+			return null;
+		}
 		return (
 			<div className="flex gap-1">
 				<Button
@@ -113,7 +118,9 @@ const TemplateList: React.FC = () => {
 
 			<div className="flex justify-content-between align-items-center mb-4">
 				<h2>Templates Management</h2>
-				<Button label="Create Template" icon="pi pi-plus" onClick={handleInsert} />
+				{isAdmin && (
+					<Button label="Create Template" icon="pi pi-plus" onClick={handleInsert} />
+				)}
 			</div>
 
 			<DataTable
@@ -131,7 +138,7 @@ const TemplateList: React.FC = () => {
 					filter
 					filterPlaceholder="Search by Name"
 				/>
-				<Column body={actionBodyTemplate} header="Actions" />
+				{isAdmin && <Column body={actionBodyTemplate} header="Actions" />}
 			</DataTable>
 
 			{showForm && (

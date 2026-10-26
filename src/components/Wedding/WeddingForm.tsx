@@ -7,6 +7,7 @@ import { Message } from "primereact/message";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { weddingService } from "../../services/weddingService";
 import { Event, Wedding } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 const emptyWedding = (eventId: number): Omit<Wedding, "id"> => ({
@@ -33,6 +34,7 @@ interface WeddingFormProps {
 }
 
 const WeddingForm: React.FC<WeddingFormProps> = ({ event, onSuccess, onHide }) => {
+	const { canMutate } = useAuth();
 	const [formData, setFormData] = useState<Omit<Wedding, "id">>(emptyWedding(event.id));
 	const [loading, setLoading] = useState(false);
 	const [fetching, setFetching] = useState(true);
@@ -78,6 +80,7 @@ const WeddingForm: React.FC<WeddingFormProps> = ({ event, onSuccess, onHide }) =
 
 	const handleSubmit = async (e: React.FormEvent): Promise<void> => {
 		e.preventDefault();
+		if (!canMutate) return;
 		setLoading(true);
 		setError("");
 		try {
@@ -103,7 +106,7 @@ const WeddingForm: React.FC<WeddingFormProps> = ({ event, onSuccess, onHide }) =
 					<ProgressSpinner />
 				</div>
 			) : (
-				<form onSubmit={handleSubmit} className="p-fluid">
+				<form onSubmit={handleSubmit} className="p-fluid" style={{ pointerEvents: canMutate ? "auto" : "none" }}>
 					{error && (
 						<Message
 							severity="error"
@@ -246,14 +249,16 @@ const WeddingForm: React.FC<WeddingFormProps> = ({ event, onSuccess, onHide }) =
 							}
 						/>
 					</div>
-					<div className="flex justify-content-end gap-2 mt-3">
+					<div className="flex justify-content-end gap-2 mt-3" style={{ pointerEvents: "auto" }}>
 						<Button
 							type="button"
-							label="Batal"
+							label={canMutate ? "Batal" : "Tutup"}
 							className="p-button-text"
 							onClick={onHide}
 						/>
-						<Button type="submit" label="Simpan" loading={loading} />
+						{canMutate && (
+							<Button type="submit" label="Simpan" loading={loading} />
+						)}
 					</div>
 				</form>
 			)}

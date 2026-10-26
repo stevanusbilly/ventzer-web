@@ -12,4 +12,14 @@ export const checkinService = {
 		});
 		return response.data;
 	},
+	undo: async (
+		guestId: number,
+		eventId: number,
+	): Promise<{ message?: string }> => {
+		const response = await api.post<{ message?: string }>("/checkin/undo", {
+			guestId,
+			eventId,
+		});
+		return response.data;
+	},
 };

@@ -23,7 +23,7 @@ const EventTableList: React.FC = () => {
 	const [selectedEventTable, setSelectedEventTable] = useState<EventTable | null>(null);
 	const [showGuestDialog, setShowGuestDialog] = useState<boolean>(false);
 	const [tableForGuests, setTableForGuests] = useState<EventTable | null>(null);
-	const { user } = useAuth();
+	const { user, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
 
 	useEffect(() => {
@@ -131,23 +131,27 @@ const EventTableList: React.FC = () => {
 					icon="pi pi-users"
 					className="p-button-rounded p-button-info p-button-text"
 					onClick={() => handleManageGuests(rowData)}
-					tooltip="Manage Guests"
+					tooltip="Tamu meja"
 					tooltipOptions={{ position: "top" }}
 				/>
-				<Button
-					icon="pi pi-pencil"
-					className="p-button-rounded p-button-success p-button-text"
-					onClick={() => handleEdit(rowData)}
-					tooltip="Edit Table"
-					tooltipOptions={{ position: "top" }}
-				/>
-				<Button
-					icon="pi pi-trash"
-					className="p-button-rounded p-button-danger p-button-text"
-					onClick={() => handleDelete(rowData)}
-					tooltip="Delete Table"
-					tooltipOptions={{ position: "top" }}
-				/>
+				{canMutate && (
+					<>
+						<Button
+							icon="pi pi-pencil"
+							className="p-button-rounded p-button-success p-button-text"
+							onClick={() => handleEdit(rowData)}
+							tooltip="Edit Table"
+							tooltipOptions={{ position: "top" }}
+						/>
+						<Button
+							icon="pi pi-trash"
+							className="p-button-rounded p-button-danger p-button-text"
+							onClick={() => handleDelete(rowData)}
+							tooltip="Delete Table"
+							tooltipOptions={{ position: "top" }}
+						/>
+					</>
+				)}
 			</div>
 		);
 	};
@@ -182,7 +186,9 @@ const EventTableList: React.FC = () => {
 							filter
 						/>
 					</div>
-					<Button label="Create Table" icon="pi pi-plus" onClick={handleInsert} />
+					{canMutate && (
+						<Button label="Create Table" icon="pi pi-plus" onClick={handleInsert} />
+					)}
 				</div>
 			</div>
 

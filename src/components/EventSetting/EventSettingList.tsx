@@ -22,7 +22,7 @@ const EventSettingList: React.FC = () => {
 	const [setting, setSetting] = useState<EventSetting | null>();
 	const [selectedFilterEvent, setSelectedFilterEvent] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
-	const { user } = useAuth();
+	const { user, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
 	const [error, setError] = useState<string>("");
 	const [formData, setFormData] = useState<Omit<EventSetting, "id">>({
@@ -124,6 +124,7 @@ const EventSettingList: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent): Promise<void> => {
 		e.preventDefault();
+		if (!canMutate) return;
 		setLoading(true);
 
 		try {
@@ -181,6 +182,7 @@ const EventSettingList: React.FC = () => {
 							handleChange("maxGaleriFoto", e.target.value)
 						}
 						required
+						disabled={!canMutate}
 					/>
 				</div>
 
@@ -189,7 +191,8 @@ const EventSettingList: React.FC = () => {
 						<div className="flex align-items-center">
 							<Checkbox inputId="fotoProfil" name="fotoProfil" value="1" 
 								onChange={e => handleChange("fotoProfil", e.checked ? 1 : 0)} 
-								checked={formData.fotoProfil === 1 ? true : false} />
+								checked={formData.fotoProfil === 1 ? true : false}
+								disabled={!canMutate} />
 							<label htmlFor="fotoProfil" className="ml-2">Foto Profil</label>
 						</div>
 					</div>
@@ -198,7 +201,8 @@ const EventSettingList: React.FC = () => {
 						<div className="flex align-items-center">
 							<Checkbox inputId="socialMedia" name="socialMedia" value="1" 
 								onChange={e => handleChange("socialMedia", e.checked ? 1 : 0)} 
-								checked={formData.socialMedia === 1 ? true : false} />
+								checked={formData.socialMedia === 1 ? true : false}
+								disabled={!canMutate} />
 							<label htmlFor="socialMedia" className="ml-2">Social Media</label>
 						</div>
 					</div>
@@ -207,7 +211,8 @@ const EventSettingList: React.FC = () => {
 						<div className="flex align-items-center">
 							<Checkbox inputId="rsvp" name="rsvp" value="1" 
 								onChange={e => handleChange("rsvp", e.checked ? 1 : 0)} 
-								checked={formData.rsvp === 1 ? true : false} />
+								checked={formData.rsvp === 1 ? true : false}
+								disabled={!canMutate} />
 							<label htmlFor="rsvp" className="ml-2">RSVP</label>
 						</div>
 					</div>
@@ -216,7 +221,8 @@ const EventSettingList: React.FC = () => {
 						<div className="flex align-items-center">
 							<Checkbox inputId="video" name="video" value="1" 
 								onChange={e => handleChange("video", e.checked ? 1 : 0)} 
-								checked={formData.video === 1 ? true : false} />
+								checked={formData.video === 1 ? true : false}
+								disabled={!canMutate} />
 							<label htmlFor="video" className="ml-2">Video</label>
 						</div>
 					</div>
@@ -225,7 +231,8 @@ const EventSettingList: React.FC = () => {
 						<div className="flex align-items-center">
 							<Checkbox inputId="addToCalendar" name="addToCalendar" value="1" 
 								onChange={e => handleChange("addToCalendar", e.checked ? 1 : 0)} 
-								checked={formData.addToCalendar === 1 ? true : false} />
+								checked={formData.addToCalendar === 1 ? true : false}
+								disabled={!canMutate} />
 							<label htmlFor="addToCalendar" className="ml-2">Add To Calendar</label>
 						</div>
 					</div>
@@ -234,19 +241,22 @@ const EventSettingList: React.FC = () => {
 						<div className="flex align-items-center">
 							<Checkbox inputId="loveStory" name="loveStory" value="1" 
 								onChange={e => handleChange("loveStory", e.checked ? 1 : 0)} 
-								checked={formData.loveStory === 1 ? true : false} />
+								checked={formData.loveStory === 1 ? true : false}
+								disabled={!canMutate} />
 							<label htmlFor="loveStory" className="ml-2">Love Story</label>
 						</div>
 					</div>
 
 				</div>
 
-				<Button
-					type="submit"
-					label="Submit"
-					loading={loading}
-					className="mt-2"
-				/>
+				{canMutate && (
+					<Button
+						type="submit"
+						label="Submit"
+						loading={loading}
+						className="mt-2"
+					/>
+				)}
 			</form>
 
 		</div>

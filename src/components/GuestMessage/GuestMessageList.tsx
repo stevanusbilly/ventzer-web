@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Tag } from "primereact/tag";
 import { guestMessageService } from "../../services/guestMessageService";
 import { eventService } from "../../services/eventService";
 import { useRef } from "react";
@@ -17,7 +18,7 @@ const GuestMessageList: React.FC = () => {
 	const [events, setEvents] = useState<Event[]>([]);
 	const [selectedFilterEvent, setSelectedFilterEvent] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
-	const { user } = useAuth();
+	const { user, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
 
 	useEffect(() => {
@@ -97,9 +98,29 @@ const GuestMessageList: React.FC = () => {
 		}
 	};
 
+	const togglePublished = async (row: GuestMessage): Promise<void> => {
+		try {
+			const next = Number(row.published) === 1 ? 0 : 1;
+			const data = await guestMessageService.setPublished(row.id, next);
+			showSuccess(getApiSuccessMessage(data, next === 1 ? "Ucapan ditampilkan" : "Ucapan disembunyikan"));
+			loadGuestMessage();
+		} catch (error: unknown) {
+			showError(getApiErrorMessage(error, "Gagal mengubah status ucapan"));
+		}
+	};
+
 	const actionBodyGuestMessage = (rowData: GuestMessage): React.ReactNode => {
+		if (!canMutate) {
+			return null;
+		}
 		return (
 			<div className="flex gap-1">
+				<Button
+					icon={Number(rowData.published) === 1 ? "pi pi-eye-slash" : "pi pi-eye"}
+					className="p-button-rounded p-button-info p-button-text"
+					tooltip={Number(rowData.published) === 1 ? "Sembunyikan" : "Tampilkan"}
+					onClick={() => togglePublished(rowData)}
+				/>
 				<Button
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger p-button-text"
@@ -171,7 +192,16 @@ const GuestMessageList: React.FC = () => {
 					filter
 					filterPlaceholder="Search by Message"
 				/>
-				<Column body={actionBodyGuestMessage} header="Actions" />
+				<Column
+					header="Status"
+					body={(row: GuestMessage) => (
+						<Tag
+							value={Number(row.published) === 1 ? "Ditampilkan" : "Disembunyikan"}
+							severity={Number(row.published) === 1 ? "success" : "warning"}
+						/>
+					)}
+				/>
+				{canMutate && <Column body={actionBodyGuestMessage} header="Actions" />}
 			</DataTable>
 		</div>
 	);

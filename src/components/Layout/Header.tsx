@@ -37,16 +37,6 @@ const Header: React.FC = () => {
 					command: () => navigate("/events"),
 				},
 				{
-					label: "Location",
-					icon: "pi pi-map-marker",
-					command: () => navigate("/event_location"),
-				},
-				{
-					label: "Photo",
-					icon: "pi pi-image",
-					command: () => navigate("/event_photo"),
-				},
-				{
 					label: "Guests",
 					icon: "pi pi-users",
 					command: () => navigate("/guests"),
