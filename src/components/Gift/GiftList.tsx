@@ -51,7 +51,9 @@ const GiftList: React.FC = () => {
 				response = await eventService.getByUser(user?.id ? user.id : 0);
 			}
 			setEvents(response);
-			loadGift();
+			if (response.length > 0) {
+				setSelectedFilterEvent(response[0].id);
+			}
 		} catch (error: unknown) {
 			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {

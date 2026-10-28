@@ -6,17 +6,20 @@ import { Toast } from "primereact/toast";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Tag } from "primereact/tag";
+import { Calendar } from "primereact/calendar";
 import { guestMessageService } from "../../services/guestMessageService";
 import { eventService } from "../../services/eventService";
 import { useRef } from "react";
 import { Event, GuestMessage } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
+import { lastNDaysRange, toDateQueryParams } from "../../utils/dateRange";
 
 const GuestMessageList: React.FC = () => {
 	const [guestMessage, setGuestMessage] = useState<GuestMessage[]>([]);
 	const [events, setEvents] = useState<Event[]>([]);
 	const [selectedFilterEvent, setSelectedFilterEvent] = useState<number>(0);
+	const [dateRange, setDateRange] = useState<(Date | null)[]>([null, null]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const { user, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
@@ -27,11 +30,27 @@ const GuestMessageList: React.FC = () => {
 
 	useEffect(() => {
 		loadGuestMessage();
-	}, [selectedFilterEvent])
+	}, [selectedFilterEvent, dateRange]);
+
+	const handleEventFilterChange = (eventId: number): void => {
+		setSelectedFilterEvent(eventId);
+		if (eventId === 0 && !dateRange[0]) {
+			setDateRange(lastNDaysRange(30));
+		}
+	};
 
 	const loadGuestMessage = async (): Promise<void> => {
+		if (!selectedFilterEvent && !dateRange[0]) {
+			setGuestMessage([]);
+			setLoading(false);
+			return;
+		}
+		setLoading(true);
 		try {
-			const response = await guestMessageService.getByEvent(selectedFilterEvent);
+			const response = await guestMessageService.getByEvent(
+				selectedFilterEvent,
+				toDateQueryParams(dateRange),
+			);
 			setGuestMessage(response);
 		} catch (error: unknown) {
 			showError(getApiErrorMessage(error, "Gagal memuat ucapan"));
@@ -49,7 +68,9 @@ const GuestMessageList: React.FC = () => {
 				response = await eventService.getByUser(user?.id ? user.id : 0);
 			}
 			setEvents(response);
-			loadGuestMessage();
+			if (response.length > 0) {
+				setSelectedFilterEvent(response[0].id);
+			}
 		} catch (error: unknown) {
 			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		} finally {
@@ -135,9 +156,9 @@ const GuestMessageList: React.FC = () => {
 			<Toast ref={toast} />
 			<ConfirmDialog />
 
-			<div className="flex justify-content-between align-items-center mb-4">
+			<div className="flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 				<h2>Guest Message Management</h2>
-				<div className="flex gap-2">
+				<div className="flex gap-2 flex-wrap">
 					<div className="flex align-items-center gap-2">
 						<label htmlFor="eventFilter" className="font-semibold text-color-secondary">
 							Pilih Event:
@@ -153,22 +174,32 @@ const GuestMessageList: React.FC = () => {
 								value: event.id
 							})))}
 							onChange={(e: DropdownChangeEvent) => {
-								setSelectedFilterEvent(e.value)
+								handleEventFilterChange(e.value)
 							}}
 							placeholder="Pilih Event"
 							className="w-14rem"
 							filter
 						/>
 					</div>
+					<Calendar
+						value={dateRange}
+						onChange={(e) =>
+							setDateRange((e.value as (Date | null)[]) || [null, null])
+						}
+						selectionMode="range"
+						readOnlyInput
+						dateFormat="dd/mm/yy"
+						placeholder="Tanggal: dari — sampai"
+						showButtonBar
+						hideOnRangeSelection
+						className="w-18rem"
+					/>
 				</div>
 			</div>
 
 			<DataTable
 				value={guestMessage}
 				loading={loading}
-				paginator
-				rows={10}
-				rowsPerPageOptions={[5, 10, 25, 50]}
 				emptyMessage="No message found"
 			>
 				<Column

@@ -1,18 +1,27 @@
 import api from "./api";
 import { GuestMessage } from "../types";
 
+export interface GuestMessageListParams {
+	dateFrom?: string;
+	dateTo?: string;
+}
+
 export const guestMessageService = {
-	list: async (): Promise<GuestMessage[]> => {
-		const response = await api.get<GuestMessage[]>("/guest_message");
+	list: async (params?: GuestMessageListParams): Promise<GuestMessage[]> => {
+		const response = await api.get<GuestMessage[]>("/guest_message", { params });
 		return response.data;
 	},
 	get: async (id: number): Promise<GuestMessage> => {
 		const response = await api.get<GuestMessage>(`/guest_message/${id}`);
 		return response.data;
 	},
-	getByEvent: async (eventId: number): Promise<GuestMessage[]> => {
+	getByEvent: async (
+		eventId: number,
+		params?: GuestMessageListParams,
+	): Promise<GuestMessage[]> => {
 		const response = await api.get<GuestMessage[]>(
 			`/guest_message/event/${eventId}`,
+			{ params },
 		);
 		return response.data;
 	},

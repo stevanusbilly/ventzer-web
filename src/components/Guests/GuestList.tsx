@@ -7,6 +7,7 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Tag } from "primereact/tag";
 import { InputText } from "primereact/inputtext";
+import { Calendar } from "primereact/calendar";
 import { guestService } from "../../services/guestService";
 import { eventService } from "../../services/eventService";
 import { exportService } from "../../services/exportService";
@@ -16,6 +17,7 @@ import { Guest, Event } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { buildInvitationUrl } from "../../utils/invitationLink";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
+import { lastNDaysRange, toDateQueryParams } from "../../utils/dateRange";
 
 const RSVP_OPTIONS = [
 	{ label: "Semua status", value: "" },
@@ -28,6 +30,7 @@ const GuestList: React.FC = () => {
 	const [guests, setGuests] = useState<Guest[]>([]);
 	const [events, setEvents] = useState<Event[]>([]);
 	const [selectedFilterEvent, setSelectedFilterEvent] = useState<number>(0);
+	const [dateRange, setDateRange] = useState<(Date | null)[]>([null, null]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [rsvpFilter, setRsvpFilter] = useState("");
 	const [loading, setLoading] = useState(true);
@@ -43,16 +46,32 @@ const GuestList: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		loadGuests();
+		const timer = window.setTimeout(() => {
+			loadGuests();
+		}, 350);
+		return () => window.clearTimeout(timer);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [selectedFilterEvent, searchQuery, rsvpFilter]);
+	}, [selectedFilterEvent, searchQuery, rsvpFilter, dateRange]);
+
+	const handleEventFilterChange = (eventId: number): void => {
+		setSelectedFilterEvent(eventId);
+		if (eventId === 0 && !dateRange[0]) {
+			setDateRange(lastNDaysRange(30));
+		}
+	};
 
 	const loadGuests = async (): Promise<void> => {
+		if (!selectedFilterEvent && !dateRange[0]) {
+			setGuests([]);
+			setLoading(false);
+			return;
+		}
 		setLoading(true);
 		try {
 			const params = {
 				q: searchQuery || undefined,
 				rsvpStatus: rsvpFilter || undefined,
+				...toDateQueryParams(dateRange),
 			};
 			const response = await guestService.getByEvent(selectedFilterEvent, params);
 			setGuests(response);
@@ -70,6 +89,9 @@ const GuestList: React.FC = () => {
 					? await eventService.getAll()
 					: await eventService.getByUser(user?.id || 0);
 			setEvents(response);
+			if (response.length > 0) {
+				setSelectedFilterEvent(response[0].id);
+			}
 		} catch (error: unknown) {
 			showError(getApiErrorMessage(error, "Gagal memuat event"));
 		}
@@ -228,9 +250,22 @@ const GuestList: React.FC = () => {
 							{ label: "Semua event", value: 0 },
 							...events.map((e) => ({ label: e.name, value: e.id })),
 						]}
-						onChange={(e: DropdownChangeEvent) => setSelectedFilterEvent(e.value)}
+						onChange={(e: DropdownChangeEvent) => handleEventFilterChange(e.value)}
 						className="w-14rem"
 						filter
+					/>
+					<Calendar
+						value={dateRange}
+						onChange={(e) =>
+							setDateRange((e.value as (Date | null)[]) || [null, null])
+						}
+						selectionMode="range"
+						readOnlyInput
+						dateFormat="dd/mm/yy"
+						placeholder="Tanggal dibuat: dari — sampai"
+						showButtonBar
+						hideOnRangeSelection
+						className="w-18rem"
 					/>
 					<InputText
 						value={searchQuery}
@@ -270,7 +305,7 @@ const GuestList: React.FC = () => {
 				</div>
 			</div>
 
-			<DataTable value={guests} loading={loading} paginator rows={10} emptyMessage="Tidak ada tamu">
+			<DataTable value={guests} loading={loading} emptyMessage="Tidak ada tamu">
 				<Column field="name" header="Nama" sortable filter />
 				<Column field="email" header="Email" sortable filter />
 				<Column field="phone" header="Telepon" sortable filter />

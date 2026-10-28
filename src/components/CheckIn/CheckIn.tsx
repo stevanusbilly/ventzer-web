@@ -8,7 +8,6 @@ import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { checkinService } from "../../services/checkinService";
-import { guestService } from "../../services/guestService";
 import { eventService } from "../../services/eventService";
 import { Guest, Event } from "../../types";
 import QRCodeScanner from "./QRCodeScanner";
@@ -60,17 +59,8 @@ const CheckIn: React.FC = () => {
 
 	const loadRecentCheckIns = async (): Promise<void> => {
 		try {
-			const response = await guestService.getByEvent(eventId);
-			setRecentCheckIns(
-				response
-					.filter((g) => g.checkedIn)
-					.sort(
-						(a, b) =>
-							new Date(b.checkedIn || 0).getTime() -
-							new Date(a.checkedIn || 0).getTime(),
-					)
-					.slice(0, 10),
-			);
+			const response = await checkinService.getRecent(eventId, 10);
+			setRecentCheckIns(response);
 		} catch (error) {
 			console.error("Failed to load check-ins:", error);
 		}

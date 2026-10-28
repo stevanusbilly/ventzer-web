@@ -1,9 +1,18 @@
 import api from "./api";
-import { CheckinRequest, CheckinResponse } from "../types";
+import { CheckinRequest, CheckinResponse, Guest } from "../types";
 
 export const checkinService = {
 	checkin: async (checkinData: CheckinRequest): Promise<CheckinResponse> => {
 		const response = await api.post<CheckinResponse>("/checkin", checkinData);
+		return response.data;
+	},
+	getRecent: async (eventId?: number, limit = 10): Promise<Guest[]> => {
+		const response = await api.get<Guest[]>("/checkin/recent", {
+			params: {
+				limit,
+				...(eventId ? { eventId } : {}),
+			},
+		});
 		return response.data;
 	},
 	getCount: async (eventId?: number): Promise<{ count: number }> => {

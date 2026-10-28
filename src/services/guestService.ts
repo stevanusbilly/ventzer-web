@@ -5,6 +5,8 @@ export interface GuestListParams {
 	q?: string;
 	phone?: string;
 	rsvpStatus?: string;
+	dateFrom?: string;
+	dateTo?: string;
 }
 
 export const guestService = {
@@ -18,6 +20,15 @@ export const guestService = {
 	): Promise<Guest[]> => {
 		const response = await api.get<Guest[]>(`/guests/event/${eventId}`, {
 			params,
+		});
+		return response.data;
+	},
+	getRecent: async (eventId?: number, limit = 10): Promise<Guest[]> => {
+		const response = await api.get<Guest[]>("/guests/recent", {
+			params: {
+				limit,
+				...(eventId ? { eventId } : {}),
+			},
 		});
 		return response.data;
 	},

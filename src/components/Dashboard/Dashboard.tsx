@@ -64,18 +64,12 @@ const Dashboard: React.FC = () => {
 			const [guestCountRes, checkinCountRes, guests] = await Promise.all([
 				guestService.getCount(eventFilter),
 				checkinService.getCount(eventFilter),
-				guestService.getByEvent(selectedEventId, {}),
+				guestService.getRecent(eventFilter, 10),
 			]);
 
 			setGuestCount(guestCountRes.count);
 			setCheckInCount(checkinCountRes.count);
-			setRecentGuests(
-				guests
-					.filter((g) => g.checkedIn)
-					.slice(0, 10)
-					.concat(guests.filter((g) => !g.checkedIn).slice(0, 5))
-					.slice(0, 10),
-			);
+			setRecentGuests(guests);
 
 			if (selectedEventId > 0) {
 				const eventSummary = await eventService.getSummary(selectedEventId);
@@ -191,8 +185,6 @@ const Dashboard: React.FC = () => {
 						<DataTable
 							value={recentGuests}
 							loading={loading}
-							paginator
-							rows={5}
 							emptyMessage="Belum ada tamu"
 						>
 							<Column field="name" header="Nama" />
