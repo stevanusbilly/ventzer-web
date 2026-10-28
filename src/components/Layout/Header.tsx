@@ -52,19 +52,9 @@ const Header: React.FC = () => {
 					command: () => navigate("/gift"),
 				},
 				{
-					label: "Table",
-					icon: "pi pi-users",
-					command: () => navigate("/event_table"),
-				},
-				{
 					label: "Check-in",
 					icon: "pi pi-check-circle",
 					command: () => navigate("/checkin"),
-				},
-				{
-					label: "Setting",
-					icon: "pi pi-info-circle",
-					command: () => navigate("/event_setting"),
 				},
 		  ]
 		: [];

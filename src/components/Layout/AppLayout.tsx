@@ -31,9 +31,7 @@ const ALL_NAV: NavItem[] = [
 	{ label: "Guests", icon: "pi pi-users", path: "/guests" },
 	{ label: "Guest Message", icon: "pi pi-envelope", path: "/guest_message" },
 	{ label: "Gift", icon: "pi pi-gift", path: "/gift" },
-	{ label: "Table", icon: "pi pi-clone", path: "/event_table" },
 	{ label: "Check-in", icon: "pi pi-check-circle", path: "/checkin" },
-	{ label: "Setting", icon: "pi pi-info-circle", path: "/event_setting" },
 ];
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {

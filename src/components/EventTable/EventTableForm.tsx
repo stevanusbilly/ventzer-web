@@ -14,15 +14,21 @@ import moment from 'moment';
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface EventTableFormProps {
+	event?: Event;
 	eventTable: EventTable | null;
 	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
-const EventTableForm: React.FC<EventTableFormProps> = ({ eventTable, onSuccess, onHide }) => {
+const EventTableForm: React.FC<EventTableFormProps> = ({
+	event: lockedEvent,
+	eventTable,
+	onSuccess,
+	onHide,
+}) => {
 	const [formData, setFormData] = useState<Omit<EventTable, "id">>({
-		eventId: eventTable?.eventId || 0,
-		eventName: eventTable?.eventName || "",
+		eventId: lockedEvent?.id || eventTable?.eventId || 0,
+		eventName: lockedEvent?.name || eventTable?.eventName || "",
 		kategori: eventTable?.kategori || "",
 		menu: eventTable?.menu || "",
 		note: eventTable?.note || "",
@@ -35,17 +41,18 @@ const EventTableForm: React.FC<EventTableFormProps> = ({ eventTable, onSuccess, 
 	const { user } = useAuth();
 
 	useEffect(() => {
-		loadEvent();
-	}, []);
+		if (!lockedEvent) {
+			void loadEvent();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [lockedEvent]);
 
 	const loadEvent = async (): Promise<void> => {
 		try {
-			let response = [];
-			if (user?.role === 'admin') {
-				response = await eventService.getAll();
-			} else {
-				response = await eventService.getByUser(user?.id ? user.id : 0);
-			}
+			const response =
+				user?.role === "admin"
+					? await eventService.getAll()
+					: await eventService.getByUser(user?.id ? user.id : 0);
 			setEvent(response);
 		} catch (error) {
 			console.error("Failed to load events:", error);
@@ -58,9 +65,15 @@ const EventTableForm: React.FC<EventTableFormProps> = ({ eventTable, onSuccess, 
 		setError("");
 
 		try {
+			const payload = {
+				...formData,
+				eventId: lockedEvent?.id || formData.eventId,
+				eventName: lockedEvent?.name || formData.eventName,
+				jumlahKursi: Number(formData.jumlahKursi) || 1,
+			};
 			const result = eventTable
-				? await eventTableService.upd(eventTable.id, formData)
-				: await eventTableService.ins(formData);
+				? await eventTableService.upd(eventTable.id, payload)
+				: await eventTableService.ins(payload);
 			onSuccess(
 				getApiSuccessMessage(
 					result,
@@ -92,6 +105,7 @@ const EventTableForm: React.FC<EventTableFormProps> = ({ eventTable, onSuccess, 
 				{error && (
 					<Message severity="error" text={error} className="w-full mb-3" style={{whiteSpace: "break-spaces"}} />
 				)}
+				{!lockedEvent && (
 				<div className="field">
 					<label htmlFor="eventId">Event</label>
 					<Dropdown
@@ -109,6 +123,7 @@ const EventTableForm: React.FC<EventTableFormProps> = ({ eventTable, onSuccess, 
 						placeholder="Select an event"
 					/>
 				</div>
+				)}
 
 				<div className="field">
 					<label htmlFor="kategori">Kategori</label>

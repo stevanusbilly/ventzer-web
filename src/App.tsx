@@ -11,6 +11,7 @@ import Login from "./components/Auth/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
 import EventList from "./components/Events/EventList";
 import EventPreviewList from "./components/Events/EventPreviewList";
+import EventPreviewTsx from "./components/Events/EventPreviewTsx";
 import GuestList from "./components/Guests/GuestList";
 import CheckIn from "./components/CheckIn/CheckIn";
 import LandingPage from "./pages/LandingPage";
@@ -21,10 +22,8 @@ import InvitationPage from "./pages/InvitationPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
 import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
-import EventTableList from "./components/EventTable/EventTableList";
 import GiftList from "./components/Gift/GiftList";
 import GuestMessageList from "./components/GuestMessage/GuestMessageList";
-import EventSettingList from "./components/EventSetting/EventSettingList";
 import { UserRole } from "./types";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -111,6 +110,14 @@ const AppContent: React.FC = () => (
 			}
 		/>
 		<Route
+			path="/events/preview-tsx/:id"
+			element={
+				<ProtectedRoute>
+					<EventPreviewTsx />
+				</ProtectedRoute>
+			}
+		/>
+		<Route
 			path="/guests"
 			element={
 				<ProtectedRoute>
@@ -131,16 +138,6 @@ const AppContent: React.FC = () => (
 			}
 		/>
 		<Route
-			path="/event_table"
-			element={
-				<ProtectedRoute>
-					<AppLayout>
-						<EventTableList />
-					</AppLayout>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
 			path="/gift"
 			element={
 				<ProtectedRoute>
@@ -156,16 +153,6 @@ const AppContent: React.FC = () => (
 				<ProtectedRoute>
 					<AppLayout>
 						<GuestMessageList />
-					</AppLayout>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
-			path="/event_setting"
-			element={
-				<ProtectedRoute>
-					<AppLayout>
-						<EventSettingList />
 					</AppLayout>
 				</ProtectedRoute>
 			}

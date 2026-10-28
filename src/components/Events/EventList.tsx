@@ -12,6 +12,8 @@ import EventAssignmentDialog from "./EventAssignmentDialog";
 import WeddingForm from "../Wedding/WeddingForm";
 import EventLocationDialog from "../EventLocation/EventLocationDialog";
 import EventPhotoDialog from "../EventPhoto/EventPhotoDialog";
+import EventSettingDialog from "../EventSetting/EventSettingDialog";
+import EventTableDialog from "../EventTable/EventTableDialog";
 import { Event } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
@@ -49,6 +51,8 @@ const EventList: React.FC = () => {
 	const [showWedding, setShowWedding] = useState(false);
 	const [showLocation, setShowLocation] = useState(false);
 	const [showPhoto, setShowPhoto] = useState(false);
+	const [showSetting, setShowSetting] = useState(false);
+	const [showTable, setShowTable] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 	const { user, isAdmin, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
@@ -158,10 +162,34 @@ const EventList: React.FC = () => {
 				}}
 			/>
 			<Button
+				icon="pi pi-cog"
+				className="p-button-rounded p-button-secondary p-button-text"
+				tooltip="Setting event"
+				onClick={() => {
+					setSelectedEvent(rowData);
+					setShowSetting(true);
+				}}
+			/>
+			<Button
+				icon="pi pi-clone"
+				className="p-button-rounded p-button-secondary p-button-text"
+				tooltip="Meja event"
+				onClick={() => {
+					setSelectedEvent(rowData);
+					setShowTable(true);
+				}}
+			/>
+			<Button
 				icon="pi pi-eye"
 				className="p-button-rounded p-button-info p-button-text"
-				tooltip="Preview"
+				tooltip="Preview HTML"
 				onClick={() => window.open(`/events/preview/${rowData.id}`, "_blank")}
+			/>
+			<Button
+				icon="pi pi-desktop"
+				className="p-button-rounded p-button-help p-button-text"
+				tooltip="Preview TSX"
+				onClick={() => window.open(`/events/preview-tsx/${rowData.id}`, "_blank")}
 			/>
 			{isAdmin && (
 				<>
@@ -289,6 +317,18 @@ const EventList: React.FC = () => {
 				<EventPhotoDialog
 					event={selectedEvent}
 					onHide={() => setShowPhoto(false)}
+				/>
+			)}
+			{showSetting && selectedEvent && (
+				<EventSettingDialog
+					event={selectedEvent}
+					onHide={() => setShowSetting(false)}
+				/>
+			)}
+			{showTable && selectedEvent && (
+				<EventTableDialog
+					event={selectedEvent}
+					onHide={() => setShowTable(false)}
 				/>
 			)}
 		</div>
