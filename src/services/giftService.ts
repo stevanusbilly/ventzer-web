@@ -2,14 +2,6 @@ import api from "./api";
 import { Gift } from "../types";
 
 export const giftService = {
-	list: async (): Promise<Gift[]> => {
-		const response = await api.get<Gift[]>("/gift");
-		return response.data;
-	},
-	get: async (id: number): Promise<Gift> => {
-		const response = await api.get<Gift>(`/gift/${id}`);
-		return response.data;
-	},
 	getByEvent: async (eventId: number): Promise<Gift[]> => {
 		const response = await api.get<Gift[]>(`/gift/event/${eventId}`);
 		return response.data;

@@ -220,6 +220,14 @@ export interface InvitationSetting {
 	loveStory: boolean;
 }
 
+export interface InvitationMessage {
+	id: number;
+	guestId: number;
+	guestName: string;
+	message: string;
+	createdAt?: string;
+}
+
 export interface InvitationData {
 	event: Event;
 	setting: InvitationSetting;
@@ -227,7 +235,7 @@ export interface InvitationData {
 	locations: EventLocation[];
 	photos: EventPhoto[];
 	gifts: Gift[];
-	messages: { id: number; guestName: string; message: string; createdAt?: string }[];
+	messages: InvitationMessage[];
 	guest: InvitationGuest;
 }
 
@@ -239,15 +247,4 @@ export interface EventAssignmentUser {
 	email?: string;
 	role: UserRole;
 	createdAt?: string;
-}
-
-export interface AssignedEventsResponse {
-	userId: number;
-	assignedEvents: {
-		id: number;
-		name: string;
-		date: string;
-		createdAt?: string;
-		assignedAt?: string | null;
-	}[];
 }

@@ -6,10 +6,6 @@ export const categoryPhotoService = {
 		const response = await api.get<CategoryPhoto[]>("/category_photo");
 		return response.data;
 	},
-	get: async (id: number): Promise<CategoryPhoto> => {
-		const response = await api.get<CategoryPhoto>(`/category_photo/${id}`);
-		return response.data;
-	},
 	ins: async (eventData: Omit<CategoryPhoto, "id">): Promise<CategoryPhoto> => {
 		const response = await api
 			.post<CategoryPhoto>("/category_photo", eventData);

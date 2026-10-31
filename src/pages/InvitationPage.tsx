@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Message } from "primereact/message";
-import { Toast } from "primereact/toast";
 import { invitationService } from "../services/invitationService";
 import { EventPhoto, GuestMessage, InvitationData } from "../types";
-import { getApiErrorMessage, getApiSuccessMessage } from "../utils/apiError";
+import { getApiErrorMessage } from "../utils/apiError";
 import { ClassicInvitationTemplate } from "../invitation-templates/classic-tsx";
 import { ClassicInvitationPhotos } from "../invitation-templates/classic-tsx/types";
+import { BronzeInvitationTemplate } from "../invitation-templates/bronze-tsx";
+import { isBronzeTemplate } from "../invitation-templates/isBronzeTemplate";
 
 const findPhoto = (photos: EventPhoto[], category: string): EventPhoto | null =>
 	photos.find((photo) => photo.categoryPhotoName === category) || null;
@@ -24,93 +25,76 @@ const toTemplatePhotos = (photos: EventPhoto[]): ClassicInvitationPhotos => ({
 });
 
 const InvitationPage: React.FC = () => {
-	const { eventId, token } = useParams<{ eventId: string; token: string }>();
+	const { token } = useParams<{ token: string }>();
 	const [data, setData] = useState<InvitationData | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
-	const toast = useRef<Toast>(null);
-
-	const load = async (): Promise<void> => {
-		if (!eventId || !token) {
-			setError("Link undangan tidak valid");
-			setLoading(false);
-			return;
-		}
-		try {
-			const response = await invitationService.getInvitation(
-				Number(eventId),
-				token,
-			);
-			setData(response);
-			setError("");
-		} catch (err) {
-			setError(getApiErrorMessage(err, "Undangan tidak ditemukan"));
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	useEffect(() => {
+		const load = async (): Promise<void> => {
+			if (!token) {
+				setError("Link undangan tidak valid");
+				setLoading(false);
+				return;
+			}
+			try {
+				const response = await invitationService.getInvitation(token);
+				setData(response);
+				setError("");
+			} catch (err) {
+				setError(getApiErrorMessage(err, "Undangan tidak ditemukan"));
+			} finally {
+				setLoading(false);
+			}
+		};
+
 		void load();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [eventId, token]);
+	}, [token]);
 
 	const handleRsvp = async (payload: {
 		kehadiran: 1 | 2;
 		jumlahKehadiran?: number;
 	}): Promise<void> => {
-		if (!eventId || !token) return;
-		try {
-			const result = await invitationService.submitRsvp(Number(eventId), token, {
-				kehadiran: payload.kehadiran,
-				jumlahKehadiran:
-					payload.kehadiran === 1 ? payload.jumlahKehadiran || 1 : 0,
-			});
-			toast.current?.show({
-				severity: "success",
-				summary: "Berhasil",
-				detail: getApiSuccessMessage(
-					result,
-					payload.kehadiran === 1
-						? "Terima kasih, kehadiran Anda tercatat."
-						: "Terima kasih atas konfirmasinya.",
-				),
-				life: 3000,
-			});
-			await load();
-		} catch (err) {
-			toast.current?.show({
-				severity: "error",
-				summary: "Gagal",
-				detail: getApiErrorMessage(err, "Gagal menyimpan RSVP"),
-				life: 4000,
-			});
+		if (!token) {
+			throw new Error("Link undangan tidak valid");
 		}
+		const result = await invitationService.submitRsvp(token, {
+			kehadiran: payload.kehadiran,
+			jumlahKehadiran:
+				payload.kehadiran === 1 ? payload.jumlahKehadiran || 1 : 0,
+		});
+		setData((prev) => {
+			if (!prev || !result.guest) {
+				return prev;
+			}
+			return {
+				...prev,
+				guest: {
+					...prev.guest,
+					rsvpStatus: result.guest.rsvpStatus,
+					rsvpJumlah: result.guest.rsvpJumlah,
+				},
+			};
+		});
 	};
 
 	const handleMessage = async (message: string): Promise<void> => {
-		if (!eventId || !token) return;
-		try {
-			const result = await invitationService.submitMessage(
-				Number(eventId),
-				token,
-				{ message },
-			);
-			toast.current?.show({
-				severity: "success",
-				summary: "Berhasil",
-				detail: getApiSuccessMessage(result, "Ucapan Anda berhasil dikirim."),
-				life: 3000,
-			});
-			await load();
-		} catch (err) {
-			toast.current?.show({
-				severity: "error",
-				summary: "Gagal",
-				detail: getApiErrorMessage(err, "Gagal mengirim ucapan"),
-				life: 4000,
-			});
+		if (!token) {
+			throw new Error("Link undangan tidak valid");
 		}
+		const result = await invitationService.submitMessage(token, { message });
+		setData((prev) => {
+			if (!prev || !result.data) {
+				return prev;
+			}
+			return {
+				...prev,
+				messages: [
+					result.data,
+					...prev.messages.filter((row) => row.id !== result.data?.id),
+				],
+			};
+		});
 	};
 
 	if (loading) {
@@ -133,32 +117,34 @@ const InvitationPage: React.FC = () => {
 		id: row.id,
 		eventId: data.event.id,
 		eventName: data.event.name,
-		guestId: 0,
+		guestId: row.guestId,
 		guestName: row.guestName,
 		message: row.message,
 		published: 1,
 		createdAt: row.createdAt,
 	}));
 
+	const Template = isBronzeTemplate(data.event)
+		? BronzeInvitationTemplate
+		: ClassicInvitationTemplate;
+
 	return (
-		<>
-			<Toast ref={toast} />
-			<ClassicInvitationTemplate
-				event={data.event}
-				wedding={data.wedding}
-				locations={data.locations}
-				gifts={data.gifts}
-				messages={messages}
-				photos={toTemplatePhotos(data.photos)}
-				guestName={data.guest.name}
-				guestRsvpStatus={data.guest.rsvpStatus}
-				guestRsvpJumlah={data.guest.rsvpJumlah}
-				setting={data.setting}
-				mode="live"
-				onRsvp={handleRsvp}
-				onSendMessage={handleMessage}
-			/>
-		</>
+		<Template
+			event={data.event}
+			wedding={data.wedding}
+			locations={data.locations}
+			gifts={data.gifts}
+			messages={messages}
+			photos={toTemplatePhotos(data.photos)}
+			guestId={data.guest.id}
+			guestName={data.guest.name}
+			guestRsvpStatus={data.guest.rsvpStatus}
+			guestRsvpJumlah={data.guest.rsvpJumlah}
+			setting={data.setting}
+			mode="live"
+			onRsvp={handleRsvp}
+			onSendMessage={handleMessage}
+		/>
 	);
 };
 

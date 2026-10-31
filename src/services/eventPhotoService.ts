@@ -2,14 +2,6 @@ import api from "./api";
 import { EventPhoto } from "../types";
 
 export const eventPhotoService = {
-	list: async (): Promise<EventPhoto[]> => {
-		const response = await api.get<EventPhoto[]>("/event_photo");
-		return response.data;
-	},
-	get: async (id: number): Promise<EventPhoto> => {
-		const response = await api.get<EventPhoto>(`/event_photo/${id}`);
-		return response.data;
-	},
 	getByEvent: async (eventId: number): Promise<EventPhoto[]> => {
 		const response = await api.get<EventPhoto[]>(`/event_photo/event/${eventId}`);
 		return response.data;

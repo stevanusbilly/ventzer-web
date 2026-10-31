@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ClassicInvitationProps } from "./types";
+import { getApiErrorMessage } from "../../utils/apiError";
 import {
 	formatLongDate,
 	formatShortDate,
@@ -10,6 +11,12 @@ import {
 	youtubeEmbedUrl,
 } from "./utils";
 import "./ClassicInvitationTemplate.css";
+
+const rsvpStatusLabel = (status?: string): string => {
+	if (status === "accepted") return "Hadir";
+	if (status === "declined") return "Tidak Hadir";
+	return "Belum konfirmasi";
+};
 
 const defaultSetting = {
 	fotoProfil: true,
@@ -47,6 +54,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 	gifts,
 	messages,
 	photos,
+	guestId,
 	guestName,
 	guestRsvpStatus,
 	guestRsvpJumlah,
@@ -61,9 +69,23 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 	const [copiedId, setCopiedId] = useState<number | null>(null);
 	const [jumlah, setJumlah] = useState(guestRsvpJumlah || 1);
 	const [ucapan, setUcapan] = useState("");
-	const [busy, setBusy] = useState(false);
+	const [rsvpBusy, setRsvpBusy] = useState(false);
+	const [messageBusy, setMessageBusy] = useState(false);
+	const [rsvpNotice, setRsvpNotice] = useState<{ ok: boolean; text: string } | null>(
+		null,
+	);
+	const [messageNotice, setMessageNotice] = useState<{
+		ok: boolean;
+		text: string;
+	} | null>(null);
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const countdown = useCountdown(event.date);
+
+	useEffect(() => {
+		if (guestRsvpJumlah && guestRsvpJumlah > 0) {
+			setJumlah(guestRsvpJumlah);
+		}
+	}, [guestRsvpJumlah]);
 
 	const bride = wedding?.namaPanggilanBride || "Bride";
 	const groom = wedding?.namaPanggilanGroom || "Groom";
@@ -121,26 +143,49 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 	};
 
 	const handleRsvp = async (kehadiran: 1 | 2): Promise<void> => {
-		if (!onRsvp) return;
-		setBusy(true);
+		if (!onRsvp || mode === "preview") return;
+		setRsvpBusy(true);
+		setRsvpNotice(null);
 		try {
 			await onRsvp({
 				kehadiran,
 				jumlahKehadiran: kehadiran === 1 ? Number(jumlah) || 1 : 0,
 			});
+			setRsvpNotice({
+				ok: true,
+				text:
+					kehadiran === 1
+						? "Terima kasih, kehadiran Anda sudah tercatat."
+						: "Terima kasih, konfirmasi tidak hadir sudah tercatat.",
+			});
+		} catch (err) {
+			setRsvpNotice({
+				ok: false,
+				text: getApiErrorMessage(err, "Gagal menyimpan RSVP"),
+			});
 		} finally {
-			setBusy(false);
+			setRsvpBusy(false);
 		}
 	};
 
 	const handleMessage = async (): Promise<void> => {
-		if (!onSendMessage || !ucapan.trim()) return;
-		setBusy(true);
+		if (!onSendMessage || !ucapan.trim() || mode === "preview") return;
+		setMessageBusy(true);
+		setMessageNotice(null);
 		try {
 			await onSendMessage(ucapan.trim());
 			setUcapan("");
+			setMessageNotice({
+				ok: true,
+				text: "Ucapan Anda berhasil dikirim.",
+			});
+		} catch (err) {
+			setMessageNotice({
+				ok: false,
+				text: getApiErrorMessage(err, "Gagal mengirim ucapan"),
+			});
 		} finally {
-			setBusy(false);
+			setMessageBusy(false);
 		}
 	};
 
@@ -399,9 +444,12 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 							</p>
 							<h2 className="cit-section-title">Konfirmasi Kehadiran</h2>
 							<div className="cit-ornament" />
-							{guestRsvpStatus && guestRsvpStatus !== "pending" && (
-								<p className="cit-body">Status Anda: {guestRsvpStatus}</p>
-							)}
+							<p className="cit-body">
+								Untuk {guestName}. Status: {rsvpStatusLabel(guestRsvpStatus)}
+								{guestRsvpStatus === "accepted" && guestRsvpJumlah
+									? ` (${guestRsvpJumlah} orang)`
+									: ""}
+							</p>
 							<div className="cit-form">
 								<label htmlFor="cit-jumlah">Jumlah orang yang hadir</label>
 								<input
@@ -417,7 +465,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 									<button
 										type="button"
 										className="cit-btn"
-										disabled={busy || mode === "preview"}
+										disabled={rsvpBusy || mode === "preview"}
 										onClick={() => handleRsvp(1)}
 									>
 										Hadir
@@ -425,13 +473,20 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 									<button
 										type="button"
 										className="cit-btn-ghost"
-										disabled={busy || mode === "preview"}
+										disabled={rsvpBusy || mode === "preview"}
 										onClick={() => handleRsvp(2)}
 									>
 										Tidak Hadir
 									</button>
 								</div>
 							</div>
+							{rsvpNotice && (
+								<p
+									className={`cit-feedback ${rsvpNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
+								>
+									{rsvpNotice.text}
+								</p>
+							)}
 							{mode === "preview" && (
 								<p className="cit-note">Mode preview: RSVP tidak dikirim.</p>
 							)}
@@ -445,7 +500,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 						<h2 className="cit-section-title">Ucapan &amp; Doa</h2>
 						<div className="cit-ornament" />
 						<div className="cit-form">
-							<label htmlFor="cit-ucapan">Tulis ucapan</label>
+							<label htmlFor="cit-ucapan">Tulis ucapan sebagai {guestName}</label>
 							<textarea
 								id="cit-ucapan"
 								rows={3}
@@ -458,20 +513,33 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 							<button
 								type="button"
 								className="cit-btn"
-								disabled={busy || mode === "preview" || !ucapan.trim()}
+								disabled={messageBusy || mode === "preview" || !ucapan.trim()}
 								onClick={handleMessage}
 							>
 								Kirim Ucapan
 							</button>
 						</div>
+						{messageNotice && (
+							<p
+								className={`cit-feedback ${messageNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
+							>
+								{messageNotice.text}
+							</p>
+						)}
 						{mode === "preview" && (
 							<p className="cit-note">Mode preview: ucapan tidak dikirim.</p>
 						)}
 						{publishedMessages.length > 0 && (
 							<div className="cit-message-list">
 								{publishedMessages.map((row) => (
-									<article key={row.id} className="cit-message">
-										<strong>{row.guestName}</strong>
+									<article
+										key={row.id}
+										className={`cit-message ${guestId && row.guestId === guestId ? "cit-message-own" : ""}`}
+									>
+										<strong>
+											{row.guestName}
+											{guestId && row.guestId === guestId ? " (Anda)" : ""}
+										</strong>
 										<p>{row.message}</p>
 									</article>
 								))}

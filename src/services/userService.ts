@@ -6,10 +6,6 @@ export const userService = {
 		const response = await api.get<User[]>("/users");
         return response.data;
 	},
-	get: async (id: number): Promise<User> => {
-		const response = await api.get<User>(`/users/${id}`);
-        return response.data;
-	},
 	ins: async (userData: Omit<User, "id">): Promise<User> => {
 		const response = await api.post<User>("/users", userData);
         return response.data;
@@ -21,10 +17,6 @@ export const userService = {
 	},
 	del: async (id: number): Promise<{ message?: string }> => {
 		const response = await api.delete<{ message?: string }>(`/users/${id}`);
-		return response.data;
-	},
-	getMe: async (): Promise<User> => {
-		const response = await api.get<User>("/users/me");
 		return response.data;
 	},
 	updMe: async (payload: {

@@ -182,14 +182,8 @@ const EventList: React.FC = () => {
 			<Button
 				icon="pi pi-eye"
 				className="p-button-rounded p-button-info p-button-text"
-				tooltip="Preview HTML"
+				tooltip="Preview undangan"
 				onClick={() => window.open(`/events/preview/${rowData.id}`, "_blank")}
-			/>
-			<Button
-				icon="pi pi-desktop"
-				className="p-button-rounded p-button-help p-button-text"
-				tooltip="Preview TSX"
-				onClick={() => window.open(`/events/preview-tsx/${rowData.id}`, "_blank")}
 			/>
 			{isAdmin && (
 				<>

@@ -43,6 +43,7 @@ export type ClassicInvitationProps = {
 	gifts: Gift[];
 	messages: GuestMessage[];
 	photos: ClassicInvitationPhotos;
+	guestId?: number;
 	guestName: string;
 	guestRsvpStatus?: string;
 	guestRsvpJumlah?: number | null;

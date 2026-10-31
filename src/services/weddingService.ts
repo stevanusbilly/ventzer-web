@@ -6,19 +6,9 @@ export const weddingService = {
 		const response = await api.get<Wedding>(`/wedding/event/${eventId}`);
 		return response.data;
 	},
-	get: async (id: number): Promise<Wedding> => {
-		const response = await api.get<Wedding>(`/wedding/${id}`);
-		return response.data;
-	},
 	ins: async (eventData: Omit<Wedding, "id">): Promise<Wedding> => {
 		const response = await api
 			.post<Wedding>("/wedding", eventData);
-		return response.data;
-	},
-	delByEvent: async (eventId: number): Promise<{ message?: string }> => {
-		const response = await api.delete<{ message?: string }>(
-			`/wedding/event/${eventId}`,
-		);
 		return response.data;
 	},
 };

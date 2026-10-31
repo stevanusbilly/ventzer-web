@@ -1,5 +1,4 @@
 import api from "./api";
-import { AssignedEventsResponse } from "../types";
 
 export const assignmentService = {
 	assignUserToEvent: async (
@@ -16,12 +15,6 @@ export const assignmentService = {
 	): Promise<{ event: unknown; assignments: unknown[] }> => {
 		const response = await api.get(
 			`/assignments/events/${eventId}/assignments`,
-		);
-		return response.data;
-	},
-	getUserAssignedEvents: async (): Promise<AssignedEventsResponse> => {
-		const response = await api.get<AssignedEventsResponse>(
-			"/assignments/users/me/events",
 		);
 		return response.data;
 	},

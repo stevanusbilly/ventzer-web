@@ -2,14 +2,6 @@ import api from "./api";
 import { EventLocation } from "../types";
 
 export const eventLocationService = {
-	list: async (): Promise<EventLocation[]> => {
-		const response = await api.get<EventLocation[]>("/event_location");
-		return response.data;
-	},
-	get: async (id: number): Promise<EventLocation> => {
-		const response = await api.get<EventLocation>(`/event_location/${id}`);
-		return response.data;
-	},
 	getByEvent: async (eventId: number): Promise<EventLocation[]> => {
 		const response = await api.get<EventLocation[]>(`/event_location/event/${eventId}`);
 		return response.data;

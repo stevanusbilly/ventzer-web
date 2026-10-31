@@ -10,10 +10,6 @@ export const eventService = {
 		const response = await api.get<Event[]>(`/events/user/${userId}`);
 		return response.data;
 	},
-	getCount: async (): Promise<{ count: number }> => {
-		const response = await api.get<{ count: number }>("/events/getCount");
-		return response.data;
-	},
 	getById: async (id: number): Promise<Event> => {
 		const response = await api.get<Event>(`/events/${id}`);
 		return response.data;

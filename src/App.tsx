@@ -4,13 +4,13 @@ import {
 	Routes,
 	Route,
 	Navigate,
+	useParams,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import AppLayout from "./components/Layout/AppLayout";
 import Login from "./components/Auth/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
 import EventList from "./components/Events/EventList";
-import EventPreviewList from "./components/Events/EventPreviewList";
 import EventPreviewTsx from "./components/Events/EventPreviewTsx";
 import GuestList from "./components/Guests/GuestList";
 import CheckIn from "./components/CheckIn/CheckIn";
@@ -25,6 +25,16 @@ import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
 import GiftList from "./components/Gift/GiftList";
 import GuestMessageList from "./components/GuestMessage/GuestMessageList";
 import { UserRole } from "./types";
+
+const PreviewLegacyRedirect: React.FC = () => {
+	const { id } = useParams<{ id: string }>();
+	return <Navigate to={`/events/preview/${id}`} replace />;
+};
+
+const InvitationLegacyRedirect: React.FC = () => {
+	const { token } = useParams<{ token: string }>();
+	return <Navigate to={`/invitation/${token || ""}`} replace />;
+};
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { isAuthenticated } = useAuth();
@@ -46,7 +56,11 @@ const RoleRoute: React.FC<{
 const AppContent: React.FC = () => (
 	<Routes>
 		<Route path="/login" element={<Login />} />
-		<Route path="/invitation/:eventId/:token" element={<InvitationPage />} />
+		<Route path="/invitation/:token" element={<InvitationPage />} />
+		<Route
+			path="/invitation/:eventId/:token"
+			element={<InvitationLegacyRedirect />}
+		/>
 		<Route
 			path="/dashboard"
 			element={
@@ -105,18 +119,11 @@ const AppContent: React.FC = () => (
 			path="/events/preview/:id"
 			element={
 				<ProtectedRoute>
-					<EventPreviewList />
-				</ProtectedRoute>
-			}
-		/>
-		<Route
-			path="/events/preview-tsx/:id"
-			element={
-				<ProtectedRoute>
 					<EventPreviewTsx />
 				</ProtectedRoute>
 			}
 		/>
+		<Route path="/events/preview-tsx/:id" element={<PreviewLegacyRedirect />} />
 		<Route
 			path="/guests"
 			element={

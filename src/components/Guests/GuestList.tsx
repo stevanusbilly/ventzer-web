@@ -151,7 +151,7 @@ const GuestList: React.FC = () => {
 			showError("Token undangan tidak tersedia");
 			return;
 		}
-		const link = buildInvitationUrl(guest.eventId, guest.qrToken);
+		const link = buildInvitationUrl(guest.qrToken);
 		try {
 			await navigator.clipboard.writeText(link);
 			showSuccess("Link undangan disalin");

@@ -9,9 +9,9 @@ export function getFrontendBaseUrl(): string {
 	return "";
 }
 
-export function buildInvitationUrl(eventId: number, token: string): string {
+export function buildInvitationUrl(token: string): string {
 	const base = getFrontendBaseUrl();
-	return `${base}/invitation/${eventId}/${encodeURIComponent(token)}`;
+	return `${base}/invitation/${encodeURIComponent(token)}`;
 }
 
 /** Ambil qrToken dari URL undangan atau kembalikan teks scan mentah. */
@@ -43,7 +43,7 @@ export function extractEventIdFromScan(decodedText: string): number | null {
 		const url = new URL(decodedText.trim());
 		const parts = url.pathname.split("/").filter(Boolean);
 		const invIdx = parts.indexOf("invitation");
-		if (invIdx >= 0 && parts[invIdx + 1]) {
+		if (invIdx >= 0 && parts[invIdx + 2] && parts[invIdx + 1]) {
 			const id = Number(parts[invIdx + 1]);
 			return Number.isInteger(id) && id > 0 ? id : null;
 		}

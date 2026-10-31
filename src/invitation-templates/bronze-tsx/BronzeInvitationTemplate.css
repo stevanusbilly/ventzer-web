@@ -1,0 +1,564 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:wght@400;500;600&display=swap");
+
+@font-face {
+	font-family: "Batusa Font";
+	font-display: swap;
+	src: url("./fonts/Batusa-Font.otf") format("opentype");
+}
+
+.bit-root {
+	--bit-forest: #212d21;
+	--bit-forest-mid: #334037;
+	--bit-forest-soft: #2b382e;
+	--bit-forest-deep: #000c0f;
+	--bit-cream: #eeefe7;
+	--bit-ink: #121f35;
+	--bit-serif: "Batusa Font", "DM Serif Display", Georgia, serif;
+	--bit-sans: "Montserrat", "Segoe UI", sans-serif;
+	min-height: 100vh;
+	background: var(--bit-forest);
+	color: var(--bit-cream);
+	font-family: var(--bit-serif);
+}
+
+.bit-root.bit-locked {
+	height: 100vh;
+	overflow: hidden;
+}
+
+.bit-cover {
+	position: fixed;
+	inset: 0;
+	z-index: 40;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem 1.25rem;
+	background-color: #000c0f;
+	background-size: cover;
+	background-position: center;
+	text-align: center;
+	transition: transform 1s ease;
+}
+
+.bit-cover::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(0, 4, 10, 0.36) 68%, #000c0f 100%);
+}
+
+.bit-opened .bit-cover {
+	transform: translateY(-110%);
+	pointer-events: none;
+}
+
+.bit-cover-inner {
+	position: relative;
+	z-index: 1;
+	width: min(420px, 100%);
+}
+
+.bit-guest {
+	margin: 0 0 0.4rem;
+	font-size: 1.1rem;
+	font-weight: 700;
+}
+
+.bit-invite-line {
+	margin: 0 0 2.4rem;
+	font-size: 1rem;
+	line-height: 2.5;
+}
+
+.bit-cover-kicker {
+	margin: 0 0 0.4rem;
+	font-size: 1rem;
+	letter-spacing: 0.04em;
+}
+
+.bit-cover h1,
+.bit-opening-names,
+.bit-person h3,
+.bit-loc-name,
+.bit-section-title {
+	font-family: var(--bit-serif);
+	font-weight: 600;
+}
+
+.bit-cover h1 {
+	font-size: clamp(2rem, 8vw, 2.4rem);
+	margin: 0 0 1.4rem;
+	line-height: 1.15;
+}
+
+.bit-open-btn,
+.bit-btn,
+.bit-btn-ghost,
+.bit-music {
+	border: 0;
+	cursor: pointer;
+	font-family: var(--bit-serif);
+}
+
+.bit-open-btn {
+	display: inline-block;
+	padding: 0.7rem 1.4rem;
+	background: #fff;
+	color: #000;
+	font-size: 1rem;
+	border-radius: 2px;
+}
+
+.bit-shell {
+	display: grid;
+	grid-template-columns: minmax(280px, 42%) 1fr;
+	min-height: 100vh;
+}
+
+.bit-side {
+	position: sticky;
+	top: 0;
+	height: 100vh;
+	background-color: var(--bit-forest-mid);
+	background-size: cover;
+	background-position: center;
+	display: none;
+}
+
+.bit-side::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(255, 255, 255, 0) 44%, #313e35 100%);
+}
+
+.bit-side-copy {
+	position: absolute;
+	inset: auto 1.4rem 2rem 1.4rem;
+	z-index: 1;
+	text-align: right;
+}
+
+.bit-scroll-hint {
+	position: absolute;
+	top: 2rem;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	text-align: center;
+	animation: bit-bounce 1.4s ease-in-out infinite;
+}
+
+.bit-scroll-hint span {
+	display: block;
+	font-size: 1.4rem;
+}
+
+@keyframes bit-bounce {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(8px);
+	}
+}
+
+.bit-main {
+	background: var(--bit-forest-mid);
+}
+
+.bit-opening {
+	min-height: 62vh;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding: 4rem 1.5rem 3rem;
+	background-color: var(--bit-forest-mid);
+	background-size: cover;
+	background-position: center;
+	text-align: center;
+	position: relative;
+}
+
+.bit-opening::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0) 65%, #334037 100%);
+}
+
+.bit-opening-inner {
+	position: relative;
+	z-index: 1;
+}
+
+.bit-opening p {
+	margin: 0;
+	letter-spacing: 0.12em;
+}
+
+.bit-opening-names {
+	font-size: clamp(1.8rem, 7vw, 2.3rem);
+	margin: 0.35rem 0 0.7rem;
+}
+
+.bit-rule {
+	width: 30px;
+	height: 2px;
+	margin: 0 auto 0.7rem;
+	background: #fff;
+}
+
+.bit-section {
+	padding: 3.2rem 1.4rem;
+	text-align: center;
+}
+
+.bit-section-forest {
+	background-image: linear-gradient(180deg, #334037 0%, #212d21 100%);
+}
+
+.bit-section-forest-alt {
+	background-image: linear-gradient(180deg, #212d21 0%, #334037 100%);
+}
+
+.bit-section-moss {
+	background-image: linear-gradient(180deg, #323f36 0%, #2b382e 100%);
+}
+
+.bit-section-soft {
+	background: #2b382e;
+}
+
+.bit-section-cream {
+	background: var(--bit-cream);
+	color: var(--bit-forest);
+}
+
+.bit-quote {
+	font-size: 1.15rem;
+	line-height: 1.8;
+	white-space: pre-wrap;
+	margin: 0 auto;
+	max-width: 34rem;
+}
+
+.bit-person-card,
+.bit-loc-card {
+	background: var(--bit-cream);
+	color: var(--bit-forest);
+	border-radius: 15px;
+	padding: 1.6rem 1.2rem;
+	margin: 0 auto 1.6rem;
+	max-width: 28rem;
+}
+
+.bit-person-card img {
+	width: 100%;
+	aspect-ratio: 3 / 4;
+	object-fit: cover;
+	border-radius: 10px;
+	margin-bottom: 1rem;
+}
+
+.bit-person-card h3 {
+	font-size: 1.55rem;
+	margin: 0 0 0.6rem;
+	color: #212d21;
+}
+
+.bit-person-card p,
+.bit-loc-card p {
+	margin: 0.25rem 0;
+	white-space: pre-wrap;
+	color: #121f35;
+}
+
+.bit-person-card a {
+	color: #212d21;
+}
+
+.bit-loc-wrap {
+	max-width: 28rem;
+	margin: 0 auto;
+	border: 3px solid var(--bit-cream);
+	border-radius: 10px;
+	padding: 1.4rem 1rem 1.6rem;
+}
+
+.bit-loc-title {
+	font-size: 1.7rem;
+	margin: 1.2rem 0 0.6rem;
+	color: var(--bit-cream);
+}
+
+.bit-loc-card {
+	background: transparent;
+	color: var(--bit-cream);
+	padding: 0 0 0.6rem;
+	box-shadow: none;
+}
+
+.bit-loc-card h4,
+.bit-loc-card h3 {
+	margin: 0.35rem 0;
+	color: var(--bit-cream);
+}
+
+.bit-loc-card h3 {
+	font-size: 1.5rem;
+}
+
+.bit-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.4rem;
+	padding: 0 1.2rem;
+	background: var(--bit-cream);
+	color: #212d21;
+	border-radius: 5px;
+	font-size: 0.95rem;
+	box-shadow: 0 12px 18px -6px rgba(0, 0, 0, 0.22);
+	text-decoration: none;
+}
+
+.bit-btn-ghost {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.4rem;
+	padding: 0 1.2rem;
+	background: transparent;
+	color: var(--bit-cream);
+	border: 1px solid rgba(238, 239, 231, 0.35);
+	border-radius: 5px;
+}
+
+.bit-gift-card {
+	background-image: linear-gradient(125deg, #fff 0%, #d1d1d1 100%);
+	color: #000;
+	border-radius: 10px;
+	padding: 1.2rem 1rem 1.4rem;
+	margin: 0 auto 1.2rem;
+	max-width: 24rem;
+	box-shadow: 0 2px 18px rgba(0, 0, 0, 0.08);
+}
+
+.bit-gift-card p {
+	margin: 0.2rem 0;
+}
+
+.bit-gift-num {
+	font-family: "Exo 2", var(--bit-sans);
+	font-size: 1.1rem;
+	margin: 0.7rem 0 !important;
+}
+
+.bit-gift-card .bit-btn {
+	background: #000;
+	color: #fff;
+	font-size: 0.75rem;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.bit-countdown {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.5rem;
+	max-width: 26rem;
+	margin: 1.2rem auto 1.8rem;
+}
+
+.bit-count-box {
+	background: var(--bit-cream);
+	color: #212d21;
+	border-radius: 4px;
+	padding: 0.85rem 0.2rem;
+}
+
+.bit-count-box strong {
+	display: block;
+	font-size: 1.8rem;
+}
+
+.bit-count-box span {
+	font-size: 0.8rem;
+}
+
+.bit-gallery-main {
+	width: min(42rem, 100%);
+	aspect-ratio: 16 / 10;
+	margin: 0 auto 0.7rem;
+	border-radius: 6px;
+	background-size: cover;
+	background-position: center;
+}
+
+.bit-gallery-thumbs {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.45rem;
+	max-width: 42rem;
+	margin: 0 auto;
+}
+
+.bit-gallery-thumbs button {
+	aspect-ratio: 1;
+	border: 0;
+	padding: 0;
+	border-radius: 4px;
+	background-size: cover;
+	background-position: center;
+	cursor: pointer;
+	opacity: 0.7;
+}
+
+.bit-gallery-thumbs button.bit-active {
+	opacity: 1;
+	outline: 2px solid var(--bit-cream);
+}
+
+.bit-form {
+	display: grid;
+	gap: 0.7rem;
+	max-width: 24rem;
+	margin: 1rem auto 0;
+	text-align: left;
+	color: var(--bit-forest);
+}
+
+.bit-form label {
+	font-size: 0.9rem;
+}
+
+.bit-form input,
+.bit-form textarea,
+.bit-form select {
+	width: 100%;
+	box-sizing: border-box;
+	border: 1px solid rgba(33, 45, 33, 0.18);
+	padding: 0.65rem 0.75rem;
+	font-family: var(--bit-sans);
+	text-align: center;
+}
+
+.bit-form textarea {
+	text-align: left;
+}
+
+.bit-actions {
+	display: flex;
+	gap: 0.6rem;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.bit-message-list {
+	max-width: 28rem;
+	margin: 1.4rem auto 0;
+	max-height: 60vh;
+	overflow: hidden;
+	text-align: left;
+	position: relative;
+}
+
+.bit-message-list.bit-expanded {
+	max-height: none;
+}
+
+.bit-message {
+	padding: 0.8rem 0;
+	border-bottom: 1px solid rgba(33, 45, 33, 0.08);
+}
+
+.bit-message strong {
+	display: block;
+	margin-bottom: 0.25rem;
+}
+
+.bit-message p {
+	margin: 0;
+}
+
+.bit-message-own strong {
+	color: var(--bit-forest);
+}
+
+.bit-feedback {
+	font-size: 0.85rem;
+	margin: 0;
+	text-align: center;
+}
+
+.bit-feedback-ok {
+	color: #2f5d3a;
+}
+
+.bit-feedback-err {
+	color: #8b3a3a;
+}
+
+.bit-video {
+	width: min(36rem, 100%);
+	aspect-ratio: 16 / 9;
+	border: 0;
+	margin-top: 1rem;
+}
+
+.bit-music {
+	position: fixed;
+	right: 10px;
+	bottom: 20px;
+	z-index: 30;
+	width: 40px;
+	height: 40px;
+	border-radius: 5px;
+	background: #fff;
+	color: #212d21;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.bit-preview-badge {
+	position: fixed;
+	left: 1rem;
+	top: 1rem;
+	z-index: 50;
+	background: var(--bit-cream);
+	color: #212d21;
+	padding: 0.35rem 0.7rem;
+	font-size: 0.75rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.bit-note {
+	font-size: 0.8rem;
+	opacity: 0.8;
+	margin-top: 0.7rem;
+}
+
+.bit-footer {
+	background: var(--bit-cream);
+	color: #212d21;
+	padding: 2.4rem 1.2rem 3rem;
+	text-align: center;
+}
+
+.bit-footer p {
+	margin: 0.3rem 0;
+}
+
+@media (min-width: 960px) {
+	.bit-side {
+		display: block;
+	}
+
+	.bit-section {
+		padding: 4rem 3rem;
+	}
+}

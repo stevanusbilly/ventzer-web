@@ -355,6 +355,24 @@
 	color: var(--cit-muted);
 }
 
+.cit-message-own {
+	border: 1px solid var(--cit-gold);
+	background: #fff8ea;
+}
+
+.cit-feedback {
+	font-size: 0.85rem;
+	margin-top: 0.75rem;
+}
+
+.cit-feedback-ok {
+	color: #3d6b4a;
+}
+
+.cit-feedback-err {
+	color: #8b3a3a;
+}
+
 .cit-video {
 	width: min(36rem, 100%);
 	aspect-ratio: 16 / 9;

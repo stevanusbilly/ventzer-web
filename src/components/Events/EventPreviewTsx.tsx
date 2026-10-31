@@ -17,6 +17,8 @@ import {
 	Wedding,
 } from "../../types";
 import { ClassicInvitationTemplate } from "../../invitation-templates/classic-tsx";
+import { BronzeInvitationTemplate } from "../../invitation-templates/bronze-tsx";
+import { isBronzeTemplate } from "../../invitation-templates/isBronzeTemplate";
 
 const EventPreviewTsx: React.FC = () => {
 	const { id } = useParams();
@@ -139,8 +141,12 @@ const EventPreviewTsx: React.FC = () => {
 		);
 	}
 
+	const Template = isBronzeTemplate(event)
+		? BronzeInvitationTemplate
+		: ClassicInvitationTemplate;
+
 	return (
-		<ClassicInvitationTemplate
+		<Template
 			event={event}
 			wedding={wedding}
 			locations={locations}

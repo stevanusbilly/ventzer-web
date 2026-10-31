@@ -10,10 +10,6 @@ export interface GuestListParams {
 }
 
 export const guestService = {
-	getAll: async (params?: GuestListParams & { eventId?: number }): Promise<Guest[]> => {
-		const response = await api.get<Guest[]>("/guests", { params });
-		return response.data;
-	},
 	getByEvent: async (
 		eventId: number,
 		params?: GuestListParams,
