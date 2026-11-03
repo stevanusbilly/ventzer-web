@@ -29,6 +29,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSuccess, onHide }) => {
 		music_url: event?.music_url || "",
 		autoplay_music: event?.autoplay_music || 0,
 		dresscode: event?.dresscode || "",
+		max_pack: event?.max_pack || 1,
 	});
 	const [templates, setTemplates] = useState<Template[]>([]);
 	const [users, setUsers] = useState<User[]>([]);
@@ -158,6 +159,23 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSuccess, onHide }) => {
 				</div>
 
 				<div className="field">
+					<label htmlFor="max_pack">Max pack</label>
+					<InputText
+						id="max_pack"
+						type="number"
+						min={1}
+						value={String(formData.max_pack)}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							handleChange("max_pack", Math.max(1, Number(e.target.value) || 1))
+						}
+						required
+					/>
+					<small className="text-color-secondary">
+						Maksimal orang yang boleh diundang ke event ini, termasuk semua pendamping.
+					</small>
+				</div>
+
+				<div className="field">
 					<label htmlFor="dresscode">Dress Code</label>
 					<InputText
 						id="dresscode"
@@ -176,7 +194,11 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSuccess, onHide }) => {
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							handleChange("music_url", e.target.value)
 						}
+						placeholder="URL MP3 atau YouTube. Kosong = lagu default"
 					/>
+					<small className="text-color-secondary">
+						Kosong = lagu default. Autoplay hanya mengatur undangan tamu, bukan tombol di template.
+					</small>
 				</div>
 
 				<div className="field">

@@ -47,6 +47,8 @@ export type BronzeInvitationProps = {
 	guestName: string;
 	guestRsvpStatus?: string;
 	guestRsvpJumlah?: number | null;
+	guestMaxGuest?: number | null;
+	guestHasSentMessage?: boolean;
 	setting?: BronzeInvitationSetting;
 	mode?: BronzeInvitationMode;
 	onRsvp?: (payload: BronzeInvitationRsvpPayload) => Promise<void> | void;

@@ -12,13 +12,13 @@ import Login from "./components/Auth/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
 import EventList from "./components/Events/EventList";
 import EventPreviewTsx from "./components/Events/EventPreviewTsx";
-import GuestList from "./components/Guests/GuestList";
 import CheckIn from "./components/CheckIn/CheckIn";
 import LandingPage from "./pages/LandingPage";
 import PricingPage from "./pages/PricingPage";
 import CatalogPage from "./pages/CatalogPage";
 import OrderProcessPage from "./pages/OrderProcessPage";
 import InvitationPage from "./pages/InvitationPage";
+import UsherPage from "./components/Usher/UsherPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
 import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
@@ -125,15 +125,16 @@ const AppContent: React.FC = () => (
 		/>
 		<Route path="/events/preview-tsx/:id" element={<PreviewLegacyRedirect />} />
 		<Route
-			path="/guests"
+			path="/events/:id/usher"
 			element={
 				<ProtectedRoute>
-					<AppLayout>
-						<GuestList />
-					</AppLayout>
+					<RoleRoute roles={["admin", "panitia"]}>
+						<UsherPage />
+					</RoleRoute>
 				</ProtectedRoute>
 			}
 		/>
+		<Route path="/guests" element={<Navigate to="/events" replace />} />
 		<Route
 			path="/checkin"
 			element={

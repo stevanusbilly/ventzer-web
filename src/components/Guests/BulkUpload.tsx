@@ -10,20 +10,29 @@ import { Event } from "../../types";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface BulkUploadProps {
+	eventId?: number;
 	onSuccess: () => void;
 	onHide: () => void;
 }
 
-const BulkUpload: React.FC<BulkUploadProps> = ({ onSuccess, onHide }) => {
-	const [selectedEvent, setSelectedEvent] = useState<number>(0);
+const BulkUpload: React.FC<BulkUploadProps> = ({
+	eventId,
+	onSuccess,
+	onHide,
+}) => {
+	const [selectedEvent, setSelectedEvent] = useState<number>(eventId || 0);
 	const [events, setEvents] = useState<Event[]>([]);
 	const [uploading, setUploading] = useState<boolean>(false);
 	const fileUploadRef = useRef<FileUpload>(null);
 	const toast = useRef<Toast>(null);
 
 	React.useEffect(() => {
+		if (eventId) {
+			setSelectedEvent(eventId);
+			return;
+		}
 		loadEvents();
-	}, []);
+	}, [eventId]);
 
 	const loadEvents = async (): Promise<void> => {
 		try {
@@ -94,16 +103,18 @@ const BulkUpload: React.FC<BulkUploadProps> = ({ onSuccess, onHide }) => {
 
 	const downloadExcelTemplate = (): void => {
 		// Create Excel template content
-		const excelTemplateContent = `name,email,phone,rsvpStatus
-John Doe,john@example.com,08123456789,pending
-Jane Smith,jane@example.com,08198765432,accepted
-Bob Johnson,bob@example.com,08155555555,declined
+		const excelTemplateContent = `name,email,phone,rsvpStatus,max_guest
+John Doe,john@example.com,08123456789,pending,2
+Jane Smith,jane@example.com,08198765432,accepted,1
+Bob Johnson,bob@example.com,08155555555,declined,3
 
 # Instructions:
 # 1. Save this as Excel file (.xlsx)
 # 2. Fill in guest data
 # 3. RSVP Status options: pending, accepted, declined
-# 4. Upload using the form above`;
+# 4. max_guest wajib, minimal 1, termasuk tamu sendiri
+# 5. Total max_guest tidak boleh melebihi max pack event
+# 6. Upload using the form above`;
 
 		const blob = new Blob([excelTemplateContent], { type: "text/plain" });
 		const url = window.URL.createObjectURL(blob);
@@ -125,21 +136,23 @@ Bob Johnson,bob@example.com,08155555555,declined
 				onHide={onHide}
 				className="bulk-upload-dialog"
 			>
-				<div className="field">
-					<label htmlFor="event">Select Event</label>
-					<Dropdown
-						id="event"
-						value={selectedEvent}
-						options={events.map((event) => ({
-							label: event.name,
-							value: event.id,
-						}))}
-						onChange={(e: DropdownChangeEvent) => setSelectedEvent(e.value)}
-						placeholder="Select an event"
-						className="w-full"
-						required
-					/>
-				</div>
+				{!eventId && (
+					<div className="field">
+						<label htmlFor="event">Select Event</label>
+						<Dropdown
+							id="event"
+							value={selectedEvent}
+							options={events.map((event) => ({
+								label: event.name,
+								value: event.id,
+							}))}
+							onChange={(e: DropdownChangeEvent) => setSelectedEvent(e.value)}
+							placeholder="Select an event"
+							className="w-full"
+							required
+						/>
+					</div>
+				)}
 
 				<div className="field mt-3">
 					<label>Upload Excel File (.xlsx, .xls)</label>
@@ -181,6 +194,9 @@ Bob Johnson,bob@example.com,08155555555,declined
 							</li>
 							<li>
 								<code>rsvpStatus</code> - pending, accepted, or declined
+							</li>
+							<li>
+								<code>max_guest</code> - maksimal orang undangan ini (termasuk tamu)
 							</li>
 						</ul>
 						<p className="mb-0">

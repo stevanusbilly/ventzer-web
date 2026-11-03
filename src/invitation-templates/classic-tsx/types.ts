@@ -47,6 +47,8 @@ export type ClassicInvitationProps = {
 	guestName: string;
 	guestRsvpStatus?: string;
 	guestRsvpJumlah?: number | null;
+	guestMaxGuest?: number | null;
+	guestHasSentMessage?: boolean;
 	setting?: ClassicInvitationSetting;
 	mode?: ClassicInvitationMode;
 	onRsvp?: (payload: ClassicInvitationRsvpPayload) => Promise<void> | void;

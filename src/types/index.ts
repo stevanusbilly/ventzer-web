@@ -31,6 +31,7 @@ export interface Event {
 	music_url: string;
 	autoplay_music: number;
 	dresscode: string;
+	max_pack: number;
 }
 
 export interface EventSummary {
@@ -151,6 +152,7 @@ export interface Guest {
 	rsvpStatus: "pending" | "accepted" | "declined";
 	rsvpAt?: string | null;
 	rsvpJumlah?: number | null;
+	max_guest: number;
 	qrToken?: string;
 	checkedIn?: string | null;
 	checkedInAt?: string | null;
@@ -206,8 +208,10 @@ export interface InvitationGuest {
 	name: string;
 	rsvpStatus: string;
 	rsvpJumlah?: number | null;
+	max_guest?: number;
 	rsvpAt?: string | null;
 	table?: CheckinTableInfo | null;
+	hasSentMessage?: boolean;
 }
 
 export interface InvitationSetting {

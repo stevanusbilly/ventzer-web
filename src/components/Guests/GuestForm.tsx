@@ -12,17 +12,25 @@ import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 
 interface GuestFormProps {
 	guest: Guest | null;
+	eventId?: number;
 	onSuccess: (message: string) => void;
 	onHide: () => void;
 }
 
-const GuestForm: React.FC<GuestFormProps> = ({ guest, onSuccess, onHide }) => {
+const GuestForm: React.FC<GuestFormProps> = ({
+	guest,
+	eventId,
+	onSuccess,
+	onHide,
+}) => {
+	const lockedEventId = eventId || guest?.eventId || 0;
 	const [formData, setFormData] = useState({
-		eventId: guest?.eventId || 0,
+		eventId: lockedEventId,
 		name: guest?.name || "",
 		phone: guest?.phone || "",
 		email: guest?.email || "",
 		rsvpStatus: guest?.rsvpStatus || ("pending" as Guest["rsvpStatus"]),
+		max_guest: guest?.max_guest || 1,
 	});
 	const [events, setEvents] = useState<Event[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -30,6 +38,9 @@ const GuestForm: React.FC<GuestFormProps> = ({ guest, onSuccess, onHide }) => {
 	const { user } = useAuth();
 
 	useEffect(() => {
+		if (lockedEventId) {
+			return;
+		}
 		const loadEvents = async (): Promise<void> => {
 			const response =
 				user?.role === "admin"
@@ -76,22 +87,24 @@ const GuestForm: React.FC<GuestFormProps> = ({ guest, onSuccess, onHide }) => {
 		>
 			<form onSubmit={handleSubmit} className="p-fluid">
 				{error && <Message severity="error" text={error} className="w-full mb-3" />}
-				<div className="field">
-					<label htmlFor="eventId">Event</label>
-					<Dropdown
-						id="eventId"
-						value={formData.eventId}
-						options={events.map((event) => ({
-							label: event.name,
-							value: event.id,
-						}))}
-						onChange={(e: DropdownChangeEvent) =>
-							setFormData((prev) => ({ ...prev, eventId: e.value }))
-						}
-						filter
-						required
-					/>
-				</div>
+				{!lockedEventId && (
+					<div className="field">
+						<label htmlFor="eventId">Event</label>
+						<Dropdown
+							id="eventId"
+							value={formData.eventId}
+							options={events.map((event) => ({
+								label: event.name,
+								value: event.id,
+							}))}
+							onChange={(e: DropdownChangeEvent) =>
+								setFormData((prev) => ({ ...prev, eventId: e.value }))
+							}
+							filter
+							required
+						/>
+					</div>
+				)}
 				<div className="field">
 					<label htmlFor="name">Nama</label>
 					<InputText
@@ -123,6 +136,25 @@ const GuestForm: React.FC<GuestFormProps> = ({ guest, onSuccess, onHide }) => {
 							setFormData((prev) => ({ ...prev, phone: e.target.value }))
 						}
 					/>
+				</div>
+				<div className="field">
+					<label htmlFor="max_guest">Max guest</label>
+					<InputText
+						id="max_guest"
+						type="number"
+						min={1}
+						value={String(formData.max_guest)}
+						onChange={(e) =>
+							setFormData((prev) => ({
+								...prev,
+								max_guest: Math.max(1, Number(e.target.value) || 1),
+							}))
+						}
+						required
+					/>
+					<small className="text-color-secondary">
+						Maksimal orang untuk undangan ini, termasuk tamu sendiri.
+					</small>
 				</div>
 				<div className="field">
 					<label htmlFor="rsvpStatus">Status RSVP</label>

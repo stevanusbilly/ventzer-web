@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BronzeInvitationProps } from "./types";
 import { getApiErrorMessage } from "../../utils/apiError";
 import {
@@ -10,6 +10,8 @@ import {
 	toGoogleCalendarUrl,
 	youtubeEmbedUrl,
 } from "./utils";
+import { useInvitationMusic } from "../music";
+import InvitationMusicEngine from "../InvitationMusicEngine";
 import "./BronzeInvitationTemplate.css";
 
 const rsvpStatusLabel = (status?: string): string => {
@@ -58,6 +60,8 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 	guestName,
 	guestRsvpStatus,
 	guestRsvpJumlah,
+	guestMaxGuest,
+	guestHasSentMessage = false,
 	setting,
 	mode = "preview",
 	onRsvp,
@@ -65,9 +69,11 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 }) => {
 	const flags = { ...defaultSetting, ...setting };
 	const [opened, setOpened] = useState(false);
-	const [playing, setPlaying] = useState(false);
 	const [copiedId, setCopiedId] = useState<number | null>(null);
-	const [jumlah, setJumlah] = useState(guestRsvpJumlah || 1);
+	const maxGuestCount = Math.max(1, Number(guestMaxGuest) || 1);
+	const [jumlah, setJumlah] = useState(
+		Math.min(maxGuestCount, guestRsvpJumlah && guestRsvpJumlah > 0 ? guestRsvpJumlah : 1),
+	);
 	const [kehadiran, setKehadiran] = useState<1 | 2>(
 		guestRsvpStatus === "declined" ? 2 : 1,
 	);
@@ -83,7 +89,17 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 	} | null>(null);
 	const [galleryIndex, setGalleryIndex] = useState(0);
 	const [messagesExpanded, setMessagesExpanded] = useState(false);
-	const audioRef = useRef<HTMLAudioElement>(null);
+	const {
+		audioRef,
+		kind,
+		musicUrl,
+		youtubeEmbed,
+		playing,
+		showControl,
+		startMusic,
+		toggleMusic,
+		onMusicError,
+	} = useInvitationMusic(event, mode);
 	const countdown = useCountdown(event.date);
 
 	const bride = wedding?.namaPanggilanBride || "Bride";
@@ -109,40 +125,18 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 
 	useEffect(() => {
 		if (guestRsvpJumlah && guestRsvpJumlah > 0) {
-			setJumlah(guestRsvpJumlah);
+			setJumlah(Math.min(maxGuestCount, guestRsvpJumlah));
 		}
 		if (guestRsvpStatus === "accepted") {
 			setKehadiran(1);
 		} else if (guestRsvpStatus === "declined") {
 			setKehadiran(2);
 		}
-	}, [guestRsvpJumlah, guestRsvpStatus]);
+	}, [guestRsvpJumlah, guestRsvpStatus, maxGuestCount]);
 
 	const openInvitation = async (): Promise<void> => {
 		setOpened(true);
-		if (audioRef.current && event.music_url) {
-			try {
-				await audioRef.current.play();
-				setPlaying(true);
-			} catch {
-				setPlaying(false);
-			}
-		}
-	};
-
-	const toggleMusic = async (): Promise<void> => {
-		if (!audioRef.current) return;
-		if (playing) {
-			audioRef.current.pause();
-			setPlaying(false);
-			return;
-		}
-		try {
-			await audioRef.current.play();
-			setPlaying(true);
-		} catch {
-			setPlaying(false);
-		}
+		await startMusic();
 	};
 
 	const copyGift = async (id: number, nomor: string): Promise<void> => {
@@ -181,8 +175,12 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 		}
 	};
 
+	const alreadySent =
+		guestHasSentMessage ||
+		Boolean(guestId && publishedMessages.some((row) => row.guestId === guestId));
+
 	const handleMessage = async (): Promise<void> => {
-		if (!onSendMessage || !ucapan.trim() || mode === "preview") return;
+		if (!onSendMessage || !ucapan.trim() || mode === "preview" || alreadySent) return;
 		setMessageBusy(true);
 		setMessageNotice(null);
 		try {
@@ -206,9 +204,14 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 		<div className={`bit-root ${opened ? "bit-opened" : "bit-locked"}`}>
 			{mode === "preview" && <div className="bit-preview-badge">Preview Bronze TSX</div>}
 
-			{event.music_url && (
-				<audio ref={audioRef} src={event.music_url} loop preload="auto" />
-			)}
+			<InvitationMusicEngine
+				kind={kind}
+				musicUrl={musicUrl}
+				youtubeEmbed={youtubeEmbed}
+				playing={playing}
+				audioRef={audioRef}
+				onMusicError={onMusicError}
+			/>
 
 			<section
 				className="bit-cover"
@@ -432,16 +435,31 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 										<option value={1}>Hadir</option>
 										<option value={2}>Tidak Hadir</option>
 									</select>
-									<label htmlFor="bit-jumlah">Jumlah Tamu</label>
-									<input
-										id="bit-jumlah"
-										type="number"
-										min={1}
-										max={50}
-										value={jumlah}
-										onChange={(e) => setJumlah(Number(e.target.value) || 1)}
-										disabled={mode === "preview"}
-									/>
+									{kehadiran === 1 && (
+										<>
+											<label htmlFor="bit-jumlah">Jumlah Tamu</label>
+											<input
+												id="bit-jumlah"
+												type="number"
+												min={1}
+												max={maxGuestCount}
+												value={jumlah}
+												onChange={(e) =>
+													setJumlah(
+														Math.min(
+															maxGuestCount,
+															Math.max(1, Number(e.target.value) || 1),
+														),
+													)
+												}
+												disabled={mode === "preview"}
+												required
+											/>
+											<small>
+												Maksimal {maxGuestCount} orang, termasuk Anda. Wajib diisi jika hadir.
+											</small>
+										</>
+									)}
 									<div className="bit-actions">
 										<button
 											type="button"
@@ -461,26 +479,34 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 									)}
 								</>
 							)}
-							<label htmlFor="bit-ucapan">Tulis pesan sebagai {guestName}</label>
-							<textarea
-								id="bit-ucapan"
-								rows={4}
-								maxLength={255}
-								value={ucapan}
-								onChange={(e) => setUcapan(e.target.value)}
-								placeholder="Tulis pesan"
-								disabled={mode === "preview"}
-							/>
-							<div className="bit-actions">
-								<button
-									type="button"
-									className="bit-btn"
-									disabled={messageBusy || mode === "preview" || !ucapan.trim()}
-									onClick={handleMessage}
-								>
-									Kirim Ucapan
-								</button>
-							</div>
+							{alreadySent && mode === "live" ? (
+								<p className="bit-note">
+									Ucapan Anda sudah terkirim. Setiap tamu hanya dapat mengirim satu ucapan.
+								</p>
+							) : (
+								<>
+									<label htmlFor="bit-ucapan">Tulis pesan sebagai {guestName}</label>
+									<textarea
+										id="bit-ucapan"
+										rows={4}
+										maxLength={255}
+										value={ucapan}
+										onChange={(e) => setUcapan(e.target.value)}
+										placeholder="Tulis pesan"
+										disabled={mode === "preview"}
+									/>
+									<div className="bit-actions">
+										<button
+											type="button"
+											className="bit-btn"
+											disabled={messageBusy || mode === "preview" || !ucapan.trim()}
+											onClick={handleMessage}
+										>
+											Kirim Ucapan
+										</button>
+									</div>
+								</>
+							)}
 							{messageNotice && (
 								<p
 									className={`bit-feedback ${messageNotice.ok ? "bit-feedback-ok" : "bit-feedback-err"}`}
@@ -529,14 +555,14 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 				</main>
 			</div>
 
-			{event.music_url && opened && (
+			{showControl && (
 				<button
 					type="button"
-					className="bit-music"
-					onClick={toggleMusic}
-					aria-label={playing ? "Pause musik" : "Putar musik"}
+					className={`bit-music ${playing ? "is-playing" : ""}`}
+					onClick={() => void toggleMusic()}
+					aria-label={playing ? "Matikan musik" : "Nyalakan musik"}
 				>
-					{playing ? "II" : "♪"}
+					<i className={playing ? "pi pi-volume-up" : "pi pi-volume-off"} />
 				</button>
 			)}
 		</div>

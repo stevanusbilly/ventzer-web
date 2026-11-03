@@ -28,7 +28,6 @@ const ALL_NAV: NavItem[] = [
 	},
 	{ label: "Templates", icon: "pi pi-list", path: "/templates" },
 	{ label: "Events", icon: "pi pi-calendar", path: "/events" },
-	{ label: "Guests", icon: "pi pi-users", path: "/guests" },
 	{ label: "Guest Message", icon: "pi pi-envelope", path: "/guest_message" },
 	{ label: "Gift", icon: "pi pi-gift", path: "/gift" },
 	{ label: "Check-in", icon: "pi pi-check-circle", path: "/checkin" },

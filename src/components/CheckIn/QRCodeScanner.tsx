@@ -1,17 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
-import { Message } from 'primereact/message';
-import { ProgressSpinner } from 'primereact/progressspinner';
-
-// Dynamic import untuk avoid SSR issues
-let Html5QrcodeScanner: any = null;
-
-if (typeof window !== 'undefined') {
-	import('html5-qrcode').then((module) => {
-		Html5QrcodeScanner = module.Html5QrcodeScanner;
-	});
-}
+import React, { useEffect, useRef, useState } from "react";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import "./QRCodeScanner.css";
 
 interface QRCodeScannerProps {
 	visible: boolean;
@@ -20,267 +10,211 @@ interface QRCodeScannerProps {
 	onScanError?: (errorMessage: string) => void;
 }
 
+const SCANNER_ID = "checkin-live-scanner";
+
+const delay = (ms: number): Promise<void> =>
+	new Promise((resolve) => {
+		window.setTimeout(resolve, ms);
+	});
+
+const safeStop = async (scanner: {
+	getState?: () => number;
+	stop: () => Promise<void>;
+	clear: () => void;
+}): Promise<void> => {
+	try {
+		const state = scanner.getState?.();
+		if (state && state > 1) {
+			await scanner.stop();
+		}
+	} catch {
+		// kamera mungkin sudah berhenti
+	}
+	try {
+		scanner.clear();
+	} catch {
+		// container sudah bersih
+	}
+};
+
 const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
 	visible,
 	onHide,
 	onScanSuccess,
 	onScanError,
 }) => {
-	const [scanning, setScanning] = useState<boolean>(false);
-	const [error, setError] = useState<string>('');
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [cameraPermission, setCameraPermission] = useState<
-		'granted' | 'denied' | 'prompt'
-	>('prompt');
-	const scannerRef = useRef<any>(null);
-	const scannerContainerId = 'qr-scanner-container';
+	const [status, setStatus] = useState<"starting" | "ready" | "error">("starting");
+	const [error, setError] = useState("");
+	const [retry, setRetry] = useState(0);
+	const [dialogReady, setDialogReady] = useState(false);
+	const scannerRef = useRef<{
+		getState?: () => number;
+		stop: () => Promise<void>;
+		clear: () => void;
+	} | null>(null);
+	const onScanRef = useRef(onScanSuccess);
+	const lockedRef = useRef(false);
 
-	// Check camera permissions
+	onScanRef.current = onScanSuccess;
+
 	useEffect(() => {
-		const checkCameraPermission = async () => {
-			try {
-				// Pastikan kita berada di lingkungan browser
-				if (typeof navigator !== 'undefined' && navigator.permissions) {
-					const permissionStatus = await navigator.permissions.query({
-						name: 'camera' as PermissionName,
-					});
-					setCameraPermission(permissionStatus.state);
-
-					permissionStatus.onchange = () => {
-						setCameraPermission(permissionStatus.state);
-					};
-				}
-			} catch (error) {
-				console.warn('Camera permission API not supported');
+		if (!visible) {
+			setDialogReady(false);
+			lockedRef.current = false;
+			const current = scannerRef.current;
+			scannerRef.current = null;
+			if (current) {
+				void safeStop(current);
 			}
+			return;
+		}
+
+		if (!dialogReady) {
+			return;
+		}
+
+		let alive = true;
+		lockedRef.current = false;
+
+		const startCamera = async (): Promise<void> => {
+			setStatus("starting");
+			setError("");
+			await delay(50);
+			if (!alive) {
+				return;
+			}
+
+			const container = document.getElementById(SCANNER_ID);
+			if (!container) {
+				throw new Error("Area kamera tidak siap");
+			}
+			container.replaceChildren();
+
+			const { Html5Qrcode } = await import("html5-qrcode");
+			if (!alive) {
+				return;
+			}
+
+			const scanner = new Html5Qrcode(SCANNER_ID, { verbose: false });
+			scannerRef.current = scanner;
+
+			const config = {
+				fps: 15,
+				qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+					const size = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.72);
+					return { width: Math.max(180, size), height: Math.max(180, size) };
+				},
+				aspectRatio: 1,
+				disableFlip: false,
+			};
+
+			const onDecoded = (decodedText: string): void => {
+				if (lockedRef.current) {
+					return;
+				}
+				lockedRef.current = true;
+				onScanRef.current(decodedText);
+			};
+
+			try {
+				await scanner.start(
+					{ facingMode: "environment" },
+					config,
+					onDecoded,
+					() => undefined,
+				);
+			} catch {
+				const cameras = await Html5Qrcode.getCameras();
+				if (!alive) {
+					await safeStop(scanner);
+					return;
+				}
+				if (!cameras.length) {
+					throw new Error("Kamera tidak ditemukan");
+				}
+				await scanner.start(
+					cameras[cameras.length - 1].id,
+					config,
+					onDecoded,
+					() => undefined,
+				);
+			}
+
+			if (!alive) {
+				await safeStop(scanner);
+				return;
+			}
+			setStatus("ready");
 		};
 
-		if (visible) {
-			checkCameraPermission();
-		}
-	}, [visible]);
-
-	useEffect(() => {
-		if (visible) {
-			initScanner();
-		} else {
-			stopScanner();
-		}
+		void startCamera().catch((err: unknown) => {
+			if (!alive) {
+				return;
+			}
+			const message =
+				err instanceof Error ? err.message : "Kamera tidak bisa dinyalakan";
+			setStatus("error");
+			setError(
+				message.toLowerCase().includes("denied")
+					? "Izin kamera ditolak. Izinkan kamera di pengaturan browser, lalu coba lagi."
+					: message,
+			);
+			onScanError?.(message);
+		});
 
 		return () => {
-			stopScanner();
+			alive = false;
+			const current = scannerRef.current;
+			scannerRef.current = null;
+			if (current) {
+				void safeStop(current);
+			}
 		};
-	}, [visible]);
-
-	const initScanner = async (): Promise<void> => {
-		try {
-			setError('');
-			setIsLoading(true);
-			setScanning(false);
-
-			// Clear any existing scanner
-			stopScanner();
-
-			// Pastikan kita berada di lingkungan browser
-			if (typeof window === 'undefined') {
-				throw new Error('Window object not available');
-			}
-
-			// Dynamically import the library only when needed
-			const html5QrcodeModule = await import('html5-qrcode');
-			const Html5QrcodeScanner = html5QrcodeModule.Html5QrcodeScanner;
-
-			// Give time for DOM to render
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			// Pastikan elemen container ada
-			const container = document.getElementById(scannerContainerId);
-			if (!container) {
-				throw new Error('Scanner container not found');
-			}
-
-			// Create scanner instance
-			scannerRef.current = new Html5QrcodeScanner(
-				scannerContainerId,
-				{
-					fps: 10,
-					qrbox: { width: 250, height: 250 },
-					rememberLastUsedCamera: true,
-					supportedScanTypes: [],
-				},
-				false
-			);
-
-			// Start scanning
-			scannerRef.current.render(
-				(decodedText: string) => {
-					console.log('QR Code scanned:', decodedText);
-					onScanSuccess(decodedText);
-					stopScanner();
-					onHide();
-				},
-				(errorMessage: string) => {
-					// Ignore "No QR code found" errors as they are frequent during scanning
-					if (!errorMessage.includes('No QR code found')) {
-						console.warn('Scan error:', errorMessage);
-						setError(`Scan error: ${errorMessage}`);
-						onScanError?.(errorMessage);
-					}
-				}
-			);
-
-			setScanning(true);
-			setIsLoading(false);
-		} catch (err: any) {
-			console.error('Scanner initialization error:', err);
-			const errorMsg = err.message || 'Camera access denied or not available';
-			setError(`Scanner failed to start: ${errorMsg}`);
-			setIsLoading(false);
-			setScanning(false);
-
-			// Update camera permission status if access was denied
-			if (errorMsg.toLowerCase().includes('denied')) {
-				setCameraPermission('denied');
-			}
-		}
-	};
-
-	const stopScanner = (): void => {
-		if (scannerRef.current) {
-			try {
-				// Html5QrcodeScanner memiliki metode clear() untuk membersihkan scanner
-				scannerRef.current.clear().catch((err: any) => {
-					console.warn('Error clearing scanner:', err);
-				});
-			} catch (error) {
-				console.warn('Error clearing scanner:', error);
-			} finally {
-				scannerRef.current = null;
-			}
-		}
-		setScanning(false);
-	};
+	}, [visible, dialogReady, retry, onScanError]);
 
 	const handleClose = (): void => {
-		stopScanner();
 		onHide();
-	};
-
-	const retryScanner = (): void => {
-		setError('');
-		initScanner();
-	};
-
-	const renderCameraPermissionMessage = () => {
-		if (cameraPermission === 'denied') {
-			return (
-				<div className='mb-3'>
-					<Message
-						severity='error'
-						text='Camera access denied. Please enable camera permissions in your browser settings.'
-						className='w-full mb-2'
-					/>
-					<p className='text-sm'>To enable camera access:</p>
-					<ul className='text-sm ml-3 mt-1'>
-						<li>Look for the camera icon in your browser's address bar</li>
-						<li>Click it and select "Allow" for camera access</li>
-						<li>Refresh the page and try again</li>
-					</ul>
-				</div>
-			);
-		}
-
-		return null;
-	};
-
-	const renderScannerContent = () => {
-		if (isLoading) {
-			return (
-				<div className='p-4'>
-					<ProgressSpinner
-						style={{ width: '50px', height: '50px' }}
-						strokeWidth='4'
-						animationDuration='.5s'
-					/>
-					<p className='mt-3'>Loading scanner...</p>
-				</div>
-			);
-		}
-
-		if (error) {
-			return (
-				<div className='p-4'>
-					<Message severity='error' text={error} className='w-full mb-2' />
-					<Button
-						label='Retry'
-						icon='pi pi-refresh'
-						className='p-button-outlined p-button-sm'
-						onClick={retryScanner}
-					/>
-				</div>
-			);
-		}
-
-		return (
-			<div className='p-4'>
-				<i className='pi pi-camera text-4xl text-500'></i>
-				<p>Scanner ready</p>
-			</div>
-		);
 	};
 
 	return (
 		<Dialog
-			header='Scan QR Code'
+			header="Scan QR Tamu"
 			visible={visible}
-			style={{ width: '90vw', maxWidth: '500px' }}
+			style={{ width: "92vw", maxWidth: "420px" }}
 			onHide={handleClose}
-			className='qr-scanner-dialog'
-			dismissableMask={true}
+			onShow={() => setDialogReady(true)}
+			className="qr-scanner-dialog"
+			dismissableMask
 		>
-			<div className='text-center'>
-				{renderCameraPermissionMessage()}
-
-				<div
-					id={scannerContainerId}
-					style={{
-						width: '100%',
-						minHeight: '300px',
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center',
-						backgroundColor: '#f0f0f0',
-						borderRadius: '8px',
-						marginBottom: '1rem',
-						overflow: 'hidden',
-					}}
-				>
-					{renderScannerContent()}
+			<div className="checkin-camera-shell">
+				<div id={SCANNER_ID} className="checkin-live-scanner" />
+				<div className="checkin-viewfinder" aria-hidden="true">
+					<span className="c tl" />
+					<span className="c tr" />
+					<span className="c bl" />
+					<span className="c br" />
 				</div>
-
-				<div className='flex gap-2 justify-content-center'>
+				<div className="checkin-camera-hint">
+					{status === "starting" && <p>Menyalakan kamera…</p>}
+					{status === "ready" && <p>Arahkan QR undangan ke kamera</p>}
+					{status === "error" && <p>{error}</p>}
+				</div>
+			</div>
+			<div className="flex justify-content-center gap-2 mt-3">
+				{status === "error" && (
 					<Button
-						label='Close'
-						icon='pi pi-times'
-						className='p-button-secondary'
-						onClick={handleClose}
+						label="Coba lagi"
+						icon="pi pi-refresh"
+						outlined
+						onClick={() => setRetry((value) => value + 1)}
 					/>
-					{error && (
-						<Button
-							label='Retry'
-							icon='pi pi-refresh'
-							className='p-button-outlined'
-							onClick={retryScanner}
-						/>
-					)}
-				</div>
-
-				<div className='mt-3 text-sm'>
-					<p className='text-500 mb-1'>Point camera at guest's QR code</p>
-					<small>
-						Ensure good lighting and steady hands for better scanning
-					</small>
-				</div>
+				)}
+				<Button
+					label="Tutup"
+					icon="pi pi-times"
+					className="p-button-secondary"
+					onClick={handleClose}
+				/>
 			</div>
 		</Dialog>
 	);

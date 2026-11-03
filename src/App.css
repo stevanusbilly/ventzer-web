@@ -84,8 +84,3 @@
 #qr-scanner-container {
   position: relative;
 }
-
-#qr-scanner-container video {
-  border-radius: 8px;
-  max-height: 300px;
-}

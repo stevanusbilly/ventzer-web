@@ -2,9 +2,6 @@ import api from "./api";
 import { Guest } from "../types";
 
 export interface GuestListParams {
-	q?: string;
-	phone?: string;
-	rsvpStatus?: string;
 	dateFrom?: string;
 	dateTo?: string;
 }

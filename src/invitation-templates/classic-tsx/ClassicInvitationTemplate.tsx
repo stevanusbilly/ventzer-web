@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ClassicInvitationProps } from "./types";
 import { getApiErrorMessage } from "../../utils/apiError";
 import {
@@ -10,6 +10,8 @@ import {
 	toGoogleCalendarUrl,
 	youtubeEmbedUrl,
 } from "./utils";
+import { useInvitationMusic } from "../music";
+import InvitationMusicEngine from "../InvitationMusicEngine";
 import "./ClassicInvitationTemplate.css";
 
 const rsvpStatusLabel = (status?: string): string => {
@@ -58,6 +60,8 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 	guestName,
 	guestRsvpStatus,
 	guestRsvpJumlah,
+	guestMaxGuest,
+	guestHasSentMessage = false,
 	setting,
 	mode = "preview",
 	onRsvp,
@@ -65,9 +69,11 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 }) => {
 	const flags = { ...defaultSetting, ...setting };
 	const [opened, setOpened] = useState(false);
-	const [playing, setPlaying] = useState(false);
 	const [copiedId, setCopiedId] = useState<number | null>(null);
-	const [jumlah, setJumlah] = useState(guestRsvpJumlah || 1);
+	const maxGuestCount = Math.max(1, Number(guestMaxGuest) || 1);
+	const [jumlah, setJumlah] = useState(
+		Math.min(maxGuestCount, guestRsvpJumlah && guestRsvpJumlah > 0 ? guestRsvpJumlah : 1),
+	);
 	const [ucapan, setUcapan] = useState("");
 	const [rsvpBusy, setRsvpBusy] = useState(false);
 	const [messageBusy, setMessageBusy] = useState(false);
@@ -78,14 +84,24 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 		ok: boolean;
 		text: string;
 	} | null>(null);
-	const audioRef = useRef<HTMLAudioElement>(null);
+	const {
+		audioRef,
+		kind,
+		musicUrl,
+		youtubeEmbed,
+		playing,
+		showControl,
+		startMusic,
+		toggleMusic,
+		onMusicError,
+	} = useInvitationMusic(event, mode);
 	const countdown = useCountdown(event.date);
 
 	useEffect(() => {
 		if (guestRsvpJumlah && guestRsvpJumlah > 0) {
-			setJumlah(guestRsvpJumlah);
+			setJumlah(Math.min(maxGuestCount, guestRsvpJumlah));
 		}
-	}, [guestRsvpJumlah]);
+	}, [guestRsvpJumlah, maxGuestCount]);
 
 	const bride = wedding?.namaPanggilanBride || "Bride";
 	const groom = wedding?.namaPanggilanGroom || "Groom";
@@ -107,29 +123,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 	const openInvitation = async (): Promise<void> => {
 		setOpened(true);
-		if (audioRef.current && event.music_url) {
-			try {
-				await audioRef.current.play();
-				setPlaying(true);
-			} catch {
-				setPlaying(false);
-			}
-		}
-	};
-
-	const toggleMusic = async (): Promise<void> => {
-		if (!audioRef.current) return;
-		if (playing) {
-			audioRef.current.pause();
-			setPlaying(false);
-			return;
-		}
-		try {
-			await audioRef.current.play();
-			setPlaying(true);
-		} catch {
-			setPlaying(false);
-		}
+		await startMusic();
 	};
 
 	const copyGift = async (id: number, nomor: string): Promise<void> => {
@@ -168,8 +162,12 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 		}
 	};
 
+	const alreadySent =
+		guestHasSentMessage ||
+		Boolean(guestId && publishedMessages.some((row) => row.guestId === guestId));
+
 	const handleMessage = async (): Promise<void> => {
-		if (!onSendMessage || !ucapan.trim() || mode === "preview") return;
+		if (!onSendMessage || !ucapan.trim() || mode === "preview" || alreadySent) return;
 		setMessageBusy(true);
 		setMessageNotice(null);
 		try {
@@ -193,9 +191,14 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 		<div className={`cit-root ${opened ? "cit-opened" : "cit-locked"}`}>
 			{mode === "preview" && <div className="cit-preview-badge">Preview TSX</div>}
 
-			{event.music_url && (
-				<audio ref={audioRef} src={event.music_url} loop preload="auto" />
-			)}
+			<InvitationMusicEngine
+				kind={kind}
+				musicUrl={musicUrl}
+				youtubeEmbed={youtubeEmbed}
+				playing={playing}
+				audioRef={audioRef}
+				onMusicError={onMusicError}
+			/>
 
 			<section
 				className="cit-cover"
@@ -456,11 +459,22 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 									id="cit-jumlah"
 									type="number"
 									min={1}
-									max={50}
+									max={maxGuestCount}
 									value={jumlah}
-									onChange={(e) => setJumlah(Number(e.target.value) || 1)}
+									onChange={(e) =>
+										setJumlah(
+											Math.min(
+												maxGuestCount,
+												Math.max(1, Number(e.target.value) || 1),
+											),
+										)
+									}
 									disabled={mode === "preview"}
+									required
 								/>
+								<small>
+									Maksimal {maxGuestCount} orang, termasuk Anda. Wajib diisi jika hadir.
+								</small>
 								<div className="cit-actions">
 									<button
 										type="button"
@@ -499,26 +513,32 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 						</p>
 						<h2 className="cit-section-title">Ucapan &amp; Doa</h2>
 						<div className="cit-ornament" />
-						<div className="cit-form">
-							<label htmlFor="cit-ucapan">Tulis ucapan sebagai {guestName}</label>
-							<textarea
-								id="cit-ucapan"
-								rows={3}
-								maxLength={255}
-								value={ucapan}
-								onChange={(e) => setUcapan(e.target.value)}
-								placeholder="Tulis ucapan untuk mempelai..."
-								disabled={mode === "preview"}
-							/>
-							<button
-								type="button"
-								className="cit-btn"
-								disabled={messageBusy || mode === "preview" || !ucapan.trim()}
-								onClick={handleMessage}
-							>
-								Kirim Ucapan
-							</button>
-						</div>
+						{alreadySent && mode === "live" ? (
+							<p className="cit-note">
+								Ucapan Anda sudah terkirim. Setiap tamu hanya dapat mengirim satu ucapan.
+							</p>
+						) : (
+							<div className="cit-form">
+								<label htmlFor="cit-ucapan">Tulis ucapan sebagai {guestName}</label>
+								<textarea
+									id="cit-ucapan"
+									rows={3}
+									maxLength={255}
+									value={ucapan}
+									onChange={(e) => setUcapan(e.target.value)}
+									placeholder="Tulis ucapan untuk mempelai..."
+									disabled={mode === "preview"}
+								/>
+								<button
+									type="button"
+									className="cit-btn"
+									disabled={messageBusy || mode === "preview" || !ucapan.trim()}
+									onClick={handleMessage}
+								>
+									Kirim Ucapan
+								</button>
+							</div>
+						)}
 						{messageNotice && (
 							<p
 								className={`cit-feedback ${messageNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
@@ -569,14 +589,14 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 				</main>
 			</div>
 
-			{event.music_url && opened && (
+			{showControl && (
 				<button
 					type="button"
-					className="cit-music"
-					onClick={toggleMusic}
-					aria-label={playing ? "Pause musik" : "Putar musik"}
+					className={`cit-music ${playing ? "is-playing" : ""}`}
+					onClick={() => void toggleMusic()}
+					aria-label={playing ? "Matikan musik" : "Nyalakan musik"}
 				>
-					{playing ? "II" : "♪"}
+					<i className={playing ? "pi pi-volume-up" : "pi pi-volume-off"} />
 				</button>
 			)}
 		</div>

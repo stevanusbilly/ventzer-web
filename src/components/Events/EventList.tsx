@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -14,29 +14,17 @@ import EventLocationDialog from "../EventLocation/EventLocationDialog";
 import EventPhotoDialog from "../EventPhoto/EventPhotoDialog";
 import EventSettingDialog from "../EventSetting/EventSettingDialog";
 import EventTableDialog from "../EventTable/EventTableDialog";
+import GuestDialog from "../Guests/GuestDialog";
 import { Event } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
+import { toDateQueryParams } from "../../utils/dateRange";
 
 const startOfMonth = (date: Date): Date =>
 	new Date(date.getFullYear(), date.getMonth(), 1);
 
 const endOfMonth = (date: Date): Date =>
 	new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
-
-const startOfDay = (date: Date): number =>
-	new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-
-const endOfDay = (date: Date): number =>
-	new Date(
-		date.getFullYear(),
-		date.getMonth(),
-		date.getDate(),
-		23,
-		59,
-		59,
-		999,
-	).getTime();
 
 const EventList: React.FC = () => {
 	const now = new Date();
@@ -53,21 +41,29 @@ const EventList: React.FC = () => {
 	const [showPhoto, setShowPhoto] = useState(false);
 	const [showSetting, setShowSetting] = useState(false);
 	const [showTable, setShowTable] = useState(false);
+	const [showGuests, setShowGuests] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 	const { user, isAdmin, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
 
 	useEffect(() => {
-		loadEvents();
+		void loadEvents();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [dateRange]);
 
 	const loadEvents = async (): Promise<void> => {
+		const params = toDateQueryParams(dateRange);
+		if (!params.dateFrom && !params.dateTo) {
+			setEvents([]);
+			setLoading(false);
+			return;
+		}
+		setLoading(true);
 		try {
 			const response =
 				user?.role === "admin"
-					? await eventService.getAll()
-					: await eventService.getByUser(user?.id || 0);
+					? await eventService.getAll(params)
+					: await eventService.getByUser(user?.id || 0, params);
 			setEvents(response);
 		} catch (error: unknown) {
 			showError(getApiErrorMessage(error, "Gagal memuat event"));
@@ -75,22 +71,6 @@ const EventList: React.FC = () => {
 			setLoading(false);
 		}
 	};
-
-	const filteredEvents = useMemo(() => {
-		const from = dateRange[0];
-		if (!from) {
-			return [];
-		}
-		const fromTime = startOfDay(from);
-		const toTime = dateRange[1] ? endOfDay(dateRange[1]) : endOfDay(from);
-		return events.filter((event) => {
-			const time = new Date(event.date).getTime();
-			if (Number.isNaN(time)) {
-				return false;
-			}
-			return time >= fromTime && time <= toTime;
-		});
-	}, [events, dateRange]);
 
 	const showError = (message: string): void => {
 		toast.current?.show({ severity: "error", summary: "Error", detail: message, life: 3000 });
@@ -180,6 +160,23 @@ const EventList: React.FC = () => {
 				}}
 			/>
 			<Button
+				icon="pi pi-id-card"
+				className="p-button-rounded p-button-help p-button-text"
+				tooltip="Tamu event"
+				onClick={() => {
+					setSelectedEvent(rowData);
+					setShowGuests(true);
+				}}
+			/>
+			{canMutate && (
+				<Button
+					icon="pi pi-qrcode"
+					className="p-button-rounded p-button-warning p-button-text"
+					tooltip="Wedding usher"
+					onClick={() => window.open(`/events/${rowData.id}/usher`, "_blank")}
+				/>
+			)}
+			<Button
 				icon="pi pi-eye"
 				className="p-button-rounded p-button-info p-button-text"
 				tooltip="Preview undangan"
@@ -249,7 +246,7 @@ const EventList: React.FC = () => {
 				</div>
 			</div>
 			<DataTable
-				value={filteredEvents}
+				value={events}
 				loading={loading}
 				paginator
 				rows={10}
@@ -269,6 +266,7 @@ const EventList: React.FC = () => {
 					sortable
 					filter
 				/>
+				<Column field="max_pack" header="Max pack" sortable filter />
 				<Column field="dresscode" header="Dresscode" sortable filter />
 				<Column
 					field="autoplay_music"
@@ -323,6 +321,12 @@ const EventList: React.FC = () => {
 				<EventTableDialog
 					event={selectedEvent}
 					onHide={() => setShowTable(false)}
+				/>
+			)}
+			{showGuests && selectedEvent && (
+				<GuestDialog
+					event={selectedEvent}
+					onHide={() => setShowGuests(false)}
 				/>
 			)}
 		</div>

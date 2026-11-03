@@ -1,13 +1,23 @@
 import api from "./api";
 import { Event, EventSummary } from "../types";
 
+export interface EventListParams {
+	dateFrom?: string;
+	dateTo?: string;
+}
+
 export const eventService = {
-	getAll: async (): Promise<Event[]> => {
-		const response = await api.get<Event[]>("/events");
+	getAll: async (params?: EventListParams): Promise<Event[]> => {
+		const response = await api.get<Event[]>("/events", { params });
 		return response.data;
 	},
-	getByUser: async (userId: number): Promise<Event[]> => {
-		const response = await api.get<Event[]>(`/events/user/${userId}`);
+	getByUser: async (
+		userId: number,
+		params?: EventListParams,
+	): Promise<Event[]> => {
+		const response = await api.get<Event[]>(`/events/user/${userId}`, {
+			params,
+		});
 		return response.data;
 	},
 	getById: async (id: number): Promise<Event> => {

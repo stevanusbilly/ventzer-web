@@ -1,0 +1,94 @@
+.qr-scanner-dialog .p-dialog-content {
+	padding: 0.75rem 1rem 1rem;
+}
+
+.checkin-camera-shell {
+	position: relative;
+	width: 100%;
+	height: min(70vw, 360px);
+	overflow: hidden;
+	border-radius: 16px;
+	background: #111;
+}
+
+.checkin-live-scanner,
+.checkin-live-scanner > div {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+.checkin-live-scanner video {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+	border-radius: 0 !important;
+	max-height: none !important;
+}
+
+.checkin-live-scanner #qr-shaded-region {
+	display: none !important;
+}
+
+.checkin-viewfinder {
+	position: absolute;
+	left: 50%;
+	top: 46%;
+	width: min(68%, 240px);
+	height: min(68%, 240px);
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.checkin-viewfinder .c {
+	position: absolute;
+	width: 28px;
+	height: 28px;
+	border: 3px solid #fff;
+}
+
+.checkin-viewfinder .tl {
+	top: 0;
+	left: 0;
+	border-right: 0;
+	border-bottom: 0;
+}
+
+.checkin-viewfinder .tr {
+	top: 0;
+	right: 0;
+	border-left: 0;
+	border-bottom: 0;
+}
+
+.checkin-viewfinder .bl {
+	bottom: 0;
+	left: 0;
+	border-right: 0;
+	border-top: 0;
+}
+
+.checkin-viewfinder .br {
+	bottom: 0;
+	right: 0;
+	border-left: 0;
+	border-top: 0;
+}
+
+.checkin-camera-hint {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0.7rem;
+	text-align: center;
+	pointer-events: none;
+}
+
+.checkin-camera-hint p {
+	margin: 0;
+	display: inline-block;
+	padding: 0.35rem 0.7rem;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.62);
+	color: #fff;
+	font-size: 0.85rem;
+}

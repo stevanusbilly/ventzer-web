@@ -89,6 +89,10 @@ const InvitationPage: React.FC = () => {
 			}
 			return {
 				...prev,
+				guest: {
+					...prev.guest,
+					hasSentMessage: true,
+				},
 				messages: [
 					result.data,
 					...prev.messages.filter((row) => row.id !== result.data?.id),
@@ -140,6 +144,8 @@ const InvitationPage: React.FC = () => {
 			guestName={data.guest.name}
 			guestRsvpStatus={data.guest.rsvpStatus}
 			guestRsvpJumlah={data.guest.rsvpJumlah}
+			guestMaxGuest={data.guest.max_guest}
+			guestHasSentMessage={Boolean(data.guest.hasSentMessage)}
 			setting={data.setting}
 			mode="live"
 			onRsvp={handleRsvp}
