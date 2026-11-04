@@ -16,18 +16,29 @@ export const guestService = {
 		});
 		return response.data;
 	},
-	getRecent: async (eventId?: number, limit = 10): Promise<Guest[]> => {
+	getRecent: async (
+		eventId?: number,
+		limit = 10,
+		params?: GuestListParams,
+	): Promise<Guest[]> => {
 		const response = await api.get<Guest[]>("/guests/recent", {
 			params: {
 				limit,
 				...(eventId ? { eventId } : {}),
+				...params,
 			},
 		});
 		return response.data;
 	},
-	getCount: async (eventId?: number): Promise<{ count: number }> => {
+	getCount: async (
+		eventId?: number,
+		params?: GuestListParams,
+	): Promise<{ count: number }> => {
 		const response = await api.get<{ count: number }>("/guests/getCount", {
-			params: eventId ? { eventId } : undefined,
+			params: {
+				...(eventId ? { eventId } : {}),
+				...params,
+			},
 		});
 		return response.data;
 	},

@@ -1,11 +1,12 @@
 import React, {
 	createContext,
+	useCallback,
 	useContext,
 	useState,
 	useEffect,
 	ReactNode,
 } from "react";
-import { User, LoginCredentials } from "../types";
+import { User, LoginCredentials, RegisterData, AuthResponse } from "../types";
 import { authService } from "../services/authService";
 import { getApiErrorMessage } from "../utils/apiError";
 
@@ -15,8 +16,15 @@ interface AuthContextType {
 	login: (
 		credentials: LoginCredentials,
 	) => Promise<{ success: boolean; message?: string }>;
+	register: (
+		payload: RegisterData,
+	) => Promise<{ success: boolean; message?: string }>;
+	loginGoogle: (
+		idToken: string,
+	) => Promise<{ success: boolean; message?: string }>;
 	logout: () => void;
 	updateUser: (next: User) => void;
+	refreshUser: () => Promise<void>;
 	isAuthenticated: boolean;
 	canMutate: boolean;
 	isAdmin: boolean;
@@ -58,20 +66,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		setLoading(false);
 	}, [token]);
 
+	const applySession = (response: AuthResponse): void => {
+		localStorage.setItem("token", response.token);
+		localStorage.setItem("userData", JSON.stringify(response.user));
+		setToken(response.token);
+		setUser(response.user);
+	};
+
 	const login = async (
 		credentials: LoginCredentials,
 	): Promise<{ success: boolean; message?: string }> => {
 		try {
-			const response = await authService.login(credentials);
-			localStorage.setItem("token", response.token);
-			localStorage.setItem("userData", JSON.stringify(response.user));
-			setToken(response.token);
-			setUser(response.user);
+			applySession(await authService.login(credentials));
 			return { success: true };
 		} catch (error: unknown) {
 			return {
 				success: false,
 				message: getApiErrorMessage(error, "Login gagal"),
+			};
+		}
+	};
+
+	const register = async (
+		payload: RegisterData,
+	): Promise<{ success: boolean; message?: string }> => {
+		try {
+			applySession(await authService.register(payload));
+			return { success: true };
+		} catch (error: unknown) {
+			return {
+				success: false,
+				message: getApiErrorMessage(error, "Pendaftaran gagal"),
+			};
+		}
+	};
+
+	const loginGoogle = async (
+		idToken: string,
+	): Promise<{ success: boolean; message?: string }> => {
+		try {
+			applySession(await authService.loginGoogle(idToken));
+			return { success: true };
+		} catch (error: unknown) {
+			return {
+				success: false,
+				message: getApiErrorMessage(error, "Login Google gagal"),
 			};
 		}
 	};
@@ -88,6 +127,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		localStorage.setItem("userData", JSON.stringify(next));
 	};
 
+	const refreshUser = useCallback(async (): Promise<void> => {
+		if (!localStorage.getItem("token")) {
+			return;
+		}
+		try {
+			const next = await authService.me();
+			setUser(next);
+			localStorage.setItem("userData", JSON.stringify(next));
+		} catch {
+			// biarkan sesi lokal jika /me gagal
+		}
+	}, []);
+
 	const role = user?.role;
 	const canMutate = role === "admin" || role === "panitia";
 	const isAdmin = role === "admin";
@@ -97,8 +149,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		user,
 		token,
 		login,
+		register,
+		loginGoogle,
 		logout,
 		updateUser,
+		refreshUser,
 		isAuthenticated: !!user,
 		canMutate,
 		isAdmin,

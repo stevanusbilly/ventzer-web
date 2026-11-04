@@ -29,6 +29,7 @@ export type BronzeInvitationPhotos = {
 	saveTheDate?: EventPhoto | null;
 	akhir?: EventPhoto | null;
 	gallery: EventPhoto[];
+	loveStory: EventPhoto[];
 };
 
 export type BronzeInvitationRsvpPayload = {

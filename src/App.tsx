@@ -9,10 +9,12 @@ import {
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import AppLayout from "./components/Layout/AppLayout";
 import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import StaffLogin from "./components/Auth/StaffLogin";
 import Dashboard from "./components/Dashboard/Dashboard";
+import AccountSettings from "./pages/AccountSettings";
 import EventList from "./components/Events/EventList";
 import EventPreviewTsx from "./components/Events/EventPreviewTsx";
-import CheckIn from "./components/CheckIn/CheckIn";
 import LandingPage from "./pages/LandingPage";
 import PricingPage from "./pages/PricingPage";
 import CatalogPage from "./pages/CatalogPage";
@@ -22,9 +24,13 @@ import UsherPage from "./components/Usher/UsherPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
 import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
-import GiftList from "./components/Gift/GiftList";
-import GuestMessageList from "./components/GuestMessage/GuestMessageList";
 import { UserRole } from "./types";
+import {
+	customerLoginPath,
+	homePathForRole,
+	isStaffRole,
+	staffLoginPath,
+} from "./utils/authPaths";
 
 const PreviewLegacyRedirect: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -36,9 +42,17 @@ const InvitationLegacyRedirect: React.FC = () => {
 	return <Navigate to={`/invitation/${token || ""}`} replace />;
 };
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { isAuthenticated } = useAuth();
-	return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+	if (!isAuthenticated) return <Navigate to={customerLoginPath} replace />;
+	return <>{children}</>;
+};
+
+const StaffRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+	const { isAuthenticated, user } = useAuth();
+	if (!isAuthenticated) return <Navigate to={staffLoginPath} replace />;
+	if (!isStaffRole(user?.role)) return <Navigate to={homePathForRole(user?.role)} replace />;
+	return <>{children}</>;
 };
 
 const RoleRoute: React.FC<{
@@ -46,9 +60,9 @@ const RoleRoute: React.FC<{
 	roles: UserRole[];
 }> = ({ children, roles }) => {
 	const { user, isAuthenticated } = useAuth();
-	if (!isAuthenticated) return <Navigate to="/login" replace />;
+	if (!isAuthenticated) return <Navigate to={staffLoginPath} replace />;
 	if (!user || !roles.includes(user.role)) {
-		return <Navigate to="/dashboard" replace />;
+		return <Navigate to={homePathForRole(user?.role)} replace />;
 	}
 	return <>{children}</>;
 };
@@ -56,6 +70,21 @@ const RoleRoute: React.FC<{
 const AppContent: React.FC = () => (
 	<Routes>
 		<Route path="/login" element={<Login />} />
+		<Route path="/daftar" element={<Register />} />
+		<Route path="/admin" element={<StaffLogin />} />
+		<Route path="/panitia" element={<Navigate to="/admin" replace />} />
+		<Route path="/masuk" element={<Navigate to="/login" replace />} />
+		<Route path="/akun" element={<Navigate to="/pengaturan" replace />} />
+		<Route
+			path="/pengaturan"
+			element={
+				<AuthRoute>
+					<AppLayout>
+						<AccountSettings />
+					</AppLayout>
+				</AuthRoute>
+			}
+		/>
 		<Route path="/invitation/:token" element={<InvitationPage />} />
 		<Route
 			path="/invitation/:eventId/:token"
@@ -64,107 +93,82 @@ const AppContent: React.FC = () => (
 		<Route
 			path="/dashboard"
 			element={
-				<ProtectedRoute>
+				<AuthRoute>
 					<AppLayout>
 						<Dashboard />
 					</AppLayout>
-				</ProtectedRoute>
+				</AuthRoute>
 			}
 		/>
 		<Route
 			path="/users"
 			element={
-				<ProtectedRoute>
+				<StaffRoute>
 					<RoleRoute roles={["admin"]}>
 						<AppLayout>
 							<UserList />
 						</AppLayout>
 					</RoleRoute>
-				</ProtectedRoute>
+				</StaffRoute>
 			}
 		/>
 		<Route
 			path="/category_photo"
 			element={
-				<ProtectedRoute>
+				<StaffRoute>
 					<RoleRoute roles={["admin"]}>
 						<AppLayout>
 							<CategoryPhotoList />
 						</AppLayout>
 					</RoleRoute>
-				</ProtectedRoute>
+				</StaffRoute>
 			}
 		/>
 		<Route
 			path="/templates"
 			element={
-				<ProtectedRoute>
-					<AppLayout>
-						<TemplateList />
-					</AppLayout>
-				</ProtectedRoute>
+				<StaffRoute>
+					<RoleRoute roles={["admin", "panitia"]}>
+						<AppLayout>
+							<TemplateList />
+						</AppLayout>
+					</RoleRoute>
+				</StaffRoute>
 			}
 		/>
 		<Route
 			path="/events"
 			element={
-				<ProtectedRoute>
+				<AuthRoute>
 					<AppLayout>
 						<EventList />
 					</AppLayout>
-				</ProtectedRoute>
+				</AuthRoute>
 			}
 		/>
 		<Route
 			path="/events/preview/:id"
 			element={
-				<ProtectedRoute>
+				<AuthRoute>
 					<EventPreviewTsx />
-				</ProtectedRoute>
+				</AuthRoute>
 			}
 		/>
 		<Route path="/events/preview-tsx/:id" element={<PreviewLegacyRedirect />} />
 		<Route
 			path="/events/:id/usher"
 			element={
-				<ProtectedRoute>
+				<StaffRoute>
 					<RoleRoute roles={["admin", "panitia"]}>
 						<UsherPage />
 					</RoleRoute>
-				</ProtectedRoute>
+				</StaffRoute>
 			}
 		/>
 		<Route path="/guests" element={<Navigate to="/events" replace />} />
-		<Route
-			path="/checkin"
-			element={
-				<ProtectedRoute>
-					<AppLayout>
-						<CheckIn />
-					</AppLayout>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
-			path="/gift"
-			element={
-				<ProtectedRoute>
-					<AppLayout>
-						<GiftList />
-					</AppLayout>
-				</ProtectedRoute>
-			}
-		/>
-		<Route
-			path="/guest_message"
-			element={
-				<ProtectedRoute>
-					<AppLayout>
-						<GuestMessageList />
-					</AppLayout>
-				</ProtectedRoute>
-			}
-		/>
+		<Route path="/checkin" element={<Navigate to="/events" replace />} />
+		<Route path="/gift" element={<Navigate to="/events" replace />} />
+		<Route path="/guest_message" element={<Navigate to="/events" replace />} />
 		<Route path="/pricing" element={<PricingPage />} />
 		<Route path="/catalog" element={<CatalogPage />} />
 		<Route path="/order-process" element={<OrderProcessPage />} />

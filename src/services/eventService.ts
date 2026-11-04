@@ -4,6 +4,7 @@ import { Event, EventSummary } from "../types";
 export interface EventListParams {
 	dateFrom?: string;
 	dateTo?: string;
+	eventId?: number;
 }
 
 export const eventService = {
@@ -26,6 +27,10 @@ export const eventService = {
 	},
 	getSummary: async (id: number): Promise<EventSummary> => {
 		const response = await api.get<EventSummary>(`/events/${id}/summary`);
+		return response.data;
+	},
+	getRecap: async (params?: EventListParams): Promise<EventSummary> => {
+		const response = await api.get<EventSummary>("/events/recap", { params });
 		return response.data;
 	},
 	create: async (

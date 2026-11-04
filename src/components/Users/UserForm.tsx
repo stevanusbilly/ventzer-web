@@ -22,6 +22,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSuccess, onHide }) => {
 		password: user?.password || "",
 		change_password: user?.change_password || 0,
 		email: user?.email || "",
+		phone: user?.phone || "",
 		role: user?.role || "viewer",
 	});
 	const [loading, setLoading] = useState<boolean>(false);
@@ -102,6 +103,20 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSuccess, onHide }) => {
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							handleChange("email", e.target.value)
 						}
+						required
+					/>
+				</div>
+
+				<div className="field">
+					<label htmlFor="phone">Nomor telepon</label>
+					<InputText
+						id="phone"
+						value={formData.phone || ""}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							handleChange("phone", e.target.value)
+						}
+						placeholder="08xxxxxxxxxx"
+						autoComplete="tel"
 						required
 					/>
 				</div>

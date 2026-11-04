@@ -40,6 +40,7 @@ const EventPreviewTsx: React.FC = () => {
 		saveTheDate: EventPhoto | null;
 		akhir: EventPhoto | null;
 		gallery: EventPhoto[];
+		loveStory: EventPhoto[];
 	}>({
 		cover: null,
 		opening: null,
@@ -50,6 +51,7 @@ const EventPreviewTsx: React.FC = () => {
 		saveTheDate: null,
 		akhir: null,
 		gallery: [],
+		loveStory: [],
 	});
 
 	useEffect(() => {
@@ -78,6 +80,7 @@ const EventPreviewTsx: React.FC = () => {
 					saveTheDate,
 					akhir,
 					gallery,
+					loveStory,
 				] = await Promise.all([
 					weddingService.getByEvent(eventId).catch(() => null),
 					eventLocationService.getByEvent(eventId).catch(() => []),
@@ -92,6 +95,7 @@ const EventPreviewTsx: React.FC = () => {
 					eventPhotoService.getSaveTheDateByEvent(eventId),
 					eventPhotoService.getFotoAkhirByEvent(eventId),
 					eventPhotoService.listGalleryByEvent(eventId),
+					eventPhotoService.listLoveStoryByEvent(eventId),
 				]);
 
 				setWedding(weddingData);
@@ -108,6 +112,7 @@ const EventPreviewTsx: React.FC = () => {
 					saveTheDate,
 					akhir,
 					gallery: gallery || [],
+					loveStory: loveStory || [],
 				});
 
 				try {

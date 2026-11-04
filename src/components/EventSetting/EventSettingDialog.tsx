@@ -206,7 +206,7 @@ const EventSettingDialog: React.FC<EventSettingDialogProps> = ({
 								disabled={!canMutate || loading}
 							/>
 							<label htmlFor="loveStory" className="ml-2">
-								Love Story
+								Love Story (timeline foto)
 							</label>
 						</div>
 					</div>

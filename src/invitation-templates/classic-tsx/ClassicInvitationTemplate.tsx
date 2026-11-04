@@ -12,7 +12,17 @@ import {
 } from "./utils";
 import { useInvitationMusic } from "../music";
 import InvitationMusicEngine from "../InvitationMusicEngine";
+import InvitationFlourish from "../InvitationFlourish";
+import LoveStoryTimeline from "../LoveStoryTimeline";
 import "./ClassicInvitationTemplate.css";
+
+const SectionHead: React.FC<{ kicker: string; title: string }> = ({ kicker, title }) => (
+	<header className="cit-head">
+		<p className="cit-kicker">{kicker}</p>
+		<h2 className="cit-section-title">{title}</h2>
+		<InvitationFlourish className="cit-flourish" />
+	</header>
+);
 
 const rsvpStatusLabel = (status?: string): string => {
 	if (status === "accepted") return "Hadir";
@@ -86,10 +96,12 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 	} | null>(null);
 	const {
 		audioRef,
+		youtubeRef,
 		kind,
 		musicUrl,
 		youtubeEmbed,
 		playing,
+		keepMounted,
 		showControl,
 		startMusic,
 		toggleMusic,
@@ -196,7 +208,9 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 				musicUrl={musicUrl}
 				youtubeEmbed={youtubeEmbed}
 				playing={playing}
+				keepMounted={keepMounted}
 				audioRef={audioRef}
+				youtubeRef={youtubeRef}
 				onMusicError={onMusicError}
 			/>
 
@@ -205,17 +219,21 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 				style={coverUrl ? { backgroundImage: `url("${coverUrl}")` } : undefined}
 			>
 				<div className="cit-cover-inner">
-					<p className="cit-kicker">The Wedding Of</p>
-					<p className="cit-guest">Kepada Yth. {guestName}</p>
-					<h1>
-						{bride}
-						<span className="cit-amp">&amp;</span>
-						{groom}
-					</h1>
-					<p>{formatShortDate(event.date)}</p>
-					<button type="button" className="cit-open-btn" onClick={openInvitation}>
-						Buka Undangan
-					</button>
+					<div className="cit-cover-frame">
+						<p className="cit-kicker">The Wedding Of</p>
+						<h1>
+							{bride}
+							<span className="cit-amp">&amp;</span>
+							{groom}
+						</h1>
+						<InvitationFlourish className="cit-flourish cit-flourish-light" />
+						<p className="cit-cover-date">{formatShortDate(event.date)}</p>
+						<p className="cit-guest">Kepada Yth.</p>
+						<p className="cit-guest-name">{guestName}</p>
+						<button type="button" className="cit-open-btn" onClick={openInvitation}>
+							Buka Undangan
+						</button>
+					</div>
 				</div>
 			</section>
 
@@ -226,23 +244,17 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 				/>
 				<main className="cit-main">
 					<section className="cit-section">
-						<p className="cit-kicker" style={{ color: "#8a7347" }}>
-							Undangan Pernikahan
-						</p>
-						<h2 className="cit-section-title cit-names">
-							{bride} &amp; {groom}
-						</h2>
-						<div className="cit-ornament" />
+						<SectionHead kicker="Undangan Pernikahan" title={`${bride} & ${groom}`} />
 						<p className="cit-lead">
 							{wedding?.openingText || "Dengan hormat mengundang Anda hadir dalam hari bahagia kami."}
 						</p>
-						<p className="cit-body" style={{ marginTop: "1rem" }}>
+						<p className="cit-body cit-body-gap">
 							{event.name}
 							<br />
 							{formatLongDate(event.date)}
 						</p>
 						{event.dresscode && (
-							<p className="cit-note">Dress code: {event.dresscode}</p>
+							<p className="cit-chip">Dress code · {event.dresscode}</p>
 						)}
 					</section>
 
@@ -259,27 +271,19 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 									: undefined
 							}
 						>
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								Quote
-							</p>
+							<SectionHead kicker="Sebuah Ayat" title="Quote" />
 							<p className="cit-quote">{wedding.quote}</p>
 						</section>
 					)}
 
 					<section className="cit-section">
-						<p className="cit-kicker" style={{ color: "#8a7347" }}>
-							Mempelai
-						</p>
-						<h2 className="cit-section-title">The Bride &amp; The Groom</h2>
-						<div className="cit-ornament" />
+						<SectionHead kicker="Mempelai" title="The Bride & The Groom" />
 						<div className="cit-couple">
 							<article className="cit-person">
 								{flags.fotoProfil && photos.profilBride && (
 									<img src={getImageUrl(photos.profilBride.pathImage)} alt={bride} />
 								)}
-								<p className="cit-kicker" style={{ color: "#8a7347" }}>
-									The Bride
-								</p>
+								<p className="cit-kicker">The Bride</p>
 								<h3>{wedding?.namaLengkapBride || bride}</h3>
 								<p className="cit-body">{wedding?.bioBride}</p>
 								{flags.socialMedia && wedding?.sosmedBride && (
@@ -290,13 +294,14 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 									</p>
 								)}
 							</article>
+							<span className="cit-couple-and" aria-hidden="true">
+								&amp;
+							</span>
 							<article className="cit-person">
 								{flags.fotoProfil && photos.profilGroom && (
 									<img src={getImageUrl(photos.profilGroom.pathImage)} alt={groom} />
 								)}
-								<p className="cit-kicker" style={{ color: "#8a7347" }}>
-									The Groom
-								</p>
+								<p className="cit-kicker">The Groom</p>
 								<h3>{wedding?.namaLengkapGroom || groom}</h3>
 								<p className="cit-body">{wedding?.bioGroom}</p>
 								{flags.socialMedia && wedding?.sosmedGroom && (
@@ -310,45 +315,34 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 						</div>
 					</section>
 
-					{flags.loveStory && wedding?.loveStory && (
-						<section className="cit-section">
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								Our Story
-							</p>
-							<h2 className="cit-section-title">Love Story</h2>
-							<div className="cit-ornament" />
-							<p className="cit-body">{wedding.loveStory}</p>
-						</section>
+					{flags.loveStory && (photos.loveStory || []).length > 0 && (
+						<LoveStoryTimeline items={photos.loveStory} />
 					)}
 
 					{locations.length > 0 && (
 						<section className="cit-section">
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								Save The Date
-							</p>
-							<h2 className="cit-section-title">Waktu &amp; Tempat</h2>
-							<div className="cit-ornament" />
-							{locations.map((loc) => (
-								<article key={loc.id} className="cit-card">
-									<h4>{loc.name}</h4>
-									<p>{formatLongDate(loc.date)}</p>
-									<p>
-										{formatTime(loc.startTime)}
-										{loc.endTime ? ` — ${formatTime(loc.endTime)}` : ""} WIB
-									</p>
-									<p>
-										<strong>{loc.location}</strong>
-									</p>
-									<p>{loc.alamat}</p>
-									{loc.urlMaps && (
-										<p style={{ marginTop: "0.8rem" }}>
+							<SectionHead kicker="Save The Date" title="Waktu & Tempat" />
+							<div className="cit-loc-grid">
+								{locations.map((loc) => (
+									<article key={loc.id} className="cit-card">
+										<p className="cit-kicker">{loc.name}</p>
+										<h4>{loc.location}</h4>
+										<ul className="cit-meta-list">
+											<li>{formatLongDate(loc.date)}</li>
+											<li>
+												{formatTime(loc.startTime)}
+												{loc.endTime ? ` — ${formatTime(loc.endTime)}` : ""} WIB
+											</li>
+											<li>{loc.alamat}</li>
+										</ul>
+										{loc.urlMaps && (
 											<a className="cit-btn" href={loc.urlMaps} target="_blank" rel="noreferrer">
 												Lihat Lokasi
 											</a>
-										</p>
-									)}
-								</article>
-							))}
+										)}
+									</article>
+								))}
+							</div>
 							{flags.addToCalendar && calendarUrl && (
 								<a className="cit-btn-ghost" href={calendarUrl} target="_blank" rel="noreferrer">
 									Tambah ke Kalender
@@ -358,10 +352,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 					)}
 
 					<section className="cit-section">
-						<p className="cit-kicker" style={{ color: "#8a7347" }}>
-							Countdown
-						</p>
-						<h2 className="cit-section-title">Menuju Hari Bahagia</h2>
+						<SectionHead kicker="Countdown" title="Menuju Hari Bahagia" />
 						<div className="cit-countdown">
 							<div className="cit-count-box">
 								<strong>{countdown.days}</strong>
@@ -384,11 +375,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 					{gallery.length > 0 && (
 						<section className="cit-section">
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								Gallery
-							</p>
-							<h2 className="cit-section-title">Momen Kami</h2>
-							<div className="cit-ornament" />
+							<SectionHead kicker="Gallery" title="Momen Kami" />
 							<div className="cit-gallery">
 								{gallery.map((photo) => (
 									<img
@@ -403,10 +390,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 					{flags.video && (prewedding || streaming) && (
 						<section className="cit-section">
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								Video
-							</p>
-							<h2 className="cit-section-title">Tonton Kisah Kami</h2>
+							<SectionHead kicker="Video" title="Tonton Kisah Kami" />
 							{prewedding && (
 								<iframe className="cit-video" title="Prewedding" src={prewedding} allowFullScreen />
 							)}
@@ -418,35 +402,30 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 					{gifts.length > 0 && (
 						<section className="cit-section">
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								Wedding Gift
-							</p>
-							<h2 className="cit-section-title">Amplop Digital</h2>
-							<div className="cit-ornament" />
-							{gifts.map((gift) => (
-								<article key={gift.id} className="cit-card">
-									<h4>{gift.name}</h4>
-									<p>{gift.provider}</p>
-									<p className="cit-gift-num">{gift.nomor}</p>
-									<button
-										type="button"
-										className="cit-btn"
-										onClick={() => copyGift(gift.id, gift.nomor)}
-									>
-										{copiedId === gift.id ? "Tersalin" : "Salin Nomor"}
-									</button>
-								</article>
-							))}
+							<SectionHead kicker="Wedding Gift" title="Amplop Digital" />
+							<div className="cit-loc-grid">
+								{gifts.map((gift) => (
+									<article key={gift.id} className="cit-card cit-gift-card">
+										<p className="cit-kicker">{gift.provider}</p>
+										<h4>{gift.name}</h4>
+										<p className="cit-gift-num">{gift.nomor}</p>
+										<button
+											type="button"
+											className="cit-btn"
+											onClick={() => copyGift(gift.id, gift.nomor)}
+										>
+											{copiedId === gift.id ? "Tersalin" : "Salin Nomor"}
+										</button>
+									</article>
+								))}
+							</div>
 						</section>
 					)}
 
 					{flags.rsvp && (
 						<section className="cit-section">
-							<p className="cit-kicker" style={{ color: "#8a7347" }}>
-								RSVP
-							</p>
-							<h2 className="cit-section-title">Konfirmasi Kehadiran</h2>
-							<div className="cit-ornament" />
+							<SectionHead kicker="RSVP" title="Konfirmasi Kehadiran" />
+							<div className="cit-paper">
 							<p className="cit-body">
 								Untuk {guestName}. Status: {rsvpStatusLabel(guestRsvpStatus)}
 								{guestRsvpStatus === "accepted" && guestRsvpJumlah
@@ -504,15 +483,13 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 							{mode === "preview" && (
 								<p className="cit-note">Mode preview: RSVP tidak dikirim.</p>
 							)}
+							</div>
 						</section>
 					)}
 
 					<section className="cit-section">
-						<p className="cit-kicker" style={{ color: "#8a7347" }}>
-							Wishes
-						</p>
-						<h2 className="cit-section-title">Ucapan &amp; Doa</h2>
-						<div className="cit-ornament" />
+						<SectionHead kicker="Wishes" title="Ucapan & Doa" />
+						<div className="cit-paper">
 						{alreadySent && mode === "live" ? (
 							<p className="cit-note">
 								Ucapan Anda sudah terkirim. Setiap tamu hanya dapat mengirim satu ucapan.
@@ -549,6 +526,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 						{mode === "preview" && (
 							<p className="cit-note">Mode preview: ucapan tidak dikirim.</p>
 						)}
+						</div>
 						{publishedMessages.length > 0 && (
 							<div className="cit-message-list">
 								{publishedMessages.map((row) => (
@@ -580,10 +558,11 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 								: { background: "#1b241c", color: "#fffaf3" }
 						}
 					>
-						<p className="cit-kicker">Terima kasih</p>
-						<h2 className="cit-section-title" style={{ color: "#fffaf3" }}>
+						<p className="cit-kicker cit-kicker-light">Terima kasih</p>
+						<h2 className="cit-section-title cit-title-light">
 							{bride} &amp; {groom}
 						</h2>
+						<InvitationFlourish className="cit-flourish cit-flourish-light" />
 						<p>Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir.</p>
 					</section>
 				</main>

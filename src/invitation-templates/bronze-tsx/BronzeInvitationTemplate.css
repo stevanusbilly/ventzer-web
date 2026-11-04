@@ -13,6 +13,7 @@
 	--bit-forest-deep: #000c0f;
 	--bit-cream: #eeefe7;
 	--bit-ink: #121f35;
+	--bit-gold: #c9b48a;
 	--bit-serif: "Batusa Font", "DM Serif Display", Georgia, serif;
 	--bit-sans: "Montserrat", "Segoe UI", sans-serif;
 	min-height: 100vh;
@@ -46,7 +47,7 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(180deg, rgba(0, 4, 10, 0.36) 68%, #000c0f 100%);
+	background: linear-gradient(180deg, rgba(0, 4, 10, 0.36) 58%, #000c0f 100%);
 }
 
 .bit-opened .bit-cover {
@@ -57,40 +58,82 @@
 .bit-cover-inner {
 	position: relative;
 	z-index: 1;
-	width: min(420px, 100%);
+	width: min(440px, 100%);
 }
 
-.bit-guest {
-	margin: 0 0 0.4rem;
-	font-size: 1.1rem;
-	font-weight: 700;
+.bit-cover-frame {
+	padding: 2.2rem 1.5rem 2rem;
+	border: 1px solid rgba(238, 239, 231, 0.28);
+	background: rgba(0, 12, 15, 0.34);
+	box-shadow: inset 0 0 0 8px rgba(238, 239, 231, 0.08);
+}
+
+.bit-kicker,
+.bit-kicker-dark {
+	margin: 0 0 0.45rem;
+	font-family: var(--bit-sans);
+	font-size: 0.68rem;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--bit-gold);
+}
+
+.bit-kicker-dark {
+	color: #6d7a63;
 }
 
 .bit-invite-line {
-	margin: 0 0 2.4rem;
-	font-size: 1rem;
-	line-height: 2.5;
+	margin: 0 0 1rem;
+	font-family: var(--bit-sans);
+	font-size: 0.95rem;
+	line-height: 1.7;
+	opacity: 0.9;
 }
 
-.bit-cover-kicker {
-	margin: 0 0 0.4rem;
-	font-size: 1rem;
-	letter-spacing: 0.04em;
+.bit-cover-date {
+	margin: 0.85rem 0 1.1rem;
+	font-family: var(--bit-sans);
+	font-size: 0.8rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: rgba(238, 239, 231, 0.78);
+}
+
+.bit-guest {
+	margin: 0;
+	font-family: var(--bit-sans);
+	font-size: 0.75rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	opacity: 0.72;
+}
+
+.bit-guest-name {
+	margin: 0.2rem 0 0;
+	font-size: 1.4rem;
 }
 
 .bit-cover h1,
 .bit-opening-names,
 .bit-person h3,
 .bit-loc-name,
-.bit-section-title {
+.bit-section-title,
+.bit-footer-names {
 	font-family: var(--bit-serif);
 	font-weight: 600;
 }
 
 .bit-cover h1 {
-	font-size: clamp(2rem, 8vw, 2.4rem);
-	margin: 0 0 1.4rem;
-	line-height: 1.15;
+	font-size: clamp(2.1rem, 8vw, 2.7rem);
+	margin: 0 0 0.7rem;
+	line-height: 1.1;
+}
+
+.bit-amp {
+	display: block;
+	font-style: italic;
+	font-size: 1.2rem;
+	color: var(--bit-gold);
 }
 
 .bit-open-btn,
@@ -104,7 +147,8 @@
 
 .bit-open-btn {
 	display: inline-block;
-	padding: 0.7rem 1.4rem;
+	margin-top: 1.4rem;
+	padding: 0.75rem 1.5rem;
 	background: #fff;
 	color: #000;
 	font-size: 1rem;
@@ -213,7 +257,7 @@
 }
 
 .bit-section {
-	padding: 3.2rem 1.4rem;
+	padding: 3.4rem 1.4rem;
 	text-align: center;
 }
 
@@ -233,27 +277,79 @@
 	background: #2b382e;
 }
 
-.bit-section-cream {
+.bit-section-cream,
+.bit-section-wishes {
 	background: var(--bit-cream);
 	color: var(--bit-forest);
 }
 
+.bit-section-wishes {
+	padding-top: 0;
+}
+
+.bit-head {
+	margin-bottom: 1.5rem;
+}
+
+.bit-head-light .bit-kicker,
+.bit-head-light .bit-flourish {
+	color: #6d7a63;
+}
+
+.bit-section-title {
+	font-size: clamp(1.7rem, 5vw, 2.1rem);
+	margin: 0 0 0.7rem;
+}
+
+.bit-flourish {
+	display: inline-flex;
+	width: 88px;
+	color: var(--bit-gold);
+}
+
+.bit-flourish svg {
+	width: 100%;
+	height: 16px;
+}
+
+.bit-flourish-light {
+	color: rgba(238, 239, 231, 0.82);
+}
+
 .bit-quote {
-	font-size: 1.15rem;
-	line-height: 1.8;
+	font-family: var(--bit-sans);
+	font-size: 1rem;
+	line-height: 1.85;
 	white-space: pre-wrap;
 	margin: 0 auto;
 	max-width: 34rem;
 }
 
+.bit-couple {
+	display: grid;
+	gap: 1.2rem;
+	align-items: start;
+}
+
+.bit-couple-and {
+	display: none;
+	font-size: 2.2rem;
+	align-self: center;
+	color: var(--bit-gold);
+}
+
 .bit-person-card,
-.bit-loc-card {
+.bit-loc-item,
+.bit-paper,
+.bit-gift-card {
+	border-radius: 16px;
+}
+
+.bit-person-card {
 	background: var(--bit-cream);
 	color: var(--bit-forest);
-	border-radius: 15px;
-	padding: 1.6rem 1.2rem;
-	margin: 0 auto 1.6rem;
-	max-width: 28rem;
+	padding: 1.5rem 1.2rem;
+	margin: 0;
 }
 
 .bit-person-card img {
@@ -261,7 +357,7 @@
 	aspect-ratio: 3 / 4;
 	object-fit: cover;
 	border-radius: 10px;
-	margin-bottom: 1rem;
+	margin: 0.4rem 0 1rem;
 }
 
 .bit-person-card h3 {
@@ -275,41 +371,68 @@
 	margin: 0.25rem 0;
 	white-space: pre-wrap;
 	color: #121f35;
+	font-family: var(--bit-sans);
+	font-size: 0.92rem;
+	line-height: 1.65;
 }
 
 .bit-person-card a {
 	color: #212d21;
 }
 
-.bit-loc-wrap {
-	max-width: 28rem;
+.bit-loc-grid,
+.bit-gift-grid {
+	display: grid;
+	gap: 1rem;
+	max-width: 44rem;
 	margin: 0 auto;
-	border: 3px solid var(--bit-cream);
-	border-radius: 10px;
-	padding: 1.4rem 1rem 1.6rem;
 }
 
-.bit-loc-title {
-	font-size: 1.7rem;
-	margin: 1.2rem 0 0.6rem;
-	color: var(--bit-cream);
+.bit-loc-item {
+	border: 1px solid rgba(238, 239, 231, 0.22);
+	padding: 1.4rem 1.1rem 1.5rem;
 }
 
 .bit-loc-card {
-	background: transparent;
-	color: var(--bit-cream);
-	padding: 0 0 0.6rem;
-	box-shadow: none;
-}
-
-.bit-loc-card h4,
-.bit-loc-card h3 {
-	margin: 0.35rem 0;
-	color: var(--bit-cream);
+	padding: 0 0 1rem;
 }
 
 .bit-loc-card h3 {
+	margin: 0.2rem 0 0.8rem;
+	color: var(--bit-cream);
 	font-size: 1.5rem;
+}
+
+.bit-meta-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+}
+
+.bit-meta-list li {
+	position: relative;
+	padding: 0.4rem 0 0.4rem 1rem;
+	border-bottom: 1px solid rgba(238, 239, 231, 0.12);
+	font-family: var(--bit-sans);
+	font-size: 0.88rem;
+	line-height: 1.55;
+	color: rgba(238, 239, 231, 0.86);
+}
+
+.bit-meta-list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.85rem;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--bit-gold);
+}
+
+.bit-calendar-wrap {
+	margin: 1.3rem 0 0;
 }
 
 .bit-btn {
@@ -326,6 +449,13 @@
 	text-decoration: none;
 }
 
+.bit-btn-dark {
+	background: #212d21;
+	color: var(--bit-cream);
+	box-shadow: none;
+	margin-top: 0.4rem;
+}
+
 .bit-btn-ghost {
 	display: inline-flex;
 	align-items: center;
@@ -339,29 +469,27 @@
 }
 
 .bit-gift-card {
-	background-image: linear-gradient(125deg, #fff 0%, #d1d1d1 100%);
+	background: linear-gradient(160deg, #fff 0%, #ecece4 100%);
 	color: #000;
-	border-radius: 10px;
-	padding: 1.2rem 1rem 1.4rem;
-	margin: 0 auto 1.2rem;
-	max-width: 24rem;
-	box-shadow: 0 2px 18px rgba(0, 0, 0, 0.08);
+	padding: 1.4rem 1.1rem 1.5rem;
 }
 
-.bit-gift-card p {
-	margin: 0.2rem 0;
+.bit-gift-card h4 {
+	margin: 0.15rem 0 0.6rem;
+	font-size: 1.35rem;
 }
 
 .bit-gift-num {
-	font-family: "Exo 2", var(--bit-sans);
-	font-size: 1.1rem;
-	margin: 0.7rem 0 !important;
+	font-family: var(--bit-sans);
+	font-size: 1.15rem;
+	letter-spacing: 0.04em;
+	margin: 0.4rem 0 1rem;
 }
 
 .bit-gift-card .bit-btn {
 	background: #000;
 	color: #fff;
-	font-size: 0.75rem;
+	font-size: 0.8rem;
 	border-radius: 0;
 	box-shadow: none;
 }
@@ -371,13 +499,13 @@
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: 0.5rem;
 	max-width: 26rem;
-	margin: 1.2rem auto 1.8rem;
+	margin: 0 auto 1.8rem;
 }
 
 .bit-count-box {
 	background: var(--bit-cream);
 	color: #212d21;
-	border-radius: 4px;
+	border-radius: 8px;
 	padding: 0.85rem 0.2rem;
 }
 
@@ -387,14 +515,17 @@
 }
 
 .bit-count-box span {
-	font-size: 0.8rem;
+	font-family: var(--bit-sans);
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 }
 
 .bit-gallery-main {
 	width: min(42rem, 100%);
 	aspect-ratio: 16 / 10;
 	margin: 0 auto 0.7rem;
-	border-radius: 6px;
+	border-radius: 10px;
 	background-size: cover;
 	background-position: center;
 }
@@ -411,7 +542,7 @@
 	aspect-ratio: 1;
 	border: 0;
 	padding: 0;
-	border-radius: 4px;
+	border-radius: 6px;
 	background-size: cover;
 	background-position: center;
 	cursor: pointer;
@@ -423,17 +554,25 @@
 	outline: 2px solid var(--bit-cream);
 }
 
+.bit-paper {
+	max-width: 28rem;
+	margin: 0 auto;
+	background: #fff;
+	padding: 1.4rem 1.2rem 1.5rem;
+	box-shadow: 0 12px 28px rgba(33, 45, 33, 0.08);
+}
+
 .bit-form {
 	display: grid;
 	gap: 0.7rem;
-	max-width: 24rem;
-	margin: 1rem auto 0;
 	text-align: left;
 	color: var(--bit-forest);
 }
 
-.bit-form label {
-	font-size: 0.9rem;
+.bit-form label,
+.bit-form small {
+	font-family: var(--bit-sans);
+	font-size: 0.85rem;
 }
 
 .bit-form input,
@@ -444,11 +583,7 @@
 	border: 1px solid rgba(33, 45, 33, 0.18);
 	padding: 0.65rem 0.75rem;
 	font-family: var(--bit-sans);
-	text-align: center;
-}
-
-.bit-form textarea {
-	text-align: left;
+	border-radius: 8px;
 }
 
 .bit-actions {
@@ -464,7 +599,6 @@
 	max-height: 60vh;
 	overflow: hidden;
 	text-align: left;
-	position: relative;
 }
 
 .bit-message-list.bit-expanded {
@@ -472,7 +606,7 @@
 }
 
 .bit-message {
-	padding: 0.8rem 0;
+	padding: 0.9rem 0;
 	border-bottom: 1px solid rgba(33, 45, 33, 0.08);
 }
 
@@ -483,13 +617,20 @@
 
 .bit-message p {
 	margin: 0;
+	font-family: var(--bit-sans);
+	font-size: 0.92rem;
+	line-height: 1.55;
 }
 
-.bit-message-own strong {
-	color: var(--bit-forest);
+.bit-message-own {
+	background: rgba(33, 45, 33, 0.04);
+	padding-left: 0.7rem;
+	padding-right: 0.7rem;
+	border-radius: 8px;
 }
 
 .bit-feedback {
+	font-family: var(--bit-sans);
 	font-size: 0.85rem;
 	margin: 0;
 	text-align: center;
@@ -507,7 +648,8 @@
 	width: min(36rem, 100%);
 	aspect-ratio: 16 / 9;
 	border: 0;
-	margin-top: 1rem;
+	margin-top: 0.4rem;
+	border-radius: 10px;
 }
 
 .bit-music {
@@ -541,20 +683,39 @@
 }
 
 .bit-note {
+	font-family: var(--bit-sans);
 	font-size: 0.8rem;
 	opacity: 0.8;
 	margin-top: 0.7rem;
 }
 
+.bit-note-tight {
+	margin-top: 0;
+}
+
 .bit-footer {
 	background: var(--bit-cream);
 	color: #212d21;
-	padding: 2.4rem 1.2rem 3rem;
+	padding: 2.6rem 1.2rem 3.2rem;
 	text-align: center;
 }
 
 .bit-footer p {
-	margin: 0.3rem 0;
+	margin: 0.35rem 0;
+	font-family: var(--bit-sans);
+}
+
+.bit-footer-names {
+	font-family: var(--bit-serif) !important;
+	font-size: 1.8rem;
+	margin: 0.2rem 0 0.7rem !important;
+}
+
+@media (min-width: 720px) {
+	.bit-loc-grid,
+	.bit-gift-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
 
 @media (min-width: 960px) {
@@ -562,7 +723,21 @@
 		display: block;
 	}
 
+	.bit-couple {
+		grid-template-columns: 1fr auto 1fr;
+		max-width: 52rem;
+		margin: 0 auto;
+	}
+
+	.bit-couple-and {
+		display: block;
+	}
+
 	.bit-section {
-		padding: 4rem 3rem;
+		padding: 4.2rem 3rem;
+	}
+
+	.bit-section-wishes {
+		padding-top: 0;
 	}
 }

@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600&display=swap");
+
+.login-page {
+	--login-paper: #f6f1e8;
+	--login-card: #fffdf8;
+	--login-ink: #2b332c;
+	--login-muted: #7a8476;
+	--login-forest: #1c3a2f;
+	--login-gold: #c9a36a;
+	min-height: 100dvh;
+	display: grid;
+	grid-template-columns: minmax(16rem, 1.05fr) minmax(20rem, 1fr);
+	background: var(--login-paper);
+	color: var(--login-ink);
+	font-family: Outfit, "Segoe UI", sans-serif;
+}
+
+.login-aside {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	padding: 3.2rem 2.6rem;
+	background:
+		radial-gradient(circle at 20% 15%, rgba(201, 163, 106, 0.18), transparent 18rem),
+		linear-gradient(180deg, #244a3c 0%, #1c3a2f 100%);
+	color: #f6f1e8;
+}
+
+.login-floral {
+	position: absolute;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.login-floral-tl {
+	top: -1rem;
+	left: -1rem;
+	width: min(80%, 22rem);
+}
+
+.login-floral-br {
+	left: 12%;
+	bottom: -1rem;
+	width: min(78%, 20rem);
+	opacity: 0.92;
+}
+
+.login-aside-copy {
+	position: relative;
+	z-index: 1;
+	max-width: 22rem;
+}
+
+.login-kicker {
+	margin: 0 0 0.55rem;
+	letter-spacing: 0.28em;
+	text-transform: uppercase;
+	font-size: 0.7rem;
+	color: var(--login-gold);
+}
+
+.login-aside-copy h1,
+.login-card h1 {
+	margin: 0 0 0.7rem;
+	font-family: "Cormorant Garamond", Georgia, serif;
+	font-weight: 600;
+}
+
+.login-aside-copy h1 {
+	font-size: clamp(2.2rem, 4.4vw, 3rem);
+	line-height: 1.12;
+}
+
+.login-flourish {
+	display: inline-flex;
+	width: 88px;
+	color: var(--login-gold);
+	margin-bottom: 0.85rem;
+}
+
+.login-flourish svg {
+	width: 100%;
+	height: 16px;
+}
+
+.login-aside-copy p {
+	margin: 0;
+	max-width: 18rem;
+	line-height: 1.7;
+	color: rgba(246, 241, 232, 0.78);
+}
+
+.login-main {
+	display: grid;
+	place-items: center;
+	padding: 2rem 1.4rem;
+}
+
+.login-card {
+	width: min(26rem, 100%);
+	padding: 2.2rem 1.8rem 1.9rem;
+	background: var(--login-card);
+	border: 1px solid rgba(201, 163, 106, 0.24);
+	border-radius: 24px;
+	box-shadow:
+		0 22px 50px rgba(43, 51, 44, 0.07),
+		inset 0 0 0 8px rgba(201, 163, 106, 0.07);
+}
+
+.login-card h1 {
+	font-size: 2rem;
+}
+
+.login-lead {
+	margin: 0 0 1.5rem;
+	color: var(--login-muted);
+	font-size: 0.92rem;
+	line-height: 1.6;
+}
+
+.login-form {
+	display: grid;
+	gap: 1rem;
+}
+
+.login-form label {
+	display: block;
+	margin-bottom: 0.4rem;
+	font-size: 0.82rem;
+	color: var(--login-muted);
+}
+
+.login-form .p-inputtext,
+.login-form .p-password-input {
+	width: 100%;
+	border-radius: 12px;
+	border: 1px solid rgba(43, 51, 44, 0.12);
+	background: #fff;
+	padding: 0.75rem 0.9rem;
+}
+
+.login-form .p-password {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	border: 1px solid rgba(43, 51, 44, 0.12);
+	border-radius: 12px;
+	background: #fff;
+	overflow: hidden;
+}
+
+.login-form .p-password-input,
+.login-form .p-password .p-inputtext {
+	width: 100%;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.login-form .p-password .p-password-toggle {
+	margin-right: 0.4rem;
+	color: var(--login-muted);
+}
+
+.login-form .p-inputtext:enabled:focus,
+.login-form .p-password-input:enabled:focus {
+	box-shadow: 0 0 0 3px rgba(201, 163, 106, 0.22);
+	border-color: var(--login-gold);
+}
+
+.login-error {
+	justify-content: center;
+}
+
+.login-submit.p-button {
+	width: 100%;
+	border: 0;
+	border-radius: 999px;
+	background: var(--login-forest);
+	border-color: var(--login-forest);
+	color: #f6f1e8;
+	font-weight: 500;
+	letter-spacing: 0.04em;
+}
+
+.login-submit.p-button:hover {
+	background: #244a3c;
+	border-color: #244a3c;
+}
+
+.login-google {
+	margin-top: 1.1rem;
+	display: flex;
+	justify-content: center;
+}
+
+.login-google:empty {
+	display: none;
+}
+
+.login-switch {
+	margin: 1.2rem 0 0;
+	text-align: center;
+	font-size: 0.85rem;
+	color: var(--login-muted);
+}
+
+.login-switch a {
+	color: var(--login-forest);
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.login-switch a:hover {
+	text-decoration: underline;
+}
+
+@media (max-width: 860px) {
+	.login-page {
+		grid-template-columns: 1fr;
+	}
+
+	.login-aside {
+		min-height: 16rem;
+		padding: 4.5rem 1.4rem 1.8rem;
+	}
+
+	.login-aside-copy h1 {
+		font-size: 2.2rem;
+	}
+
+	.login-main {
+		padding: 1.4rem 1rem 2rem;
+	}
+}

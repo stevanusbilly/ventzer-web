@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
@@ -12,6 +13,7 @@ import { categoryPhotoService } from "../../services/categoryPhotoService";
 import { CategoryPhoto, Event, EventPhoto } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
+import { isLoveStoryCategory } from "../../utils/loveStory";
 
 interface EventPhotoFormProps {
 	eventPhoto: EventPhoto | null;
@@ -29,7 +31,7 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 		date: eventPhoto?.date || "",
 		keterangan: eventPhoto?.keterangan || "",
 		pathImage: eventPhoto?.pathImage || "",
-		order: eventPhoto?.order || 1,
+		order: eventPhoto?.order || 0,
 	});
 	const [event, setEvent] = useState<Event[]>([]);
 	const [categoryPhoto, setCategoryPhoto] = useState<CategoryPhoto[]>([]);
@@ -136,9 +138,9 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 			data.append("eventId", String(formData.eventId));
 			data.append("categoryPhotoId", String(formData.categoryPhotoId));
 			data.append("name", formData.name);
-			data.append("date", formData.date);
-			data.append("keterangan", formData.keterangan);
-			data.append("order", String(formData.order));
+			data.append("date", showStoryFields ? formData.date : "");
+			data.append("keterangan", showStoryFields ? formData.keterangan : "");
+			data.append("order", String(showStoryFields ? formData.order || 1 : 0));
 
 			if (selectedFile) {
 				data.append("pathImage", selectedFile);
@@ -162,11 +164,37 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 		}
 	};
 
+	const selectedCategoryName =
+		categoryPhoto.find((row) => row.id === formData.categoryPhotoId)?.name ||
+		formData.categoryPhotoName;
+	const showStoryFields = isLoveStoryCategory(selectedCategoryName);
+
 	const handleChange = (
 		field: keyof Omit<EventPhoto, "id">,
 		value: string | Date | number
 	): void => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
+		setFormData((prev) => {
+			if (field !== "categoryPhotoId") {
+				return { ...prev, [field]: value };
+			}
+			const nextName = categoryPhoto.find((row) => row.id === value)?.name || "";
+			if (isLoveStoryCategory(nextName)) {
+				return {
+					...prev,
+					categoryPhotoId: Number(value),
+					categoryPhotoName: nextName,
+					order: prev.order || 1,
+				};
+			}
+			return {
+				...prev,
+				categoryPhotoId: Number(value),
+				categoryPhotoName: nextName,
+				date: "",
+				keterangan: "",
+				order: 0,
+			};
+		});
 	};
 
 	return (
@@ -217,7 +245,7 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 				</div>
 
 				<div className="field">
-					<label htmlFor="name">Name</label>
+					<label htmlFor="name">{showStoryFields ? "Judul" : "Name"}</label>
 					<InputText
 						id="name"
 						value={formData.name}
@@ -228,6 +256,8 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 					/>
 				</div>
 
+				{showStoryFields && (
+					<>
 				<div className="field">
 					<label htmlFor="date">Date</label>
 					<InputText
@@ -242,12 +272,11 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 
 				<div className="field">
 					<label htmlFor="keterangan">Keterangan</label>
-					<InputText
+					<InputTextarea
 						id="keterangan"
 						value={formData.keterangan}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							handleChange("keterangan", e.target.value)
-						}
+						rows={5}
+						onChange={(e) => handleChange("keterangan", e.target.value)}
 						required
 					/>
 				</div>
@@ -264,6 +293,8 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 						required
 					/>
 				</div>
+					</>
+				)}
 
 				<div className="field">
 					<label htmlFor="pathImage" className="font-semibold block mb-2">

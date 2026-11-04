@@ -15,9 +15,15 @@ export const checkinService = {
 		});
 		return response.data;
 	},
-	getCount: async (eventId?: number): Promise<{ count: number }> => {
+	getCount: async (
+		eventId?: number,
+		params?: { dateFrom?: string; dateTo?: string },
+	): Promise<{ count: number }> => {
 		const response = await api.get<{ count: number }>("/checkin/getCount", {
-			params: eventId ? { eventId } : undefined,
+			params: {
+				...(eventId ? { eventId } : {}),
+				...params,
+			},
 		});
 		return response.data;
 	},

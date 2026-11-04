@@ -8,6 +8,7 @@ import { ClassicInvitationTemplate } from "../invitation-templates/classic-tsx";
 import { ClassicInvitationPhotos } from "../invitation-templates/classic-tsx/types";
 import { BronzeInvitationTemplate } from "../invitation-templates/bronze-tsx";
 import { isBronzeTemplate } from "../invitation-templates/isBronzeTemplate";
+import { LOVE_STORY_CATEGORY } from "../utils/loveStory";
 
 const findPhoto = (photos: EventPhoto[], category: string): EventPhoto | null =>
 	photos.find((photo) => photo.categoryPhotoName === category) || null;
@@ -22,6 +23,9 @@ const toTemplatePhotos = (photos: EventPhoto[]): ClassicInvitationPhotos => ({
 	saveTheDate: findPhoto(photos, "Foto Save The Date"),
 	akhir: findPhoto(photos, "Foto Akhir"),
 	gallery: photos.filter((photo) => photo.categoryPhotoName === "Gallery"),
+	loveStory: photos
+		.filter((photo) => photo.categoryPhotoName === LOVE_STORY_CATEGORY)
+		.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0) || a.id - b.id),
 });
 
 const InvitationPage: React.FC = () => {

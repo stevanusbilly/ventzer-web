@@ -5,15 +5,26 @@ import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { Chart } from "primereact/chart";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { guestService } from "../../services/guestService";
 import { eventService } from "../../services/eventService";
-import { checkinService } from "../../services/checkinService";
 import { Guest, Event, EventSummary } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
+import { currentMonthRange, toDateQueryParams } from "../../utils/dateRange";
+
+const emptySummary: EventSummary = {
+	totalGuests: 0,
+	pending: 0,
+	accepted: 0,
+	declined: 0,
+	checkedIn: 0,
+	eventCount: 0,
+};
 
 const Dashboard: React.FC = () => {
 	const { user } = useAuth();
+	const [dateRange, setDateRange] = useState<(Date | null)[]>(currentMonthRange());
 	const [guestCount, setGuestCount] = useState(0);
 	const [eventCount, setEventCount] = useState(0);
 	const [checkInCount, setCheckInCount] = useState(0);
@@ -48,47 +59,60 @@ const Dashboard: React.FC = () => {
 		});
 	};
 
+	const resetDashboard = (): void => {
+		setEvents([]);
+		setEventCount(0);
+		setGuestCount(0);
+		setCheckInCount(0);
+		setRecentGuests([]);
+		setSummary(null);
+		applyChart(emptySummary);
+	};
+
 	const loadData = async (): Promise<void> => {
+		const params = toDateQueryParams(dateRange);
+		if (!params.dateFrom && !params.dateTo) {
+			resetDashboard();
+			return;
+		}
+
 		setLoading(true);
+		setEvents([]);
 		try {
-			let eventList: Event[] = [];
-			if (user?.role === "admin") {
-				eventList = await eventService.getAll();
-			} else if (user?.id) {
-				eventList = await eventService.getByUser(user.id);
-			}
+			const eventList =
+				user?.role === "admin"
+					? await eventService.getAll(params)
+					: await eventService.getByUser(user?.id || 0, params);
 			setEvents(eventList);
 			setEventCount(eventList.length);
 
-			const eventFilter = selectedEventId || undefined;
-			const [guestCountRes, checkinCountRes, guests] = await Promise.all([
-				guestService.getCount(eventFilter),
-				checkinService.getCount(eventFilter),
-				guestService.getRecent(eventFilter, 10),
-			]);
-
-			setGuestCount(guestCountRes.count);
-			setCheckInCount(checkinCountRes.count);
-			setRecentGuests(guests);
-
-			if (selectedEventId > 0) {
-				const eventSummary = await eventService.getSummary(selectedEventId);
-				setSummary(eventSummary);
-				applyChart(eventSummary);
-			} else if (eventList.length > 0) {
-				const eventSummary = await eventService.getSummary(eventList[0].id);
-				setSummary(eventSummary);
-				applyChart(eventSummary);
-			} else {
-				setSummary(null);
-				applyChart({
-					totalGuests: 0,
-					pending: 0,
-					accepted: 0,
-					declined: 0,
-					checkedIn: 0,
-				});
+			if (
+				selectedEventId > 0 &&
+				!eventList.some((event) => event.id === selectedEventId)
+			) {
+				setSelectedEventId(0);
+				return;
 			}
+
+			const recapParams = {
+				...params,
+				...(selectedEventId > 0 ? { eventId: selectedEventId } : {}),
+			};
+			const recap = await eventService.getRecap(recapParams);
+			setGuestCount(Number(recap.totalGuests) || 0);
+			setCheckInCount(Number(recap.checkedIn) || 0);
+			setEventCount(
+				selectedEventId > 0 ? 1 : Number(recap.eventCount ?? eventList.length),
+			);
+			setSummary(recap);
+			applyChart(recap);
+
+			const guests = await guestService.getRecent(
+				selectedEventId || undefined,
+				10,
+				params,
+			);
+			setRecentGuests(guests);
 		} catch (error) {
 			console.error("Error loading dashboard:", error);
 		} finally {
@@ -97,9 +121,9 @@ const Dashboard: React.FC = () => {
 	};
 
 	useEffect(() => {
-		loadData();
+		void loadData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [selectedEventId, user?.id]);
+	}, [dateRange, selectedEventId, user?.id, user?.role]);
 
 	const statusBodyTemplate = (rowData: Guest): React.ReactNode => {
 		const severity = {
@@ -116,29 +140,66 @@ const Dashboard: React.FC = () => {
 			? new Date(rowData.checkedIn).toLocaleString("id-ID")
 			: "Belum check-in";
 
+	const eventOptions = events.map((event) => ({
+		label: event.name,
+		value: event.id,
+	}));
+
 	return (
 		<div className="flex flex-column gap-4">
-			<div className="flex justify-content-between align-items-center flex-wrap gap-2">
+			<div className="flex justify-content-between align-items-end flex-wrap gap-3">
 				<div>
 					<h2 className="text-2xl font-bold text-900 m-0">Dashboard</h2>
 					<p className="text-500 m-0 mt-1">Ringkasan RSVP dan check-in</p>
 				</div>
-				<div className="flex gap-2 align-items-center">
-					<Dropdown
-						value={selectedEventId}
-						options={[
-							{ label: "Semua event", value: 0 },
-							...events.map((e) => ({ label: e.name, value: e.id })),
-						]}
-						onChange={(e: DropdownChangeEvent) => setSelectedEventId(e.value)}
-						placeholder="Filter event"
-						className="w-14rem"
-					/>
+				<div className="flex gap-2 align-items-end flex-wrap">
+					<div className="flex flex-column gap-1">
+						<label htmlFor="dashboardDateFilter" className="font-semibold">
+							Tanggal event
+						</label>
+						<Calendar
+							id="dashboardDateFilter"
+							value={dateRange}
+							onChange={(e) => {
+								setSelectedEventId(0);
+								setDateRange((e.value as (Date | null)[]) || [null, null]);
+							}}
+							selectionMode="range"
+							readOnlyInput
+							dateFormat="dd/mm/yy"
+							placeholder="Dari — sampai"
+							showButtonBar
+							hideOnRangeSelection
+							className="w-18rem"
+						/>
+					</div>
+					<div className="flex flex-column gap-1">
+						<label htmlFor="dashboardEventFilter" className="font-semibold">
+							Event
+						</label>
+						<Dropdown
+							inputId="dashboardEventFilter"
+							value={selectedEventId}
+							options={[
+								{ label: "Semua event di rentang ini", value: 0 },
+								...eventOptions,
+							]}
+							onChange={(e: DropdownChangeEvent) => setSelectedEventId(e.value)}
+							placeholder={
+								dateRange[0]
+									? "Tidak ada event di rentang ini"
+									: "Pilih rentang tanggal dulu"
+							}
+							disabled={!dateRange[0] || eventOptions.length === 0}
+							className="w-18rem"
+						/>
+					</div>
 					<Button
 						icon="pi pi-refresh"
 						label="Refresh"
 						className="p-button-outlined p-button-sm"
-						onClick={loadData}
+						onClick={() => void loadData()}
+						disabled={!dateRange[0]}
 					/>
 				</div>
 			</div>
@@ -185,7 +246,11 @@ const Dashboard: React.FC = () => {
 						<DataTable
 							value={recentGuests}
 							loading={loading}
-							emptyMessage="Belum ada tamu"
+							emptyMessage={
+								dateRange[0]
+									? "Belum ada tamu pada rentang tanggal ini"
+									: "Pilih rentang tanggal untuk menampilkan data"
+							}
 						>
 							<Column field="name" header="Nama" />
 							<Column field="eventName" header="Event" />

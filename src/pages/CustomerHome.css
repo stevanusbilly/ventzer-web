@@ -1,0 +1,97 @@
+.customer-home {
+	min-height: 100dvh;
+	padding: 1.4rem 1.2rem 3rem;
+	background: #f6f1e8;
+	color: #2b332c;
+	font-family: Outfit, "Segoe UI", sans-serif;
+}
+
+.customer-home-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	max-width: 42rem;
+	margin: 0 auto 2.4rem;
+}
+
+.customer-home-card {
+	max-width: 36rem;
+	margin: 0 auto;
+	padding: 2.2rem 1.8rem;
+	background: #fffdf8;
+	border: 1px solid rgba(201, 163, 106, 0.24);
+	border-radius: 24px;
+	box-shadow: inset 0 0 0 8px rgba(201, 163, 106, 0.07);
+}
+
+.customer-home-card h1 {
+	margin: 0 0 0.7rem;
+	font-family: "Cormorant Garamond", Georgia, serif;
+	font-size: clamp(2rem, 5vw, 2.6rem);
+}
+
+.customer-home-card p {
+	margin: 0;
+	color: #7a8476;
+	line-height: 1.7;
+}
+
+.verify-card {
+	max-width: 36rem;
+	margin: 1rem auto 0;
+	padding: 1.4rem 1.6rem;
+	background: #fffdf8;
+	border: 1px solid rgba(201, 163, 106, 0.24);
+	border-radius: 20px;
+}
+
+.verify-card.is-done {
+	border-color: rgba(28, 58, 47, 0.28);
+}
+
+.verify-card-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 0.4rem;
+}
+
+.verify-card h2 {
+	margin: 0;
+	font-family: "Cormorant Garamond", Georgia, serif;
+	font-size: 1.5rem;
+}
+
+.verify-card-head span {
+	font-size: 0.78rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #7a8476;
+}
+
+.verify-card.is-done .verify-card-head span {
+	color: #1c3a2f;
+}
+
+.verify-card p {
+	margin: 0;
+	color: #7a8476;
+}
+
+.verify-actions {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.7rem;
+	margin-top: 0.9rem;
+}
+
+.verify-actions .p-inputtext,
+.verify-actions .p-button {
+	width: 100%;
+}
+
+.verify-hint {
+	margin-top: 0.8rem;
+	font-size: 0.88rem;
+}

@@ -1,0 +1,238 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Outfit:wght@400;500;600&display=swap");
+
+.dash-shell {
+	--dash-paper: #f6f1e8;
+	--dash-card: #fffdf8;
+	--dash-ink: #2b332c;
+	--dash-muted: #7a8476;
+	--dash-forest: #1c3a2f;
+	--dash-gold: #c9a36a;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	background: var(--dash-paper);
+	color: var(--dash-ink);
+	font-family: Outfit, "Segoe UI", sans-serif;
+}
+
+.dash-nav {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	min-height: 4.4rem;
+	padding: 0.65rem 1.1rem;
+	background: rgba(255, 253, 248, 0.94);
+	backdrop-filter: blur(16px);
+	border-bottom: 1px solid rgba(201, 163, 106, 0.22);
+}
+
+.dash-nav-brand {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	margin-right: 0.6rem;
+	border: 0;
+	background: none;
+	color: var(--dash-forest);
+	cursor: pointer;
+}
+
+.dash-nav-brand img {
+	height: 34px;
+}
+
+.dash-nav-brand span {
+	font-family: "Cormorant Garamond", Georgia, serif;
+	font-size: 1.35rem;
+	font-weight: 600;
+}
+
+.dash-nav-links {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	flex: 1;
+	min-width: 0;
+	overflow-x: auto;
+}
+
+.dash-nav-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.5rem 0.8rem;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--dash-muted);
+	font-size: 0.88rem;
+	font-weight: 500;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.dash-nav-link i {
+	font-size: 0.85rem;
+}
+
+.dash-nav-link:hover,
+.dash-nav-link.is-active {
+	background: rgba(28, 58, 47, 0.08);
+	color: var(--dash-forest);
+}
+
+.dash-nav-user {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	margin-left: auto;
+}
+
+.dash-nav-user-meta {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.2;
+	text-align: right;
+}
+
+.dash-nav-user-meta strong {
+	font-size: 0.86rem;
+}
+
+.dash-nav-user-meta small {
+	color: var(--dash-muted);
+	font-size: 0.72rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.dash-nav-toggle,
+.dash-nav-icon {
+	width: 2.4rem;
+	height: 2.4rem;
+	border: 0;
+	border-radius: 999px;
+	background: var(--dash-forest);
+	color: #f6f1e8;
+	cursor: pointer;
+}
+
+.dash-nav-icon {
+	background: transparent;
+	color: var(--dash-forest);
+}
+
+.dash-nav-toggle {
+	display: none;
+}
+
+.dash-banner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.7rem;
+	margin: 0.9rem 1.1rem 0;
+	padding: 0.8rem 1rem;
+	border: 1px solid rgba(201, 163, 106, 0.28);
+	border-radius: 14px;
+	background: #fffdf8;
+	color: #2b332c;
+}
+
+.dash-banner button {
+	border: 0;
+	border-radius: 999px;
+	background: #1c3a2f;
+	color: #f6f1e8;
+	padding: 0.45rem 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.dash-main {
+	flex: 1;
+	padding: 1.2rem;
+	min-width: 0;
+}
+
+.dash-drawer-mask {
+	display: none;
+}
+
+@media (max-width: 520px) {
+	.dash-nav-brand span {
+		display: none;
+	}
+}
+
+@media (max-width: 960px) {
+	.dash-nav-links,
+	.dash-nav > .dash-nav-user .dash-nav-user-meta {
+		display: none;
+	}
+
+	.dash-nav-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		order: -1;
+	}
+
+	.dash-drawer-mask {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		background: rgba(28, 58, 47, 0.28);
+	}
+
+	.dash-drawer {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: min(20rem, 86vw);
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		padding: 1.2rem;
+		background: #fffdf8;
+		box-shadow: 18px 0 40px rgba(43, 51, 44, 0.12);
+	}
+
+	.dash-drawer-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.2rem;
+	}
+
+	.dash-drawer-head strong {
+		font-family: "Cormorant Garamond", Georgia, serif;
+		font-size: 1.4rem;
+	}
+
+	.dash-drawer nav {
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.dash-drawer .dash-nav-link {
+		width: 100%;
+		justify-content: flex-start;
+		padding: 0.85rem 0.9rem;
+		border-radius: 14px;
+		font-size: 1rem;
+	}
+
+	.dash-drawer-foot {
+		margin-top: auto;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(201, 163, 106, 0.22);
+		display: grid;
+		gap: 0.6rem;
+	}
+}

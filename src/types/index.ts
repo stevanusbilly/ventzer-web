@@ -7,7 +7,10 @@ export interface User {
 	password?: string;
 	change_password?: number;
 	email?: string;
+	phone?: string;
 	role: UserRole;
+	emailVerified?: boolean;
+	phoneVerified?: boolean;
 }
 
 export interface CategoryPhoto {
@@ -40,6 +43,7 @@ export interface EventSummary {
 	accepted: number;
 	declined: number;
 	checkedIn: number;
+	eventCount?: number;
 }
 
 export interface EventLocation {
@@ -137,7 +141,6 @@ export interface Wedding {
 	sosmedGroom: string;
 	quote: string;
 	openingText: string;
-	loveStory: string;
 	urlVideoPrewedding: string;
 	urlVideoStreaming: string;
 }
@@ -158,17 +161,19 @@ export interface Guest {
 	checkedInAt?: string | null;
 }
 
+export type AuthPortal = "admin" | "panitia" | "customer";
+
 export interface LoginCredentials {
 	username: string;
 	password: string;
+	portal?: AuthPortal;
 }
 
 export interface RegisterData {
-	username: string;
 	name: string;
 	email: string;
 	password: string;
-	role: string;
+	phone: string;
 }
 
 export interface AuthResponse {

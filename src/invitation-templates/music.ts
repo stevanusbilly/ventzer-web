@@ -72,8 +72,22 @@ export const getYoutubeMusicEmbed = (videoId: string): string => {
 		modestbranding: "1",
 		playsinline: "1",
 		rel: "0",
+		enablejsapi: "1",
 	});
+	if (typeof window !== "undefined" && window.location.origin) {
+		params.set("origin", window.location.origin);
+	}
 	return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+};
+
+const commandYoutube = (
+	frame: HTMLIFrameElement | null,
+	func: "playVideo" | "pauseVideo",
+): void => {
+	frame?.contentWindow?.postMessage(
+		JSON.stringify({ event: "command", func, args: [] }),
+		"*",
+	);
 };
 
 export const shouldAutoplayMusic = (event?: EventMusicFields | null): boolean => {
@@ -86,16 +100,25 @@ export const useInvitationMusic = (
 	mode: InvitationMode = "preview",
 ) => {
 	const audioRef = useRef<HTMLAudioElement>(null);
+	const youtubeRef = useRef<HTMLIFrameElement>(null);
+	const audioPositionRef = useRef(0);
 	const [playing, setPlaying] = useState(false);
+	const [started, setStarted] = useState(false);
 	const [resolved, setResolved] = useState(() => resolveInvitationMusic(event));
 
 	useEffect(() => {
 		setResolved(resolveInvitationMusic(event));
 		setPlaying(false);
+		setStarted(false);
+		audioPositionRef.current = 0;
 	}, [event?.music_url, event?.musicUrl]);
 
 	const play = async (): Promise<void> => {
 		if (resolved.kind === "youtube") {
+			if (started) {
+				commandYoutube(youtubeRef.current, "playVideo");
+			}
+			setStarted(true);
 			setPlaying(true);
 			return;
 		}
@@ -104,11 +127,30 @@ export const useInvitationMusic = (
 			return;
 		}
 		try {
+			if (audioPositionRef.current > 0.15 && node.currentTime < 0.15) {
+				node.currentTime = audioPositionRef.current;
+			}
 			await node.play();
+			setStarted(true);
 			setPlaying(true);
 		} catch {
 			setPlaying(false);
 		}
+	};
+
+	const pause = (): void => {
+		if (resolved.kind === "youtube") {
+			commandYoutube(youtubeRef.current, "pauseVideo");
+			setPlaying(false);
+			return;
+		}
+		const node = audioRef.current;
+		if (!node) {
+			return;
+		}
+		audioPositionRef.current = node.currentTime;
+		node.pause();
+		setPlaying(false);
 	};
 
 	const startMusic = async (): Promise<void> => {
@@ -119,17 +161,8 @@ export const useInvitationMusic = (
 	};
 
 	const toggleMusic = async (): Promise<void> => {
-		if (resolved.kind === "youtube") {
-			setPlaying((current) => !current);
-			return;
-		}
-		const node = audioRef.current;
-		if (!node) {
-			return;
-		}
-		if (!node.paused && playing) {
-			node.pause();
-			setPlaying(false);
+		if (playing) {
+			pause();
 			return;
 		}
 		await play();
@@ -137,10 +170,12 @@ export const useInvitationMusic = (
 
 	return {
 		audioRef,
+		youtubeRef,
 		kind: resolved.kind,
 		musicUrl: resolved.src,
 		youtubeEmbed: resolved.kind === "youtube" ? getYoutubeMusicEmbed(resolved.src) : "",
 		playing,
+		keepMounted: started,
 		showControl: Boolean(resolved.src),
 		startMusic,
 		toggleMusic,

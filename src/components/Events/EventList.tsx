@@ -5,43 +5,21 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Checkbox } from "primereact/checkbox";
 import { Calendar } from "primereact/calendar";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog } from "primereact/confirmdialog";
 import { eventService } from "../../services/eventService";
 import EventForm from "./EventForm";
-import EventAssignmentDialog from "./EventAssignmentDialog";
-import WeddingForm from "../Wedding/WeddingForm";
-import EventLocationDialog from "../EventLocation/EventLocationDialog";
-import EventPhotoDialog from "../EventPhoto/EventPhotoDialog";
-import EventSettingDialog from "../EventSetting/EventSettingDialog";
-import EventTableDialog from "../EventTable/EventTableDialog";
-import GuestDialog from "../Guests/GuestDialog";
+import EventManageDialog from "./EventManageDialog";
 import { Event } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
-import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
-import { toDateQueryParams } from "../../utils/dateRange";
-
-const startOfMonth = (date: Date): Date =>
-	new Date(date.getFullYear(), date.getMonth(), 1);
-
-const endOfMonth = (date: Date): Date =>
-	new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+import { getApiErrorMessage } from "../../utils/apiError";
+import { currentMonthRange, toDateQueryParams } from "../../utils/dateRange";
 
 const EventList: React.FC = () => {
-	const now = new Date();
 	const [events, setEvents] = useState<Event[]>([]);
-	const [dateRange, setDateRange] = useState<(Date | null)[]>([
-		startOfMonth(now),
-		endOfMonth(now),
-	]);
+	const [dateRange, setDateRange] = useState<(Date | null)[]>(currentMonthRange());
 	const [loading, setLoading] = useState(true);
 	const [showForm, setShowForm] = useState(false);
-	const [showAssignment, setShowAssignment] = useState(false);
-	const [showWedding, setShowWedding] = useState(false);
-	const [showLocation, setShowLocation] = useState(false);
-	const [showPhoto, setShowPhoto] = useState(false);
-	const [showSetting, setShowSetting] = useState(false);
-	const [showTable, setShowTable] = useState(false);
-	const [showGuests, setShowGuests] = useState(false);
+	const [showManage, setShowManage] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 	const { user, isAdmin, canMutate } = useAuth();
 	const toast = useRef<Toast>(null);
@@ -51,12 +29,12 @@ const EventList: React.FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dateRange]);
 
-	const loadEvents = async (): Promise<void> => {
+	const loadEvents = async (): Promise<Event[]> => {
 		const params = toDateQueryParams(dateRange);
 		if (!params.dateFrom && !params.dateTo) {
 			setEvents([]);
 			setLoading(false);
-			return;
+			return [];
 		}
 		setLoading(true);
 		try {
@@ -65,8 +43,10 @@ const EventList: React.FC = () => {
 					? await eventService.getAll(params)
 					: await eventService.getByUser(user?.id || 0, params);
 			setEvents(response);
+			return response;
 		} catch (error: unknown) {
 			showError(getApiErrorMessage(error, "Gagal memuat event"));
+			return [];
 		} finally {
 			setLoading(false);
 		}
@@ -83,130 +63,36 @@ const EventList: React.FC = () => {
 	const handleFormSuccess = (message: string): void => {
 		setShowForm(false);
 		showSuccess(message);
-		loadEvents();
+		void loadEvents();
 	};
 
-	const handleWeddingSuccess = (message: string): void => {
-		setShowWedding(false);
-		showSuccess(message);
-	};
-
-	const deleteEvent = async (id: number): Promise<void> => {
-		try {
-			const data = await eventService.delete(id);
-			showSuccess(getApiSuccessMessage(data, "Event dihapus"));
-			loadEvents();
-		} catch (error: unknown) {
-			showError(getApiErrorMessage(error, "Gagal menghapus event"));
+	const handleManageChanged = async (message?: string): Promise<void> => {
+		if (message) {
+			showSuccess(message);
 		}
+		const next = await loadEvents();
+		if (!selectedEvent) {
+			return;
+		}
+		const fresh = next.find((item) => item.id === selectedEvent.id);
+		if (fresh) {
+			setSelectedEvent(fresh);
+			return;
+		}
+		setShowManage(false);
+		setSelectedEvent(null);
 	};
 
 	const actionBodyTemplate = (rowData: Event): React.ReactNode => (
-		<div className="flex gap-1 flex-wrap">
-			{canMutate && (
-				<Button
-					icon="pi pi-pencil"
-					className="p-button-rounded p-button-success p-button-text"
-					tooltip="Edit event"
-					onClick={() => {
-						setSelectedEvent(rowData);
-						setShowForm(true);
-					}}
-				/>
-			)}
-			<Button
-				icon="pi pi-heart"
-				className="p-button-rounded p-button-help p-button-text"
-				tooltip="Data wedding"
-				onClick={() => {
-					setSelectedEvent(rowData);
-					setShowWedding(true);
-				}}
-			/>
-			<Button
-				icon="pi pi-map-marker"
-				className="p-button-rounded p-button-secondary p-button-text"
-				tooltip="Lokasi event"
-				onClick={() => {
-					setSelectedEvent(rowData);
-					setShowLocation(true);
-				}}
-			/>
-			<Button
-				icon="pi pi-image"
-				className="p-button-rounded p-button-info p-button-text"
-				tooltip="Foto event"
-				onClick={() => {
-					setSelectedEvent(rowData);
-					setShowPhoto(true);
-				}}
-			/>
-			<Button
-				icon="pi pi-cog"
-				className="p-button-rounded p-button-secondary p-button-text"
-				tooltip="Setting event"
-				onClick={() => {
-					setSelectedEvent(rowData);
-					setShowSetting(true);
-				}}
-			/>
-			<Button
-				icon="pi pi-clone"
-				className="p-button-rounded p-button-secondary p-button-text"
-				tooltip="Meja event"
-				onClick={() => {
-					setSelectedEvent(rowData);
-					setShowTable(true);
-				}}
-			/>
-			<Button
-				icon="pi pi-id-card"
-				className="p-button-rounded p-button-help p-button-text"
-				tooltip="Tamu event"
-				onClick={() => {
-					setSelectedEvent(rowData);
-					setShowGuests(true);
-				}}
-			/>
-			{canMutate && (
-				<Button
-					icon="pi pi-qrcode"
-					className="p-button-rounded p-button-warning p-button-text"
-					tooltip="Wedding usher"
-					onClick={() => window.open(`/events/${rowData.id}/usher`, "_blank")}
-				/>
-			)}
-			<Button
-				icon="pi pi-eye"
-				className="p-button-rounded p-button-info p-button-text"
-				tooltip="Preview undangan"
-				onClick={() => window.open(`/events/preview/${rowData.id}`, "_blank")}
-			/>
-			{isAdmin && (
-				<>
-					<Button
-						icon="pi pi-users"
-						className="p-button-rounded p-button-warning p-button-text"
-						onClick={() => {
-							setSelectedEvent(rowData);
-							setShowAssignment(true);
-						}}
-						tooltip="Assign panitia"
-					/>
-					<Button
-						icon="pi pi-trash"
-						className="p-button-rounded p-button-danger p-button-text"
-						onClick={() =>
-							confirmDialog({
-								message: "Hapus event ini?",
-								header: "Konfirmasi",
-								accept: () => deleteEvent(rowData.id),
-							})
-						}
-					/>
-				</>
-			)}
-		</div>
+		<Button
+			label="Kelola"
+			icon="pi pi-th-large"
+			className="p-button-outlined"
+			onClick={() => {
+				setSelectedEvent(rowData);
+				setShowManage(true);
+			}}
+		/>
 	);
 
 	return (
@@ -256,7 +142,7 @@ const EventList: React.FC = () => {
 						: "Pilih rentang tanggal untuk menampilkan event"
 				}
 			>
-				<Column field="name" header="Nama" sortable filter/>
+				<Column field="name" header="Nama" sortable filter />
 				<Column field="templateName" header="Template" sortable filter />
 				<Column field="userName" header="Pemilik" sortable filter />
 				<Column
@@ -276,7 +162,9 @@ const EventList: React.FC = () => {
 					)}
 					sortable
 				/>
-				<Column body={actionBodyTemplate} header="Aksi" />
+				{canMutate && (
+					<Column body={actionBodyTemplate} header="Aksi" style={{ width: "9rem" }} />
+				)}
 			</DataTable>
 			{showForm && (
 				<EventForm
@@ -285,48 +173,12 @@ const EventList: React.FC = () => {
 					onHide={() => setShowForm(false)}
 				/>
 			)}
-			{showAssignment && selectedEvent && (
-				<EventAssignmentDialog
+			{showManage && selectedEvent && (
+				<EventManageDialog
 					event={selectedEvent}
-					visible={showAssignment}
-					onHide={() => setShowAssignment(false)}
-				/>
-			)}
-			{showWedding && selectedEvent && (
-				<WeddingForm
-					event={selectedEvent}
-					onSuccess={handleWeddingSuccess}
-					onHide={() => setShowWedding(false)}
-				/>
-			)}
-			{showLocation && selectedEvent && (
-				<EventLocationDialog
-					event={selectedEvent}
-					onHide={() => setShowLocation(false)}
-				/>
-			)}
-			{showPhoto && selectedEvent && (
-				<EventPhotoDialog
-					event={selectedEvent}
-					onHide={() => setShowPhoto(false)}
-				/>
-			)}
-			{showSetting && selectedEvent && (
-				<EventSettingDialog
-					event={selectedEvent}
-					onHide={() => setShowSetting(false)}
-				/>
-			)}
-			{showTable && selectedEvent && (
-				<EventTableDialog
-					event={selectedEvent}
-					onHide={() => setShowTable(false)}
-				/>
-			)}
-			{showGuests && selectedEvent && (
-				<GuestDialog
-					event={selectedEvent}
-					onHide={() => setShowGuests(false)}
+					onHide={() => setShowManage(false)}
+					onChanged={handleManageChanged}
+					onError={showError}
 				/>
 			)}
 		</div>

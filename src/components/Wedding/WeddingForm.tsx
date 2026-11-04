@@ -22,7 +22,6 @@ const emptyWedding = (eventId: number): Omit<Wedding, "id"> => ({
 	sosmedGroom: "",
 	quote: "",
 	openingText: "",
-	loveStory: "",
 	urlVideoPrewedding: "",
 	urlVideoStreaming: "",
 });
@@ -58,7 +57,6 @@ const WeddingForm: React.FC<WeddingFormProps> = ({ event, onSuccess, onHide }) =
 					sosmedGroom: response.sosmedGroom || "",
 					quote: response.quote || "",
 					openingText: response.openingText || "",
-					loveStory: response.loveStory || "",
 					urlVideoPrewedding: response.urlVideoPrewedding || "",
 					urlVideoStreaming: response.urlVideoStreaming || "",
 				});
@@ -218,15 +216,6 @@ const WeddingForm: React.FC<WeddingFormProps> = ({ event, onSuccess, onHide }) =
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 								handleChange("openingText", e.target.value)
 							}
-						/>
-					</div>
-					<div className="field">
-						<label htmlFor="loveStory">Love Story</label>
-						<InputTextarea
-							id="loveStory"
-							value={formData.loveStory}
-							rows={5}
-							onChange={(e) => handleChange("loveStory", e.target.value)}
 						/>
 					</div>
 					<div className="field">

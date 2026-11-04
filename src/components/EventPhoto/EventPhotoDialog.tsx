@@ -4,6 +4,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Message } from "primereact/message";
@@ -17,6 +18,7 @@ import { categoryPhotoService } from "../../services/categoryPhotoService";
 import { CategoryPhoto, Event, EventPhoto } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
+import { isLoveStoryCategory } from "../../utils/loveStory";
 
 const getImageUrl = (path: string): string => {
 	if (!path) return "";
@@ -42,7 +44,7 @@ const emptyPhoto = (event: Event): Omit<EventPhoto, "id"> => ({
 	date: "",
 	keterangan: "",
 	pathImage: "",
-	order: 1,
+	order: 0,
 });
 
 interface EventPhotoDialogProps {
@@ -134,11 +136,37 @@ const EventPhotoDialog: React.FC<EventPhotoDialogProps> = ({ event, onHide }) =>
 		setError("");
 	};
 
+	const selectedCategoryName =
+		categories.find((row) => row.id === formData.categoryPhotoId)?.name ||
+		formData.categoryPhotoName;
+	const showStoryFields = isLoveStoryCategory(selectedCategoryName);
+
 	const handleChange = (
 		field: keyof Omit<EventPhoto, "id">,
 		value: string | number,
 	): void => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
+		setFormData((prev) => {
+			if (field !== "categoryPhotoId") {
+				return { ...prev, [field]: value };
+			}
+			const nextName = categories.find((row) => row.id === value)?.name || "";
+			if (isLoveStoryCategory(nextName)) {
+				return {
+					...prev,
+					categoryPhotoId: Number(value),
+					categoryPhotoName: nextName,
+					order: prev.order || 1,
+				};
+			}
+			return {
+				...prev,
+				categoryPhotoId: Number(value),
+				categoryPhotoName: nextName,
+				date: "",
+				keterangan: "",
+				order: 0,
+			};
+		});
 	};
 
 	const handleFileSelect = (e: FileUploadSelectEvent): void => {
@@ -185,10 +213,12 @@ const EventPhotoDialog: React.FC<EventPhotoDialogProps> = ({ event, onHide }) =>
 			data.append("name", formData.name);
 			data.append(
 				"date",
-				formData.date ? moment(formData.date).format("YYYY-MM-DD") : "",
+				showStoryFields && formData.date
+					? moment(formData.date).format("YYYY-MM-DD")
+					: "",
 			);
-			data.append("keterangan", formData.keterangan);
-			data.append("order", String(formData.order));
+			data.append("keterangan", showStoryFields ? formData.keterangan : "");
+			data.append("order", String(showStoryFields ? formData.order || 1 : 0));
 			if (selectedFile) {
 				data.append("pathImage", selectedFile);
 			} else {
@@ -270,7 +300,7 @@ const EventPhotoDialog: React.FC<EventPhotoDialogProps> = ({ event, onHide }) =>
 						/>
 					</div>
 					<div className="col-12 md:col-6 field">
-						<label htmlFor="photoName">Nama</label>
+						<label htmlFor="photoName">{showStoryFields ? "Judul" : "Nama"}</label>
 						<InputText
 							id="photoName"
 							value={formData.name}
@@ -278,6 +308,8 @@ const EventPhotoDialog: React.FC<EventPhotoDialogProps> = ({ event, onHide }) =>
 							required
 						/>
 					</div>
+					{showStoryFields && (
+						<>
 					<div className="col-12 md:col-6 field">
 						<label htmlFor="photoDate">Tanggal</label>
 						<Calendar
@@ -298,20 +330,23 @@ const EventPhotoDialog: React.FC<EventPhotoDialogProps> = ({ event, onHide }) =>
 						<InputText
 							id="photoOrder"
 							keyfilter="int"
-							value={String(formData.order)}
+							value={String(formData.order || 1)}
 							onChange={(e) => handleChange("order", Number(e.target.value) || 0)}
 							required
 						/>
 					</div>
 					<div className="col-12 field">
 						<label htmlFor="keterangan">Keterangan</label>
-						<InputText
+						<InputTextarea
 							id="keterangan"
 							value={formData.keterangan}
+							rows={5}
 							onChange={(e) => handleChange("keterangan", e.target.value)}
 							required
 						/>
 					</div>
+						</>
+					)}
 					<div className="col-12 field">
 						<label className="font-semibold block mb-2">Foto</label>
 						{editing && formData.pathImage && !isReplacing ? (

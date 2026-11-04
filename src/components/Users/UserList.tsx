@@ -147,6 +147,13 @@ const UserList: React.FC = () => {
 					filterPlaceholder="Search by Email"
 				/>
 				<Column
+					field="phone"
+					header="Nomor telepon"
+					sortable
+					filter
+					filterPlaceholder="Cari nomor telepon"
+				/>
+				<Column
 					field="role"
 					header="Role"
 					sortable

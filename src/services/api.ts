@@ -26,10 +26,21 @@ api.interceptors.response.use(
 		await normalizeAxiosError(error);
 		const hadToken = !!localStorage.getItem("token");
 		if (error.response?.status === 401 && hadToken) {
+			let role: string | undefined;
+			try {
+				const raw = localStorage.getItem("userData");
+				if (raw) {
+					role = JSON.parse(raw)?.role;
+				}
+			} catch {
+				role = undefined;
+			}
 			localStorage.removeItem("token");
 			localStorage.removeItem("userData");
-			if (window.location.pathname !== "/login") {
-				window.location.href = "/login";
+			const target =
+				role === "admin" || role === "panitia" ? "/admin" : "/login";
+			if (window.location.pathname !== target) {
+				window.location.href = target;
 			}
 		}
 		return Promise.reject(error);

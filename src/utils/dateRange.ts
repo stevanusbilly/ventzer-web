@@ -1,3 +1,14 @@
+export const startOfMonth = (date: Date): Date =>
+	new Date(date.getFullYear(), date.getMonth(), 1);
+
+export const endOfMonth = (date: Date): Date =>
+	new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+
+export const currentMonthRange = (): [Date, Date] => {
+	const now = new Date();
+	return [startOfMonth(now), endOfMonth(now)];
+};
+
 export const formatDateOnly = (date: Date): string => {
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, "0");

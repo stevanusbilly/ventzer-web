@@ -14,6 +14,13 @@ export const eventPhotoService = {
 		if (response) return response.data;
 		return null;
 	},
+	listLoveStoryByEvent: async (eventId: number): Promise<EventPhoto[] | null> => {
+		const response = await api
+			.get<EventPhoto[]>(`/event_photo/love_story/event/${eventId}`)
+			.catch(() => null);
+		if (response) return response.data;
+		return null;
+	},
 	getQuoteByEvent: async (eventId: number): Promise<EventPhoto | null> => {
 		const response = await api.get<EventPhoto>(`/event_photo/quote/event/${eventId}`)
 			.catch(error => {

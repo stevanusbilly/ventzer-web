@@ -1,10 +1,9 @@
-import React, { useState, ReactNode, useMemo } from "react";
-import { Sidebar } from "primereact/sidebar";
-import { Button } from "primereact/button";
+import React, { useMemo, useState, ReactNode } from "react";
 import { Avatar } from "primereact/avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import ProfileDialog from "./ProfileDialog";
+import { loginPathForRole, settingsPath } from "../../utils/authPaths";
+import "./AppLayout.css";
 
 interface AppLayoutProps {
 	children: ReactNode;
@@ -18,121 +17,172 @@ interface NavItem {
 }
 
 const ALL_NAV: NavItem[] = [
-	{ label: "Dashboard", icon: "pi pi-home", path: "/dashboard" },
-	{ label: "Users", icon: "pi pi-user", path: "/users", roles: ["admin"] },
+	{ label: "Dasbor", icon: "pi pi-home", path: "/dashboard" },
+	{ label: "Event", icon: "pi pi-calendar", path: "/events" },
+	{ label: "Pengguna", icon: "pi pi-user", path: "/users", roles: ["admin"] },
 	{
-		label: "Category Photo",
-		icon: "pi pi-list",
+		label: "Kategori Foto",
+		icon: "pi pi-images",
 		path: "/category_photo",
 		roles: ["admin"],
 	},
-	{ label: "Templates", icon: "pi pi-list", path: "/templates" },
-	{ label: "Events", icon: "pi pi-calendar", path: "/events" },
-	{ label: "Guest Message", icon: "pi pi-envelope", path: "/guest_message" },
-	{ label: "Gift", icon: "pi pi-gift", path: "/gift" },
-	{ label: "Check-in", icon: "pi pi-check-circle", path: "/checkin" },
+	{
+		label: "Template",
+		icon: "pi pi-th-large",
+		path: "/templates",
+		roles: ["admin", "panitia"],
+	},
+	{ label: "Pengaturan", icon: "pi pi-cog", path: settingsPath },
 ];
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-	const [visible, setVisible] = useState(false);
-	const [showProfile, setShowProfile] = useState(false);
-	const { user, logout, isAuthenticated } = useAuth();
+	const [menuOpen, setMenuOpen] = useState(false);
+	const { user, logout, isAuthenticated, isViewer } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	const navItems = useMemo(() => {
 		const role = user?.role || "viewer";
-		return ALL_NAV.filter(
-			(item) => !item.roles || item.roles.includes(role),
-		);
+		return ALL_NAV.filter((item) => !item.roles || item.roles.includes(role));
 	}, [user?.role]);
 
 	const handleLogout = (): void => {
 		logout();
-		navigate("/login");
+		navigate(loginPathForRole(user?.role));
 	};
 
 	const handleNavigate = (path: string): void => {
 		navigate(path);
-		setVisible(false);
+		setMenuOpen(false);
 	};
 
-	const renderSidebarNavigation = () => (
-		<div className="flex flex-column justify-content-between h-full">
-			<ul className="list-none p-0 m-0 flex flex-column gap-1">
-				{navItems.map((item) => {
-					const active = location.pathname === item.path;
-					return (
-						<li key={item.path}>
-							<div
-								onClick={() => handleNavigate(item.path)}
-								className={`flex align-items-center px-3 py-2 border-round cursor-pointer ${
-									active
-										? "bg-primary text-primary-contrast font-semibold"
-										: "text-700 hover:surface-hover"
-								}`}
-							>
-								<i className={`${item.icon} mr-3`} />
-								<span>{item.label}</span>
-							</div>
-						</li>
-					);
-				})}
-			</ul>
-			{isAuthenticated && user && (
-				<div className="pt-3 border-top-1 surface-border">
-					<div className="flex align-items-center gap-2 p-2 mb-3">
-						<Avatar label={user.name.charAt(0).toUpperCase()} shape="circle" />
-						<div>
-							<div className="font-semibold text-sm">{user.name}</div>
-							<div className="text-xs text-500">{user.role}</div>
-						</div>
-					</div>
-					<Button
-						label="Profil"
-						icon="pi pi-user-edit"
-						outlined
-						className="w-full mb-2"
-						onClick={() => {
-							setShowProfile(true);
-							setVisible(false);
-						}}
-					/>
-					<Button
-						label="Keluar"
-						icon="pi pi-sign-out"
-						severity="danger"
-						outlined
-						className="w-full"
-						onClick={handleLogout}
-					/>
-				</div>
-			)}
-		</div>
+	const navButtons = (
+		<>
+			{navItems.map((item) => {
+				const active =
+					location.pathname === item.path ||
+					location.pathname.startsWith(`${item.path}/`);
+				return (
+					<button
+						key={item.path}
+						type="button"
+						className={`dash-nav-link ${active ? "is-active" : ""}`}
+						onClick={() => handleNavigate(item.path)}
+					>
+						<i className={item.icon} />
+						{item.label}
+					</button>
+				);
+			})}
+		</>
 	);
 
 	return (
-		<div className="min-h-screen flex surface-ground">
-			<aside className="hidden md:flex flex-column surface-card border-right-1 surface-border sticky top-0 h-screen w-18rem p-3">
-				<div
-					className="font-bold text-xl text-primary mb-3 cursor-pointer"
-					onClick={() => navigate("/dashboard")}
+		<div className="dash-shell">
+			<header className="dash-nav">
+				<button
+					type="button"
+					className="dash-nav-toggle"
+					aria-label="Buka menu"
+					onClick={() => setMenuOpen(true)}
 				>
-					RSVP Portal
+					<i className="pi pi-bars" />
+				</button>
+				<button
+					type="button"
+					className="dash-nav-brand"
+					onClick={() => handleNavigate("/dashboard")}
+				>
+					<img
+						src="https://nstory.id/wp-content/uploads/2026/01/logoNS-newcolor.png"
+						alt="NStory"
+					/>
+					<span>RSVP Portal</span>
+				</button>
+				<nav className="dash-nav-links">{navButtons}</nav>
+				{isAuthenticated && user && (
+					<div className="dash-nav-user">
+						<div className="dash-nav-user-meta">
+							<strong>{user.name}</strong>
+							<small>{user.role}</small>
+						</div>
+						<Avatar label={user.name.charAt(0).toUpperCase()} shape="circle" />
+						<button
+							type="button"
+							className="dash-nav-icon"
+							aria-label="Pengaturan"
+							onClick={() => handleNavigate(settingsPath)}
+						>
+							<i className="pi pi-cog" />
+						</button>
+						<button
+							type="button"
+							className="dash-nav-icon"
+							aria-label="Keluar"
+							onClick={handleLogout}
+						>
+							<i className="pi pi-sign-out" />
+						</button>
+					</div>
+				)}
+			</header>
+
+			{menuOpen && (
+				<div className="dash-drawer-mask" onClick={() => setMenuOpen(false)}>
+					<aside className="dash-drawer" onClick={(event) => event.stopPropagation()}>
+						<div className="dash-drawer-head">
+							<strong>Menu</strong>
+							<button
+								type="button"
+								className="dash-nav-icon"
+								aria-label="Tutup menu"
+								onClick={() => setMenuOpen(false)}
+							>
+								<i className="pi pi-times" />
+							</button>
+						</div>
+						<nav>{navButtons}</nav>
+						{isAuthenticated && user && (
+							<div className="dash-drawer-foot">
+								<div className="dash-nav-user">
+									<Avatar
+										label={user.name.charAt(0).toUpperCase()}
+										shape="circle"
+									/>
+									<div className="dash-nav-user-meta" style={{ textAlign: "left" }}>
+										<strong>{user.name}</strong>
+										<small>{user.role}</small>
+									</div>
+								</div>
+								<button
+									type="button"
+									className="dash-nav-link"
+									onClick={() => handleNavigate(settingsPath)}
+								>
+									<i className="pi pi-cog" />
+									Pengaturan
+								</button>
+								<button type="button" className="dash-nav-link" onClick={handleLogout}>
+									<i className="pi pi-sign-out" />
+									Keluar
+								</button>
+							</div>
+						)}
+					</aside>
 				</div>
-				{renderSidebarNavigation()}
-			</aside>
-			<Sidebar visible={visible} onHide={() => setVisible(false)} className="md:hidden w-20rem">
-				{renderSidebarNavigation()}
-			</Sidebar>
-			<div className="flex-1 flex flex-column min-w-0">
-				<header className="surface-card shadow-1 px-4 py-3 flex md:hidden align-items-center gap-3">
-					<Button icon="pi pi-bars" text onClick={() => setVisible(true)} />
-					<span className="font-bold">RSVP Portal</span>
-				</header>
-				<main className="p-4 flex-1">{children}</main>
-			</div>
-			<ProfileDialog visible={showProfile} onHide={() => setShowProfile(false)} />
+			)}
+
+			{isViewer &&
+				location.pathname !== settingsPath &&
+				(!user?.emailVerified || !user?.phoneVerified) && (
+				<div className="dash-banner">
+					<span>Lengkapi verifikasi email dan nomor telepon di pengaturan akun.</span>
+					<button type="button" onClick={() => handleNavigate(settingsPath)}>
+						Buka pengaturan
+					</button>
+				</div>
+			)}
+			<main className="dash-main">{children}</main>
 		</div>
 	);
 };

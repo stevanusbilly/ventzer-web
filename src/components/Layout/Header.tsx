@@ -3,6 +3,7 @@ import { Menubar } from "primereact/menubar";
 import { Button } from "primereact/button";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { loginPathForRole, staffLoginPath } from "../../utils/authPaths";
 import { MenuItem } from "primereact/menuitem";
 
 const Header: React.FC = () => {
@@ -11,7 +12,7 @@ const Header: React.FC = () => {
 
 	const handleLogout = (): void => {
 		logout();
-		navigate("/login");
+		navigate(loginPathForRole(user?.role));
 	};
 
 	const items: MenuItem[] = isAuthenticated
@@ -36,21 +37,6 @@ const Header: React.FC = () => {
 					icon: "pi pi-calendar",
 					command: () => navigate("/events"),
 				},
-				{
-					label: "Guest Message",
-					icon: "pi pi-users",
-					command: () => navigate("/guest_message"),
-				},
-				{
-					label: "Gift",
-					icon: "pi pi-users",
-					command: () => navigate("/gift"),
-				},
-				{
-					label: "Check-in",
-					icon: "pi pi-check-circle",
-					command: () => navigate("/checkin"),
-				},
 		  ]
 		: [];
 
@@ -73,7 +59,7 @@ const Header: React.FC = () => {
 			label="Login"
 			icon="pi pi-sign-in"
 			className="p-button-text"
-			onClick={() => navigate("/login")}
+			onClick={() => navigate(staffLoginPath)}
 		/>
 	);
 
