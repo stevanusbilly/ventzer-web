@@ -3,10 +3,10 @@ import "./Navbar.css";
 import { Link, NavLink } from "react-router-dom";
 
 const links = [
-	{ to: "/", label: "Home" },
-	{ to: "/pricing", label: "Pricing" },
-	{ to: "/catalog", label: "Catalog" },
-	{ to: "/order-process", label: "Order Process" },
+	{ to: "/", label: "Beranda" },
+	{ to: "/pricing", label: "Harga" },
+	{ to: "/catalog", label: "Katalog" },
+	{ to: "/order-process", label: "Proses Pesan" },
 ];
 
 const Navbar: React.FC = () => {

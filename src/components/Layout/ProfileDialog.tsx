@@ -15,7 +15,7 @@ interface ProfileDialogProps {
 }
 
 const ProfileDialog: React.FC<ProfileDialogProps> = ({ visible, onHide }) => {
-	const { user, updateUser } = useAuth();
+	const { user, updateUser, isViewer } = useAuth();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [changePassword, setChangePassword] = useState(false);

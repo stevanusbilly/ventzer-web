@@ -104,7 +104,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 					<div className="dash-nav-user">
 						<div className="dash-nav-user-meta">
 							<strong>{user.name}</strong>
-							<small>{user.role}</small>
+							{!isViewer && <small>{user.role}</small>}
 						</div>
 						<Avatar label={user.name.charAt(0).toUpperCase()} shape="circle" />
 						<button

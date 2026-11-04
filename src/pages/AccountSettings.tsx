@@ -76,10 +76,12 @@ const AccountSettings: React.FC = () => {
 						<label htmlFor="settings-username">Username</label>
 						<InputText id="settings-username" value={user?.username || ""} disabled />
 					</div>
-					<div className="field">
-						<label htmlFor="settings-role">Role</label>
-						<InputText id="settings-role" value={user?.role || ""} disabled />
-					</div>
+					{!isViewer && (
+						<div className="field">
+							<label htmlFor="settings-role">Role</label>
+							<InputText id="settings-role" value={user?.role || ""} disabled />
+						</div>
+					)}
 					<div className="field">
 						<label htmlFor="settings-name">Nama</label>
 						<InputText
