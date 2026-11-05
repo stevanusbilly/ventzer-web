@@ -19,6 +19,8 @@ import {
 import { ClassicInvitationTemplate } from "../../invitation-templates/classic-tsx";
 import { BronzeInvitationTemplate } from "../../invitation-templates/bronze-tsx";
 import { isBronzeTemplate } from "../../invitation-templates/isBronzeTemplate";
+import { ChinesePremiumTemplate } from "../../invitation-templates/chinese-premium";
+import { isChinesePremiumTemplate } from "../../invitation-templates/isChinesePremiumTemplate";
 
 const EventPreviewTsx: React.FC = () => {
 	const { id } = useParams();
@@ -146,9 +148,11 @@ const EventPreviewTsx: React.FC = () => {
 		);
 	}
 
-	const Template = isBronzeTemplate(event)
-		? BronzeInvitationTemplate
-		: ClassicInvitationTemplate;
+	const Template = isChinesePremiumTemplate(event)
+		? ChinesePremiumTemplate
+		: isBronzeTemplate(event)
+			? BronzeInvitationTemplate
+			: ClassicInvitationTemplate;
 
 	return (
 		<Template

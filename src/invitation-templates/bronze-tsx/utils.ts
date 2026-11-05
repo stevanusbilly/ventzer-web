@@ -1,4 +1,5 @@
 export {
+	formatDotDate,
 	formatLongDate,
 	formatShortDate,
 	formatTime,

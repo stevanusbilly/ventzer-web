@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ClassicInvitationProps } from "./types";
 import { getApiErrorMessage } from "../../utils/apiError";
 import {
+	formatDotDate,
 	formatLongDate,
 	formatShortDate,
 	formatTime,
@@ -16,8 +17,12 @@ import InvitationFlourish from "../InvitationFlourish";
 import LoveStoryTimeline from "../LoveStoryTimeline";
 import "./ClassicInvitationTemplate.css";
 
-const SectionHead: React.FC<{ kicker: string; title: string }> = ({ kicker, title }) => (
-	<header className="cit-head">
+const SectionHead: React.FC<{ kicker: string; title: string; light?: boolean }> = ({
+	kicker,
+	title,
+	light,
+}) => (
+	<header className={`cit-head ${light ? "cit-head-light" : ""}`}>
 		<p className="cit-kicker">{kicker}</p>
 		<h2 className="cit-section-title">{title}</h2>
 		<InvitationFlourish className="cit-flourish" />
@@ -117,16 +122,20 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 	const bride = wedding?.namaPanggilanBride || "Bride";
 	const groom = wedding?.namaPanggilanGroom || "Groom";
+	const couple = `${bride} & ${groom}`;
+	const monogram = `${bride.charAt(0).toUpperCase()} · ${groom.charAt(0).toUpperCase()}`;
 	const coverUrl = getImageUrl(photos.cover?.pathImage || photos.opening?.pathImage);
 	const sideUrl = getImageUrl(photos.background?.pathImage || photos.opening?.pathImage);
+	const openingUrl = getImageUrl(photos.opening?.pathImage || photos.cover?.pathImage);
 	const gallery = photos.gallery.slice(0, flags.maxGaleriFoto || 8);
 	const calendarUrl = toGoogleCalendarUrl(
-		event.name || `The Wedding of ${bride} & ${groom}`,
+		event.name || `The Wedding of ${couple}`,
 		event.date,
 		locations[0]?.alamat,
 	);
 	const prewedding = youtubeEmbedUrl(wedding?.urlVideoPrewedding);
 	const streaming = youtubeEmbedUrl(wedding?.urlVideoStreaming);
+	const dotDate = formatDotDate(event.date) || formatShortDate(event.date);
 
 	const publishedMessages = useMemo(
 		() => messages.filter((row) => row.published !== 0),
@@ -201,7 +210,7 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 	return (
 		<div className={`cit-root ${opened ? "cit-opened" : "cit-locked"}`}>
-			{mode === "preview" && <div className="cit-preview-badge">Preview TSX</div>}
+			{mode === "preview" && <div className="cit-preview-badge">Classic Ivory</div>}
 
 			<InvitationMusicEngine
 				kind={kind}
@@ -219,17 +228,20 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 				style={coverUrl ? { backgroundImage: `url("${coverUrl}")` } : undefined}
 			>
 				<div className="cit-cover-inner">
-					<div className="cit-cover-frame">
-						<p className="cit-kicker">The Wedding Of</p>
+					<div className="cit-cover-arch">
+						<span className="cit-monogram">{monogram}</span>
+						<p className="cit-kicker cit-kicker-light">The Wedding Of</p>
 						<h1>
 							{bride}
 							<span className="cit-amp">&amp;</span>
 							{groom}
 						</h1>
 						<InvitationFlourish className="cit-flourish cit-flourish-light" />
-						<p className="cit-cover-date">{formatShortDate(event.date)}</p>
-						<p className="cit-guest">Kepada Yth.</p>
-						<p className="cit-guest-name">{guestName}</p>
+						<p className="cit-cover-date">{dotDate}</p>
+						<div className="cit-guest-plaque">
+							<p className="cit-guest">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+							<p className="cit-guest-name">{guestName}</p>
+						</div>
 						<button type="button" className="cit-open-btn" onClick={openInvitation}>
 							Buka Undangan
 						</button>
@@ -241,57 +253,82 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 				<aside
 					className="cit-side"
 					style={sideUrl ? { backgroundImage: `url("${sideUrl}")` } : undefined}
-				/>
+				>
+					<div className="cit-side-inner">
+						<span className="cit-monogram cit-monogram-light">{monogram}</span>
+						<p className="cit-side-kicker">The Wedding of</p>
+						<p className="cit-side-names">{couple}</p>
+						<p className="cit-side-date">{dotDate}</p>
+					</div>
+				</aside>
+
 				<main className="cit-main">
-					<section className="cit-section">
-						<SectionHead kicker="Undangan Pernikahan" title={`${bride} & ${groom}`} />
-						<p className="cit-lead">
-							{wedding?.openingText || "Dengan hormat mengundang Anda hadir dalam hari bahagia kami."}
-						</p>
-						<p className="cit-body cit-body-gap">
-							{event.name}
-							<br />
-							{formatLongDate(event.date)}
-						</p>
-						{event.dresscode && (
-							<p className="cit-chip">Dress code · {event.dresscode}</p>
-						)}
+					<section
+						className={`cit-hero ${openingUrl ? "has-photo" : ""}`}
+						style={openingUrl ? { backgroundImage: `url("${openingUrl}")` } : undefined}
+					>
+						<div className="cit-hero-frame">
+							<p className="cit-scroll-hint">
+								<span>↓</span>
+								Scroll Kebawah
+							</p>
+							<p className="cit-kicker">The Wedding of</p>
+							<h2 className="cit-hero-names">{couple}</h2>
+							<InvitationFlourish className="cit-flourish" />
+							<p className="cit-hero-date">{dotDate}</p>
+							<p className="cit-lead">
+								{wedding?.openingText ||
+									"Dengan memohon rahmat dan ridho Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam hari bahagia kami."}
+							</p>
+							{event.dresscode && (
+								<p className="cit-chip">Dress code · {event.dresscode}</p>
+							)}
+						</div>
 					</section>
 
 					{wedding?.quote && (
 						<section
-							className="cit-section"
+							className="cit-section cit-section-quote"
 							style={
 								photos.quote
 									? {
-											backgroundImage: `linear-gradient(rgba(247,241,230,0.92), rgba(247,241,230,0.92)), url("${getImageUrl(photos.quote.pathImage)}")`,
+											backgroundImage: `linear-gradient(rgba(251,247,239,0.92), rgba(246,238,224,0.94)), url("${getImageUrl(photos.quote.pathImage)}")`,
 											backgroundSize: "cover",
 											backgroundPosition: "center",
 										}
 									: undefined
 							}
 						>
-							<SectionHead kicker="Sebuah Ayat" title="Quote" />
-							<p className="cit-quote">{wedding.quote}</p>
+							<div className="cit-quote-card">
+								<span className="cit-monogram">{monogram}</span>
+								<p className="cit-quote">“{wedding.quote}”</p>
+								<InvitationFlourish className="cit-flourish" />
+							</div>
 						</section>
 					)}
 
 					<section className="cit-section">
-						<SectionHead kicker="Mempelai" title="The Bride & The Groom" />
+						<SectionHead kicker="The Beloved Couple" title="Mempelai" />
 						<div className="cit-couple">
 							<article className="cit-person">
 								{flags.fotoProfil && photos.profilBride && (
-									<img src={getImageUrl(photos.profilBride.pathImage)} alt={bride} />
+									<div className="cit-portrait-arch">
+										<img src={getImageUrl(photos.profilBride.pathImage)} alt={bride} />
+									</div>
 								)}
 								<p className="cit-kicker">The Bride</p>
 								<h3>{wedding?.namaLengkapBride || bride}</h3>
 								<p className="cit-body">{wedding?.bioBride}</p>
 								{flags.socialMedia && wedding?.sosmedBride && (
-									<p>
-										<a href={wedding.sosmedBride} target="_blank" rel="noreferrer">
-											Sosial media
-										</a>
-									</p>
+									<a
+										className="cit-social"
+										href={wedding.sosmedBride}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<i className="pi pi-instagram" aria-hidden="true" />
+										<span>Instagram</span>
+									</a>
 								)}
 							</article>
 							<span className="cit-couple-and" aria-hidden="true">
@@ -299,17 +336,23 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 							</span>
 							<article className="cit-person">
 								{flags.fotoProfil && photos.profilGroom && (
-									<img src={getImageUrl(photos.profilGroom.pathImage)} alt={groom} />
+									<div className="cit-portrait-arch">
+										<img src={getImageUrl(photos.profilGroom.pathImage)} alt={groom} />
+									</div>
 								)}
 								<p className="cit-kicker">The Groom</p>
 								<h3>{wedding?.namaLengkapGroom || groom}</h3>
 								<p className="cit-body">{wedding?.bioGroom}</p>
 								{flags.socialMedia && wedding?.sosmedGroom && (
-									<p>
-										<a href={wedding.sosmedGroom} target="_blank" rel="noreferrer">
-											Sosial media
-										</a>
-									</p>
+									<a
+										className="cit-social"
+										href={wedding.sosmedGroom}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<i className="pi pi-instagram" aria-hidden="true" />
+										<span>Instagram</span>
+									</a>
 								)}
 							</article>
 						</div>
@@ -320,24 +363,25 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 					)}
 
 					{locations.length > 0 && (
-						<section className="cit-section">
-							<SectionHead kicker="Save The Date" title="Waktu & Tempat" />
+						<section className="cit-section cit-section-warm">
+							<SectionHead kicker="Save The Date" title="Rangkaian Acara" />
+							<p className="cit-date-banner">{formatLongDate(event.date)}</p>
 							<div className="cit-loc-grid">
 								{locations.map((loc) => (
-									<article key={loc.id} className="cit-card">
-										<p className="cit-kicker">{loc.name}</p>
+									<article key={loc.id} className="cit-card cit-loc-card">
+										<span className="cit-loc-tag">{loc.name}</span>
+										<p className="cit-loc-time">
+											{formatTime(loc.startTime)}
+											{loc.endTime ? ` – ${formatTime(loc.endTime)}` : ""} WIB
+										</p>
+										<p className="cit-loc-date">{formatLongDate(loc.date)}</p>
+										<div className="cit-loc-divider" />
 										<h4>{loc.location}</h4>
-										<ul className="cit-meta-list">
-											<li>{formatLongDate(loc.date)}</li>
-											<li>
-												{formatTime(loc.startTime)}
-												{loc.endTime ? ` — ${formatTime(loc.endTime)}` : ""} WIB
-											</li>
-											<li>{loc.alamat}</li>
-										</ul>
+										<p className="cit-loc-address">{loc.alamat}</p>
 										{loc.urlMaps && (
 											<a className="cit-btn" href={loc.urlMaps} target="_blank" rel="noreferrer">
-												Lihat Lokasi
+												<i className="pi pi-map-marker" aria-hidden="true" />
+												<span>Lihat Lokasi</span>
 											</a>
 										)}
 									</article>
@@ -345,14 +389,15 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 							</div>
 							{flags.addToCalendar && calendarUrl && (
 								<a className="cit-btn-ghost" href={calendarUrl} target="_blank" rel="noreferrer">
-									Tambah ke Kalender
+									<i className="pi pi-calendar-plus" aria-hidden="true" />
+									<span>Simpan ke Kalender</span>
 								</a>
 							)}
 						</section>
 					)}
 
 					<section className="cit-section">
-						<SectionHead kicker="Countdown" title="Menuju Hari Bahagia" />
+						<SectionHead kicker="Counting Down" title="Menuju Hari Bahagia" />
 						<div className="cit-countdown">
 							<div className="cit-count-box">
 								<strong>{countdown.days}</strong>
@@ -374,15 +419,16 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 					</section>
 
 					{gallery.length > 0 && (
-						<section className="cit-section">
-							<SectionHead kicker="Gallery" title="Momen Kami" />
+						<section className="cit-section cit-section-warm">
+							<SectionHead kicker="Our Moments" title="Galeri" />
 							<div className="cit-gallery">
 								{gallery.map((photo) => (
-									<img
-										key={photo.id}
-										src={getImageUrl(photo.pathImage)}
-										alt={photo.name || "Gallery"}
-									/>
+									<figure key={photo.id} className="cit-gallery-item">
+										<img
+											src={getImageUrl(photo.pathImage)}
+											alt={photo.name || "Gallery"}
+										/>
+									</figure>
 								))}
 							</div>
 						</section>
@@ -390,31 +436,112 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 
 					{flags.video && (prewedding || streaming) && (
 						<section className="cit-section">
-							<SectionHead kicker="Video" title="Tonton Kisah Kami" />
-							{prewedding && (
-								<iframe className="cit-video" title="Prewedding" src={prewedding} allowFullScreen />
-							)}
-							{streaming && (
-								<iframe className="cit-video" title="Streaming" src={streaming} allowFullScreen />
-							)}
+							<SectionHead kicker="Motion Picture" title="Kisah dalam Layar" />
+							<div className="cit-video-stack">
+								{prewedding && (
+									<iframe className="cit-video" title="Prewedding" src={prewedding} allowFullScreen />
+								)}
+								{streaming && (
+									<iframe className="cit-video" title="Streaming" src={streaming} allowFullScreen />
+								)}
+							</div>
+						</section>
+					)}
+
+					{flags.rsvp && (
+						<section className="cit-section cit-section-warm">
+							<SectionHead kicker="RSVP" title="Konfirmasi Kehadiran" />
+							<p className="cit-lead cit-lead-Space">
+								Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila
+								Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.
+							</p>
+							<div className="cit-paper">
+								<p className="cit-body">
+									Untuk <strong>{guestName}</strong> · Status:{" "}
+									<strong>{rsvpStatusLabel(guestRsvpStatus)}</strong>
+									{guestRsvpStatus === "accepted" && guestRsvpJumlah
+										? ` (${guestRsvpJumlah} orang)`
+										: ""}
+								</p>
+								<div className="cit-form">
+									<label htmlFor="cit-jumlah">Jumlah orang yang hadir</label>
+									<input
+										id="cit-jumlah"
+										type="number"
+										min={1}
+										max={maxGuestCount}
+										value={jumlah}
+										onChange={(e) =>
+											setJumlah(
+												Math.min(
+													maxGuestCount,
+													Math.max(1, Number(e.target.value) || 1),
+												),
+											)
+										}
+										disabled={mode === "preview"}
+										required
+									/>
+									<small>
+										Maksimal {maxGuestCount} orang, termasuk Anda. Wajib diisi jika hadir.
+									</small>
+									<div className="cit-actions">
+										<button
+											type="button"
+											className="cit-btn"
+											disabled={rsvpBusy || mode === "preview"}
+											onClick={() => handleRsvp(1)}
+										>
+											Hadir
+										</button>
+										<button
+											type="button"
+											className="cit-btn-ghost"
+											disabled={rsvpBusy || mode === "preview"}
+											onClick={() => handleRsvp(2)}
+										>
+											Tidak Hadir
+										</button>
+									</div>
+								</div>
+								{rsvpNotice && (
+									<p
+										className={`cit-feedback ${rsvpNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
+									>
+										{rsvpNotice.text}
+									</p>
+								)}
+								{mode === "preview" && (
+									<p className="cit-note">Mode preview: RSVP tidak dikirim.</p>
+								)}
+							</div>
 						</section>
 					)}
 
 					{gifts.length > 0 && (
 						<section className="cit-section">
-							<SectionHead kicker="Wedding Gift" title="Amplop Digital" />
+							<SectionHead kicker="Wedding Gift" title="Tanda Kasih" />
+							<p className="cit-lead cit-lead-Space">
+								Bagi keluarga dan sahabat yang ingin mengirimkan tanda kasih, dapat
+								melalui rekening berikut:
+							</p>
 							<div className="cit-loc-grid">
 								{gifts.map((gift) => (
 									<article key={gift.id} className="cit-card cit-gift-card">
-										<p className="cit-kicker">{gift.provider}</p>
-										<h4>{gift.name}</h4>
+										<div className="cit-gift-top">
+											<span className="cit-kicker">{gift.provider}</span>
+											<i className="pi pi-credit-card" aria-hidden="true" />
+										</div>
+										<p className="cit-gift-label">Nomor Rekening</p>
 										<p className="cit-gift-num">{gift.nomor}</p>
+										<h4>a.n. {gift.name}</h4>
 										<button
 											type="button"
 											className="cit-btn"
 											onClick={() => copyGift(gift.id, gift.nomor)}
 										>
-											{copiedId === gift.id ? "Tersalin" : "Salin Nomor"}
+											<i className="pi pi-copy" aria-hidden="true" />
+											<span>{copiedId === gift.id ? "Tersalin" : "Salin Nomor"}</span>
 										</button>
 									</article>
 								))}
@@ -422,110 +549,45 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 						</section>
 					)}
 
-					{flags.rsvp && (
-						<section className="cit-section">
-							<SectionHead kicker="RSVP" title="Konfirmasi Kehadiran" />
-							<div className="cit-paper">
-							<p className="cit-body">
-								Untuk {guestName}. Status: {rsvpStatusLabel(guestRsvpStatus)}
-								{guestRsvpStatus === "accepted" && guestRsvpJumlah
-									? ` (${guestRsvpJumlah} orang)`
-									: ""}
-							</p>
-							<div className="cit-form">
-								<label htmlFor="cit-jumlah">Jumlah orang yang hadir</label>
-								<input
-									id="cit-jumlah"
-									type="number"
-									min={1}
-									max={maxGuestCount}
-									value={jumlah}
-									onChange={(e) =>
-										setJumlah(
-											Math.min(
-												maxGuestCount,
-												Math.max(1, Number(e.target.value) || 1),
-											),
-										)
-									}
-									disabled={mode === "preview"}
-									required
-								/>
-								<small>
-									Maksimal {maxGuestCount} orang, termasuk Anda. Wajib diisi jika hadir.
-								</small>
-								<div className="cit-actions">
+					<section className="cit-section cit-section-warm">
+						<SectionHead kicker="Wishes & Prayers" title="Tinggalkan Pesan & Doa" />
+						<div className="cit-paper">
+							{alreadySent && mode === "live" ? (
+								<p className="cit-note">
+									Ucapan Anda sudah terkirim. Setiap tamu hanya dapat mengirim satu ucapan.
+								</p>
+							) : (
+								<div className="cit-form">
+									<label htmlFor="cit-ucapan">Tulis ucapan sebagai {guestName}</label>
+									<textarea
+										id="cit-ucapan"
+										rows={3}
+										maxLength={255}
+										value={ucapan}
+										onChange={(e) => setUcapan(e.target.value)}
+										placeholder="Tulis doa terbaik untuk kedua mempelai..."
+										disabled={mode === "preview"}
+									/>
 									<button
 										type="button"
 										className="cit-btn"
-										disabled={rsvpBusy || mode === "preview"}
-										onClick={() => handleRsvp(1)}
+										disabled={messageBusy || mode === "preview" || !ucapan.trim()}
+										onClick={handleMessage}
 									>
-										Hadir
-									</button>
-									<button
-										type="button"
-										className="cit-btn-ghost"
-										disabled={rsvpBusy || mode === "preview"}
-										onClick={() => handleRsvp(2)}
-									>
-										Tidak Hadir
+										Kirim Ucapan
 									</button>
 								</div>
-							</div>
-							{rsvpNotice && (
+							)}
+							{messageNotice && (
 								<p
-									className={`cit-feedback ${rsvpNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
+									className={`cit-feedback ${messageNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
 								>
-									{rsvpNotice.text}
+									{messageNotice.text}
 								</p>
 							)}
 							{mode === "preview" && (
-								<p className="cit-note">Mode preview: RSVP tidak dikirim.</p>
+								<p className="cit-note">Mode preview: ucapan tidak dikirim.</p>
 							)}
-							</div>
-						</section>
-					)}
-
-					<section className="cit-section">
-						<SectionHead kicker="Wishes" title="Ucapan & Doa" />
-						<div className="cit-paper">
-						{alreadySent && mode === "live" ? (
-							<p className="cit-note">
-								Ucapan Anda sudah terkirim. Setiap tamu hanya dapat mengirim satu ucapan.
-							</p>
-						) : (
-							<div className="cit-form">
-								<label htmlFor="cit-ucapan">Tulis ucapan sebagai {guestName}</label>
-								<textarea
-									id="cit-ucapan"
-									rows={3}
-									maxLength={255}
-									value={ucapan}
-									onChange={(e) => setUcapan(e.target.value)}
-									placeholder="Tulis ucapan untuk mempelai..."
-									disabled={mode === "preview"}
-								/>
-								<button
-									type="button"
-									className="cit-btn"
-									disabled={messageBusy || mode === "preview" || !ucapan.trim()}
-									onClick={handleMessage}
-								>
-									Kirim Ucapan
-								</button>
-							</div>
-						)}
-						{messageNotice && (
-							<p
-								className={`cit-feedback ${messageNotice.ok ? "cit-feedback-ok" : "cit-feedback-err"}`}
-							>
-								{messageNotice.text}
-							</p>
-						)}
-						{mode === "preview" && (
-							<p className="cit-note">Mode preview: ucapan tidak dikirim.</p>
-						)}
 						</div>
 						{publishedMessages.length > 0 && (
 							<div className="cit-message-list">
@@ -545,26 +607,26 @@ const ClassicInvitationTemplate: React.FC<ClassicInvitationProps> = ({
 						)}
 					</section>
 
-					<section
-						className="cit-section"
+					<footer
+						className="cit-closing"
 						style={
 							photos.akhir
 								? {
-										backgroundImage: `linear-gradient(rgba(27,36,28,0.72), rgba(27,36,28,0.86)), url("${getImageUrl(photos.akhir.pathImage)}")`,
-										backgroundSize: "cover",
-										backgroundPosition: "center",
-										color: "#fffaf3",
+										backgroundImage: `linear-gradient(180deg, rgba(31, 25, 19, 0.58), rgba(22, 18, 13, 0.88)), url("${getImageUrl(photos.akhir.pathImage)}")`,
 									}
-								: { background: "#1b241c", color: "#fffaf3" }
+								: undefined
 						}
 					>
-						<p className="cit-kicker cit-kicker-light">Terima kasih</p>
-						<h2 className="cit-section-title cit-title-light">
-							{bride} &amp; {groom}
-						</h2>
-						<InvitationFlourish className="cit-flourish cit-flourish-light" />
-						<p>Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir.</p>
-					</section>
+						<div className="cit-closing-inner">
+							<span className="cit-monogram cit-monogram-light">{monogram}</span>
+							<p className="cit-closing-line">
+								Two souls become one, two hearts beat as one
+							</p>
+							<h2 className="cit-section-title cit-title-light">{couple}</h2>
+							<InvitationFlourish className="cit-flourish cit-flourish-light" />
+							<p className="cit-closing-thanks">Thank you</p>
+						</div>
+					</footer>
 				</main>
 			</div>
 

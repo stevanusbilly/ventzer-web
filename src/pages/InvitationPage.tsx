@@ -8,6 +8,8 @@ import { ClassicInvitationTemplate } from "../invitation-templates/classic-tsx";
 import { ClassicInvitationPhotos } from "../invitation-templates/classic-tsx/types";
 import { BronzeInvitationTemplate } from "../invitation-templates/bronze-tsx";
 import { isBronzeTemplate } from "../invitation-templates/isBronzeTemplate";
+import { ChinesePremiumTemplate } from "../invitation-templates/chinese-premium";
+import { isChinesePremiumTemplate } from "../invitation-templates/isChinesePremiumTemplate";
 import { LOVE_STORY_CATEGORY } from "../utils/loveStory";
 
 const findPhoto = (photos: EventPhoto[], category: string): EventPhoto | null =>
@@ -132,9 +134,11 @@ const InvitationPage: React.FC = () => {
 		createdAt: row.createdAt,
 	}));
 
-	const Template = isBronzeTemplate(data.event)
-		? BronzeInvitationTemplate
-		: ClassicInvitationTemplate;
+	const Template = isChinesePremiumTemplate(data.event)
+		? ChinesePremiumTemplate
+		: isBronzeTemplate(data.event)
+			? BronzeInvitationTemplate
+			: ClassicInvitationTemplate;
 
 	return (
 		<Template

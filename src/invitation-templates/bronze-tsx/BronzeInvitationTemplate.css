@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap");
 
 @font-face {
 	font-family: "Batusa Font";
@@ -7,15 +7,17 @@
 }
 
 .bit-root {
-	--bit-forest: #212d21;
-	--bit-forest-mid: #334037;
-	--bit-forest-soft: #2b382e;
-	--bit-forest-deep: #000c0f;
-	--bit-cream: #eeefe7;
-	--bit-ink: #121f35;
-	--bit-gold: #c9b48a;
+	--bit-forest: #19241b;
+	--bit-forest-mid: #243328;
+	--bit-forest-soft: #1f2d23;
+	--bit-forest-deep: #0e1510;
+	--bit-cream: #f4efe6;
+	--bit-cream-card: #fbf8f2;
+	--bit-bronze: #c69c6d;
+	--bit-bronze-soft: #e2c7a4;
+	--bit-line: rgba(198, 156, 109, 0.32);
 	--bit-serif: "Batusa Font", "DM Serif Display", Georgia, serif;
-	--bit-sans: "Montserrat", "Segoe UI", sans-serif;
+	--bit-sans: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 	min-height: 100vh;
 	background: var(--bit-forest);
 	color: var(--bit-cream);
@@ -35,37 +37,58 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	padding: 4rem 1.25rem;
-	background-color: #000c0f;
+	padding: 2.2rem 1.25rem;
+	background-color: var(--bit-forest-deep);
+	background-image: radial-gradient(circle at 50% 20%, rgba(198, 156, 109, 0.24), transparent 32rem);
 	background-size: cover;
 	background-position: center;
 	text-align: center;
-	transition: transform 1s ease;
+	transition: transform 1.05s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .bit-cover::before {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(180deg, rgba(0, 4, 10, 0.36) 58%, #000c0f 100%);
+	background: linear-gradient(180deg, rgba(14, 21, 16, 0.42) 0%, rgba(14, 21, 16, 0.88) 100%);
 }
 
 .bit-opened .bit-cover {
-	transform: translateY(-110%);
+	transform: translateY(-108%);
 	pointer-events: none;
 }
 
 .bit-cover-inner {
 	position: relative;
 	z-index: 1;
-	width: min(440px, 100%);
+	width: min(430px, 100%);
 }
 
 .bit-cover-frame {
-	padding: 2.2rem 1.5rem 2rem;
-	border: 1px solid rgba(238, 239, 231, 0.28);
-	background: rgba(0, 12, 15, 0.34);
-	box-shadow: inset 0 0 0 8px rgba(238, 239, 231, 0.08);
+	padding: 2.7rem 1.7rem 2.2rem;
+	border-radius: 220px 220px 26px 26px;
+	border: 1px solid rgba(226, 199, 164, 0.42);
+	background: rgba(18, 27, 20, 0.56);
+	backdrop-filter: blur(12px);
+	box-shadow:
+		0 28px 60px rgba(0, 0, 0, 0.42),
+		inset 0 0 0 8px rgba(198, 156, 109, 0.1);
+}
+
+.bit-monogram {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 3.4rem;
+	height: 2.1rem;
+	padding: 0 0.8rem;
+	margin-bottom: 0.85rem;
+	border-radius: 999px;
+	border: 1px solid var(--bit-line);
+	font-family: var(--bit-serif);
+	font-size: 0.9rem;
+	letter-spacing: 0.16em;
+	color: var(--bit-bronze-soft);
 }
 
 .bit-kicker,
@@ -73,67 +96,71 @@
 	margin: 0 0 0.45rem;
 	font-family: var(--bit-sans);
 	font-size: 0.68rem;
-	letter-spacing: 0.24em;
+	font-weight: 600;
+	letter-spacing: 0.26em;
 	text-transform: uppercase;
-	color: var(--bit-gold);
+	color: var(--bit-bronze-soft);
 }
 
 .bit-kicker-dark {
-	color: #6d7a63;
+	color: #8f6b43;
 }
 
-.bit-invite-line {
-	margin: 0 0 1rem;
-	font-family: var(--bit-sans);
-	font-size: 0.95rem;
-	line-height: 1.7;
-	opacity: 0.9;
-}
-
-.bit-cover-date {
-	margin: 0.85rem 0 1.1rem;
+.bit-cover-date,
+.bit-opening-date {
+	margin: 0.8rem 0 1.25rem;
 	font-family: var(--bit-sans);
 	font-size: 0.8rem;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: rgba(238, 239, 231, 0.78);
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	color: var(--bit-bronze-soft);
+}
+
+.bit-guest-plaque {
+	margin: 0 auto;
+	padding: 0.95rem 1rem;
+	border-radius: 16px;
+	border: 1px solid var(--bit-line);
+	background: rgba(244, 239, 230, 0.06);
 }
 
 .bit-guest {
 	margin: 0;
 	font-family: var(--bit-sans);
-	font-size: 0.75rem;
+	font-size: 0.68rem;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	opacity: 0.72;
+	opacity: 0.78;
 }
 
 .bit-guest-name {
-	margin: 0.2rem 0 0;
-	font-size: 1.4rem;
+	margin: 0.35rem 0 0;
+	font-size: 1.45rem;
+	color: var(--bit-cream);
 }
 
 .bit-cover h1,
 .bit-opening-names,
-.bit-person h3,
-.bit-loc-name,
+.bit-person-card h3,
 .bit-section-title,
-.bit-footer-names {
+.bit-footer-names,
+.bit-side-names {
 	font-family: var(--bit-serif);
 	font-weight: 600;
 }
 
 .bit-cover h1 {
-	font-size: clamp(2.1rem, 8vw, 2.7rem);
-	margin: 0 0 0.7rem;
-	line-height: 1.1;
+	font-size: clamp(2.15rem, 8vw, 2.95rem);
+	margin: 0.15rem 0 0.7rem;
+	line-height: 1.08;
 }
 
 .bit-amp {
 	display: block;
+	margin: 0.15rem 0;
 	font-style: italic;
-	font-size: 1.2rem;
-	color: var(--bit-gold);
+	font-size: 1.25rem;
+	color: var(--bit-bronze-soft);
 }
 
 .bit-open-btn,
@@ -142,22 +169,30 @@
 .bit-music {
 	border: 0;
 	cursor: pointer;
-	font-family: var(--bit-serif);
+	font-family: var(--bit-sans);
+	text-decoration: none;
+	transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .bit-open-btn {
 	display: inline-block;
-	margin-top: 1.4rem;
-	padding: 0.75rem 1.5rem;
-	background: #fff;
-	color: #000;
-	font-size: 1rem;
-	border-radius: 2px;
+	margin-top: 1.35rem;
+	padding: 0.85rem 1.8rem;
+	background: linear-gradient(135deg, #e2c7a4 0%, #b88958 100%);
+	color: #161f18;
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	border-radius: 999px;
+}
+
+.bit-open-btn:hover,
+.bit-btn:hover {
+	transform: translateY(-1px);
 }
 
 .bit-shell {
-	display: grid;
-	grid-template-columns: minmax(280px, 42%) 1fr;
 	min-height: 100vh;
 }
 
@@ -165,7 +200,7 @@
 	position: sticky;
 	top: 0;
 	height: 100vh;
-	background-color: var(--bit-forest-mid);
+	background-color: var(--bit-forest-deep);
 	background-size: cover;
 	background-position: center;
 	display: none;
@@ -175,14 +210,41 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(90deg, rgba(255, 255, 255, 0) 44%, #313e35 100%);
+	background: linear-gradient(180deg, rgba(14, 21, 16, 0.28) 0%, rgba(25, 36, 27, 0.88) 100%);
 }
 
 .bit-side-copy {
 	position: absolute;
-	inset: auto 1.4rem 2rem 1.4rem;
+	inset: auto 2.4rem 2.6rem 2.4rem;
 	z-index: 1;
-	text-align: right;
+	padding: 1.7rem 1.5rem;
+	border-radius: 24px;
+	border: 1px solid var(--bit-line);
+	background: rgba(14, 21, 16, 0.5);
+	backdrop-filter: blur(10px);
+}
+
+.bit-side-kicker {
+	margin: 0;
+	font-family: var(--bit-sans);
+	font-size: 0.68rem;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--bit-bronze-soft);
+}
+
+.bit-side-names {
+	margin: 0.35rem 0 0.45rem;
+	font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+	line-height: 1.08;
+}
+
+.bit-side-date {
+	margin: 0;
+	font-family: var(--bit-sans);
+	font-size: 0.78rem;
+	letter-spacing: 0.22em;
+	color: rgba(244, 239, 230, 0.84);
 }
 
 .bit-scroll-hint {
@@ -191,13 +253,24 @@
 	left: 0;
 	right: 0;
 	z-index: 1;
+	font-family: var(--bit-sans);
+	font-size: 0.7rem;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--bit-bronze-soft);
 	text-align: center;
-	animation: bit-bounce 1.4s ease-in-out infinite;
+	animation: bit-bounce 1.5s ease-in-out infinite;
+}
+
+.bit-scroll-mobile {
+	position: static;
+	margin: 0 0 1.1rem;
 }
 
 .bit-scroll-hint span {
 	display: block;
-	font-size: 1.4rem;
+	margin-bottom: 0.2rem;
+	font-size: 1.1rem;
 }
 
 @keyframes bit-bounce {
@@ -206,7 +279,7 @@
 		transform: translateY(0);
 	}
 	50% {
-		transform: translateY(8px);
+		transform: translateY(6px);
 	}
 }
 
@@ -215,11 +288,11 @@
 }
 
 .bit-opening {
-	min-height: 62vh;
+	min-height: 76vh;
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
 	justify-content: center;
-	padding: 4rem 1.5rem 3rem;
+	padding: 4.4rem 1.5rem 3.6rem;
 	background-color: var(--bit-forest-mid);
 	background-size: cover;
 	background-position: center;
@@ -231,50 +304,69 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0) 65%, #334037 100%);
+	background: linear-gradient(180deg, rgba(14, 21, 16, 0.4) 0%, #19241b 92%);
 }
 
 .bit-opening-inner {
 	position: relative;
 	z-index: 1;
-}
-
-.bit-opening p {
-	margin: 0;
-	letter-spacing: 0.12em;
+	width: min(34rem, 100%);
+	padding: 2.5rem 1.6rem 2.2rem;
+	border-radius: 180px 180px 28px 28px;
+	border: 1px solid var(--bit-line);
+	background: rgba(20, 29, 22, 0.68);
+	backdrop-filter: blur(10px);
 }
 
 .bit-opening-names {
-	font-size: clamp(1.8rem, 7vw, 2.3rem);
-	margin: 0.35rem 0 0.7rem;
+	font-size: clamp(2rem, 7vw, 2.75rem);
+	margin: 0.2rem 0 0.65rem;
+	line-height: 1.08;
 }
 
-.bit-rule {
-	width: 30px;
-	height: 2px;
-	margin: 0 auto 0.7rem;
-	background: #fff;
+.bit-opening-lead {
+	margin: 0 auto;
+	max-width: 28rem;
+	font-family: var(--bit-sans);
+	font-size: 0.9rem;
+	line-height: 1.75;
+	color: rgba(244, 239, 230, 0.84);
+}
+
+.bit-chip {
+	display: inline-block;
+	margin-top: 1.2rem;
+	padding: 0.42rem 0.95rem;
+	border-radius: 999px;
+	border: 1px solid var(--bit-line);
+	font-family: var(--bit-sans);
+	font-size: 0.74rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--bit-bronze-soft);
 }
 
 .bit-section {
-	padding: 3.4rem 1.4rem;
+	padding: 4rem 1.45rem;
 	text-align: center;
 }
 
 .bit-section-forest {
-	background-image: linear-gradient(180deg, #334037 0%, #212d21 100%);
+	background-image: linear-gradient(180deg, #19241b 0%, #243328 100%);
 }
 
 .bit-section-forest-alt {
-	background-image: linear-gradient(180deg, #212d21 0%, #334037 100%);
+	background-image: linear-gradient(180deg, #243328 0%, #19241b 100%);
 }
 
 .bit-section-moss {
-	background-image: linear-gradient(180deg, #323f36 0%, #2b382e 100%);
+	background-image: linear-gradient(180deg, #1f2d23 0%, #19241b 100%);
+	border-top: 1px solid rgba(198, 156, 109, 0.16);
+	border-bottom: 1px solid rgba(198, 156, 109, 0.16);
 }
 
 .bit-section-soft {
-	background: #2b382e;
+	background: var(--bit-forest-soft);
 }
 
 .bit-section-cream,
@@ -288,23 +380,24 @@
 }
 
 .bit-head {
-	margin-bottom: 1.5rem;
+	margin-bottom: 1.7rem;
 }
 
 .bit-head-light .bit-kicker,
 .bit-head-light .bit-flourish {
-	color: #6d7a63;
+	color: #8f6b43;
 }
 
 .bit-section-title {
-	font-size: clamp(1.7rem, 5vw, 2.1rem);
-	margin: 0 0 0.7rem;
+	font-size: clamp(1.85rem, 5vw, 2.35rem);
+	margin: 0 0 0.65rem;
+	line-height: 1.12;
 }
 
 .bit-flourish {
 	display: inline-flex;
-	width: 88px;
-	color: var(--bit-gold);
+	width: 92px;
+	color: var(--bit-bronze);
 }
 
 .bit-flourish svg {
@@ -313,219 +406,332 @@
 }
 
 .bit-flourish-light {
-	color: rgba(238, 239, 231, 0.82);
+	color: var(--bit-bronze-soft);
+}
+
+.bit-quote-frame {
+	max-width: 36rem;
+	margin: 0 auto;
+	padding: 2.2rem 1.5rem;
+	border-radius: 26px;
+	border: 1px solid var(--bit-line);
+	background: rgba(15, 22, 17, 0.36);
 }
 
 .bit-quote {
 	font-family: var(--bit-sans);
-	font-size: 1rem;
+	font-size: 0.98rem;
 	line-height: 1.85;
 	white-space: pre-wrap;
-	margin: 0 auto;
-	max-width: 34rem;
+	margin: 0 auto 1rem;
+	max-width: 32rem;
+	color: rgba(244, 239, 230, 0.9);
+}
+
+.bit-quote-gap {
+	margin-bottom: 1.5rem;
+}
+
+.bit-lead-dark {
+	margin: 0 auto 1.5rem;
+	max-width: 32rem;
+	font-family: var(--bit-sans);
+	font-size: 0.92rem;
+	line-height: 1.75;
+	color: rgba(25, 36, 27, 0.78);
 }
 
 .bit-couple {
 	display: grid;
-	gap: 1.2rem;
-	align-items: start;
+	gap: 1.4rem;
+	align-items: stretch;
+	max-width: 48rem;
+	margin: 0 auto;
 }
 
 .bit-couple-and {
 	display: none;
-	font-size: 2.2rem;
+	font-size: 2.3rem;
 	align-self: center;
-	color: var(--bit-gold);
+	color: var(--bit-bronze-soft);
 }
 
 .bit-person-card,
 .bit-loc-item,
 .bit-paper,
 .bit-gift-card {
-	border-radius: 16px;
+	border-radius: 24px;
 }
 
 .bit-person-card {
-	background: var(--bit-cream);
+	background: var(--bit-cream-card);
 	color: var(--bit-forest);
-	padding: 1.5rem 1.2rem;
-	margin: 0;
+	padding: 1.8rem 1.35rem;
+	border: 1px solid rgba(198, 156, 109, 0.35);
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
 }
 
-.bit-person-card img {
-	width: 100%;
+.bit-portrait-arch {
+	width: min(220px, 78%);
 	aspect-ratio: 3 / 4;
+	margin: 0.4rem auto 1.15rem;
+	padding: 0.42rem;
+	border-radius: 999px 999px 20px 20px;
+	border: 1px solid rgba(198, 156, 109, 0.45);
+	background: var(--bit-cream);
+}
+
+.bit-portrait-arch img {
+	width: 100%;
+	height: 100%;
 	object-fit: cover;
-	border-radius: 10px;
-	margin: 0.4rem 0 1rem;
+	border-radius: 999px 999px 15px 15px;
 }
 
 .bit-person-card h3 {
 	font-size: 1.55rem;
-	margin: 0 0 0.6rem;
-	color: #212d21;
+	margin: 0 0 0.5rem;
+	color: var(--bit-forest);
 }
 
 .bit-person-card p,
 .bit-loc-card p {
 	margin: 0.25rem 0;
 	white-space: pre-wrap;
-	color: #121f35;
+	color: #36453a;
 	font-family: var(--bit-sans);
-	font-size: 0.92rem;
+	font-size: 0.9rem;
 	line-height: 1.65;
 }
 
-.bit-person-card a {
-	color: #212d21;
+.bit-social {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-top: 0.85rem;
+	padding: 0.4rem 0.95rem;
+	border-radius: 999px;
+	border: 1px solid rgba(198, 156, 109, 0.48);
+	font-family: var(--bit-sans);
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--bit-forest);
+	text-decoration: none;
+}
+
+.bit-date-banner {
+	display: inline-block;
+	margin: 0 auto 1.5rem;
+	padding: 0.5rem 1.25rem;
+	border-radius: 999px;
+	border: 1px solid var(--bit-line);
+	background: rgba(14, 21, 16, 0.42);
+	font-family: var(--bit-sans);
+	font-size: 0.86rem;
+	letter-spacing: 0.08em;
+	color: var(--bit-bronze-soft);
 }
 
 .bit-loc-grid,
 .bit-gift-grid {
 	display: grid;
-	gap: 1rem;
-	max-width: 44rem;
+	gap: 1.1rem;
+	max-width: 46rem;
 	margin: 0 auto;
 }
 
 .bit-loc-item {
-	border: 1px solid rgba(238, 239, 231, 0.22);
-	padding: 1.4rem 1.1rem 1.5rem;
+	border: 1px solid var(--bit-line);
+	border-radius: 120px 120px 24px 24px;
+	background: rgba(14, 21, 16, 0.42);
+	padding: 2rem 1.35rem 1.65rem;
+}
+
+.bit-loc-tag {
+	display: inline-block;
+	padding: 0.32rem 0.9rem;
+	border-radius: 999px;
+	border: 1px solid var(--bit-line);
+	font-family: var(--bit-sans);
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--bit-bronze-soft);
+}
+
+.bit-loc-time {
+	margin: 0.95rem 0 0.2rem;
+	font-size: 1.45rem;
+	color: var(--bit-cream);
+}
+
+.bit-loc-date {
+	margin: 0;
+	font-family: var(--bit-sans);
+	font-size: 0.84rem;
+	color: rgba(244, 239, 230, 0.76);
+}
+
+.bit-loc-divider {
+	width: 3.2rem;
+	height: 1px;
+	margin: 1rem auto;
+	background: var(--bit-line);
 }
 
 .bit-loc-card {
-	padding: 0 0 1rem;
+	padding: 0 0 1.15rem;
 }
 
 .bit-loc-card h3 {
-	margin: 0.2rem 0 0.8rem;
+	margin: 0 0 0.45rem;
 	color: var(--bit-cream);
-	font-size: 1.5rem;
+	font-size: 1.4rem;
 }
 
-.bit-meta-list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	text-align: left;
-}
-
-.bit-meta-list li {
-	position: relative;
-	padding: 0.4rem 0 0.4rem 1rem;
-	border-bottom: 1px solid rgba(238, 239, 231, 0.12);
-	font-family: var(--bit-sans);
-	font-size: 0.88rem;
-	line-height: 1.55;
-	color: rgba(238, 239, 231, 0.86);
-}
-
-.bit-meta-list li::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 0.85rem;
-	width: 5px;
-	height: 5px;
-	border-radius: 50%;
-	background: var(--bit-gold);
+.bit-loc-card p {
+	color: rgba(244, 239, 230, 0.8);
 }
 
 .bit-calendar-wrap {
-	margin: 1.3rem 0 0;
+	margin: 1.4rem 0 0;
 }
 
 .bit-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 2.4rem;
-	padding: 0 1.2rem;
-	background: var(--bit-cream);
-	color: #212d21;
-	border-radius: 5px;
-	font-size: 0.95rem;
-	box-shadow: 0 12px 18px -6px rgba(0, 0, 0, 0.22);
-	text-decoration: none;
+	gap: 0.45rem;
+	min-height: 2.55rem;
+	padding: 0 1.25rem;
+	background: linear-gradient(135deg, #e2c7a4 0%, #b88958 100%);
+	color: #161f18;
+	border-radius: 999px;
+	font-size: 0.84rem;
+	font-weight: 600;
+	box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.35);
+}
+
+.bit-btn:disabled,
+.bit-btn-ghost:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+	transform: none;
 }
 
 .bit-btn-dark {
-	background: #212d21;
+	background: var(--bit-forest);
 	color: var(--bit-cream);
 	box-shadow: none;
-	margin-top: 0.4rem;
+	margin-top: 0.35rem;
 }
 
 .bit-btn-ghost {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 2.4rem;
-	padding: 0 1.2rem;
+	gap: 0.45rem;
+	min-height: 2.55rem;
+	padding: 0 1.25rem;
 	background: transparent;
-	color: var(--bit-cream);
-	border: 1px solid rgba(238, 239, 231, 0.35);
-	border-radius: 5px;
+	color: var(--bit-bronze-soft);
+	border: 1px solid var(--bit-line);
+	border-radius: 999px;
+	font-size: 0.84rem;
+	font-weight: 600;
 }
 
 .bit-gift-card {
-	background: linear-gradient(160deg, #fff 0%, #ecece4 100%);
-	color: #000;
-	padding: 1.4rem 1.1rem 1.5rem;
+	text-align: left;
+	background:
+		radial-gradient(circle at 100% 0%, rgba(198, 156, 109, 0.24), transparent 14rem),
+		var(--bit-cream-card);
+	color: var(--bit-forest);
+	border: 1px solid rgba(198, 156, 109, 0.42);
+	padding: 1.65rem 1.35rem;
 }
 
-.bit-gift-card h4 {
-	margin: 0.15rem 0 0.6rem;
-	font-size: 1.35rem;
+.bit-gift-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+	color: #8f6b43;
+}
+
+.bit-gift-top .bit-kicker {
+	margin: 0;
+}
+
+.bit-gift-label {
+	margin: 0;
+	font-family: var(--bit-sans);
+	font-size: 0.72rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #5b665c;
 }
 
 .bit-gift-num {
 	font-family: var(--bit-sans);
-	font-size: 1.15rem;
-	letter-spacing: 0.04em;
-	margin: 0.4rem 0 1rem;
+	font-size: 1.35rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	margin: 0.25rem 0 0.35rem;
 }
 
-.bit-gift-card .bit-btn {
-	background: #000;
-	color: #fff;
-	font-size: 0.8rem;
-	border-radius: 0;
-	box-shadow: none;
+.bit-gift-card h4 {
+	margin: 0 0 1rem;
+	font-family: var(--bit-sans);
+	font-size: 0.95rem;
+	font-weight: 500;
+	color: #465347;
 }
 
 .bit-countdown {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 0.5rem;
-	max-width: 26rem;
-	margin: 0 auto 1.8rem;
+	gap: 0.65rem;
+	max-width: 28rem;
+	margin: 0 auto 2.2rem;
 }
 
 .bit-count-box {
-	background: var(--bit-cream);
-	color: #212d21;
-	border-radius: 8px;
-	padding: 0.85rem 0.2rem;
+	background: rgba(14, 21, 16, 0.5);
+	color: var(--bit-cream);
+	border: 1px solid var(--bit-line);
+	border-radius: 999px 999px 18px 18px;
+	padding: 1.1rem 0.25rem 0.9rem;
 }
 
 .bit-count-box strong {
 	display: block;
-	font-size: 1.8rem;
+	font-size: 1.75rem;
+	line-height: 1.05;
 }
 
 .bit-count-box span {
+	display: block;
+	margin-top: 0.3rem;
 	font-family: var(--bit-sans);
-	font-size: 0.72rem;
-	letter-spacing: 0.08em;
+	font-size: 0.68rem;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
+	color: var(--bit-bronze-soft);
+}
+
+.bit-gallery-shell {
+	max-width: 42rem;
+	margin: 0 auto;
 }
 
 .bit-gallery-main {
-	width: min(42rem, 100%);
+	width: 100%;
 	aspect-ratio: 16 / 10;
 	margin: 0 auto 0.7rem;
-	border-radius: 10px;
+	border-radius: 20px;
+	border: 1px solid var(--bit-line);
 	background-size: cover;
 	background-position: center;
 }
@@ -533,38 +739,37 @@
 .bit-gallery-thumbs {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 0.45rem;
-	max-width: 42rem;
-	margin: 0 auto;
+	gap: 0.5rem;
 }
 
 .bit-gallery-thumbs button {
 	aspect-ratio: 1;
-	border: 0;
+	border: 1px solid transparent;
 	padding: 0;
-	border-radius: 6px;
+	border-radius: 12px;
 	background-size: cover;
 	background-position: center;
 	cursor: pointer;
-	opacity: 0.7;
+	opacity: 0.68;
 }
 
 .bit-gallery-thumbs button.bit-active {
 	opacity: 1;
-	outline: 2px solid var(--bit-cream);
+	border-color: var(--bit-bronze-soft);
 }
 
 .bit-paper {
-	max-width: 28rem;
+	max-width: 30rem;
 	margin: 0 auto;
-	background: #fff;
-	padding: 1.4rem 1.2rem 1.5rem;
-	box-shadow: 0 12px 28px rgba(33, 45, 33, 0.08);
+	background: var(--bit-cream-card);
+	border: 1px solid rgba(198, 156, 109, 0.35);
+	padding: 1.65rem 1.35rem;
+	box-shadow: 0 16px 34px rgba(25, 36, 27, 0.08);
 }
 
 .bit-form {
 	display: grid;
-	gap: 0.7rem;
+	gap: 0.75rem;
 	text-align: left;
 	color: var(--bit-forest);
 }
@@ -572,7 +777,11 @@
 .bit-form label,
 .bit-form small {
 	font-family: var(--bit-sans);
-	font-size: 0.85rem;
+	font-size: 0.82rem;
+}
+
+.bit-form small {
+	color: #5b665c;
 }
 
 .bit-form input,
@@ -580,10 +789,13 @@
 .bit-form select {
 	width: 100%;
 	box-sizing: border-box;
-	border: 1px solid rgba(33, 45, 33, 0.18);
-	padding: 0.65rem 0.75rem;
+	border: 1px solid rgba(25, 36, 27, 0.2);
+	padding: 0.72rem 0.85rem;
 	font-family: var(--bit-sans);
-	border-radius: 8px;
+	font-size: 0.92rem;
+	border-radius: 12px;
+	background: #fff;
+	color: var(--bit-forest);
 }
 
 .bit-actions {
@@ -594,8 +806,10 @@
 }
 
 .bit-message-list {
-	max-width: 28rem;
-	margin: 1.4rem auto 0;
+	display: grid;
+	gap: 0.7rem;
+	max-width: 30rem;
+	margin: 1.5rem auto 0;
 	max-height: 60vh;
 	overflow: hidden;
 	text-align: left;
@@ -606,33 +820,35 @@
 }
 
 .bit-message {
-	padding: 0.9rem 0;
-	border-bottom: 1px solid rgba(33, 45, 33, 0.08);
+	padding: 0.95rem 1.1rem;
+	border-radius: 16px;
+	background: var(--bit-cream-card);
+	border: 1px solid rgba(198, 156, 109, 0.28);
 }
 
 .bit-message strong {
 	display: block;
 	margin-bottom: 0.25rem;
+	font-size: 1.05rem;
 }
 
 .bit-message p {
 	margin: 0;
 	font-family: var(--bit-sans);
-	font-size: 0.92rem;
-	line-height: 1.55;
+	font-size: 0.9rem;
+	line-height: 1.6;
+	color: #425144;
 }
 
 .bit-message-own {
-	background: rgba(33, 45, 33, 0.04);
-	padding-left: 0.7rem;
-	padding-right: 0.7rem;
-	border-radius: 8px;
+	border-color: #8f6b43;
+	background: #fbf3e4;
 }
 
 .bit-feedback {
 	font-family: var(--bit-sans);
 	font-size: 0.85rem;
-	margin: 0;
+	margin: 0.35rem 0 0;
 	text-align: center;
 }
 
@@ -644,29 +860,35 @@
 	color: #8b3a3a;
 }
 
+.bit-video-stack {
+	display: grid;
+	gap: 1rem;
+	justify-items: center;
+}
+
 .bit-video {
-	width: min(36rem, 100%);
+	width: min(38rem, 100%);
 	aspect-ratio: 16 / 9;
-	border: 0;
-	margin-top: 0.4rem;
-	border-radius: 10px;
+	border: 1px solid var(--bit-line);
+	border-radius: 20px;
 }
 
 .bit-music {
 	position: fixed;
-	right: 10px;
-	bottom: 20px;
+	right: 1rem;
+	bottom: 1.1rem;
 	z-index: 60;
-	width: 40px;
-	height: 40px;
-	border-radius: 5px;
-	background: #fff;
-	color: #212d21;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+	width: 2.9rem;
+	height: 2.9rem;
+	border-radius: 50%;
+	border: 1px solid var(--bit-line);
+	background: var(--bit-forest-deep);
+	color: var(--bit-bronze-soft);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
 .bit-music.is-playing {
-	box-shadow: 0 0 0 4px rgba(238, 239, 231, 0.35);
+	box-shadow: 0 0 0 4px rgba(198, 156, 109, 0.32);
 }
 
 .bit-preview-badge {
@@ -674,18 +896,22 @@
 	left: 1rem;
 	top: 1rem;
 	z-index: 50;
-	background: var(--bit-cream);
-	color: #212d21;
-	padding: 0.35rem 0.7rem;
-	font-size: 0.75rem;
-	letter-spacing: 0.06em;
+	background: rgba(14, 21, 16, 0.82);
+	border: 1px solid var(--bit-line);
+	color: var(--bit-bronze-soft);
+	padding: 0.35rem 0.8rem;
+	border-radius: 999px;
+	font-family: var(--bit-sans);
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 }
 
 .bit-note {
 	font-family: var(--bit-sans);
 	font-size: 0.8rem;
-	opacity: 0.8;
+	opacity: 0.82;
 	margin-top: 0.7rem;
 }
 
@@ -694,21 +920,34 @@
 }
 
 .bit-footer {
-	background: var(--bit-cream);
-	color: #212d21;
-	padding: 2.6rem 1.2rem 3.2rem;
+	background-color: var(--bit-forest-deep);
+	background-size: cover;
+	background-position: center;
+	color: var(--bit-cream);
+	padding: 4.4rem 1.4rem 3.8rem;
 	text-align: center;
 }
 
-.bit-footer p {
-	margin: 0.35rem 0;
+.bit-footer-line {
+	margin: 0.35rem 0 0.25rem;
 	font-family: var(--bit-sans);
+	font-size: 0.92rem;
+	font-style: italic;
+	color: var(--bit-bronze-soft);
 }
 
 .bit-footer-names {
-	font-family: var(--bit-serif) !important;
-	font-size: 1.8rem;
-	margin: 0.2rem 0 0.7rem !important;
+	font-size: 2rem;
+	margin: 0.2rem 0 0.75rem;
+}
+
+.bit-footer-thanks {
+	margin: 0.7rem 0 0;
+	font-family: var(--bit-sans);
+	font-size: 0.75rem;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--bit-bronze-soft);
 }
 
 @media (min-width: 720px) {
@@ -719,14 +958,21 @@
 }
 
 @media (min-width: 960px) {
+	.bit-shell {
+		display: grid;
+		grid-template-columns: minmax(320px, 43%) 1fr;
+	}
+
 	.bit-side {
 		display: block;
 	}
 
+	.bit-scroll-mobile {
+		display: none;
+	}
+
 	.bit-couple {
 		grid-template-columns: 1fr auto 1fr;
-		max-width: 52rem;
-		margin: 0 auto;
 	}
 
 	.bit-couple-and {
@@ -734,7 +980,7 @@
 	}
 
 	.bit-section {
-		padding: 4.2rem 3rem;
+		padding: 4.8rem 3rem;
 	}
 
 	.bit-section-wishes {

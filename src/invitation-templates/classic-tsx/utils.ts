@@ -55,6 +55,14 @@ export const formatShortDate = (value?: string | null): string => {
 	return `${String(date.getDate()).padStart(2, "0")} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 };
 
+export const formatDotDate = (value?: string | null): string => {
+	const date = parseDate(value);
+	if (!date) return "";
+	const day = String(date.getDate()).padStart(2, "0");
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	return `${day} . ${month} . ${date.getFullYear()}`;
+};
+
 export const formatTime = (value?: string | null): string => {
 	if (!value) return "";
 	return value.substring(0, 5);

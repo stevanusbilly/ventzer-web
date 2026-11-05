@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { BronzeInvitationProps } from "./types";
 import { getApiErrorMessage } from "../../utils/apiError";
 import {
+	formatDotDate,
 	formatLongDate,
 	formatShortDate,
 	formatTime,
@@ -121,6 +122,7 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 	const bride = wedding?.namaPanggilanBride || "Bride";
 	const groom = wedding?.namaPanggilanGroom || "Groom";
 	const couple = `${bride} & ${groom}`;
+	const monogram = `${bride.charAt(0).toUpperCase()} · ${groom.charAt(0).toUpperCase()}`;
 	const coverUrl = getImageUrl(photos.cover?.pathImage || photos.opening?.pathImage);
 	const sideUrl = getImageUrl(photos.background?.pathImage || photos.opening?.pathImage);
 	const openingUrl = getImageUrl(photos.opening?.pathImage || photos.cover?.pathImage);
@@ -133,6 +135,7 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 	);
 	const prewedding = youtubeEmbedUrl(wedding?.urlVideoPrewedding);
 	const streaming = youtubeEmbedUrl(wedding?.urlVideoStreaming);
+	const dotDate = formatDotDate(event.date) || formatShortDate(event.date);
 
 	const publishedMessages = useMemo(
 		() => messages.filter((row) => row.published !== 0),
@@ -218,7 +221,7 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 
 	return (
 		<div className={`bit-root ${opened ? "bit-opened" : "bit-locked"}`}>
-			{mode === "preview" && <div className="bit-preview-badge">Preview Bronze TSX</div>}
+			{mode === "preview" && <div className="bit-preview-badge">Forest Bronze</div>}
 
 			<InvitationMusicEngine
 				kind={kind}
@@ -238,17 +241,19 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 			>
 				<div className="bit-cover-inner">
 					<div className="bit-cover-frame">
-						<p className="bit-kicker">You Are Invited</p>
-						<p className="bit-invite-line">{wedding?.openingText || "The Wedding Celebration of"}</p>
+						<span className="bit-monogram">{monogram}</span>
+						<p className="bit-kicker">The Wedding Celebration</p>
 						<h1>
 							{bride}
 							<span className="bit-amp">&amp;</span>
 							{groom}
 						</h1>
 						<InvitationFlourish className="bit-flourish bit-flourish-light" />
-						<p className="bit-cover-date">{formatShortDate(event.date)}</p>
-						<p className="bit-guest">Dear</p>
-						<p className="bit-guest-name">{guestName}</p>
+						<p className="bit-cover-date">{dotDate}</p>
+						<div className="bit-guest-plaque">
+							<p className="bit-guest">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+							<p className="bit-guest-name">{guestName}</p>
+						</div>
 						<button type="button" className="bit-open-btn" onClick={openInvitation}>
 							Buka Undangan
 						</button>
@@ -265,7 +270,12 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 						<span>↓</span>
 						Scroll Kebawah
 					</p>
-					<p className="bit-side-copy">The Wedding of {couple}</p>
+					<div className="bit-side-copy">
+						<span className="bit-monogram">{monogram}</span>
+						<p className="bit-side-kicker">The Wedding of</p>
+						<p className="bit-side-names">{couple}</p>
+						<p className="bit-side-date">{dotDate}</p>
+					</div>
 				</aside>
 
 				<main className="bit-main">
@@ -274,36 +284,56 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 						style={openingUrl ? { backgroundImage: `url("${openingUrl}")` } : undefined}
 					>
 						<div className="bit-opening-inner">
-							<p>The Wedding of</p>
+							<p className="bit-scroll-hint bit-scroll-mobile">
+								<span>↓</span>
+								Scroll Kebawah
+							</p>
+							<p className="bit-kicker">The Wedding of</p>
 							<p className="bit-opening-names">{couple}</p>
-							<div className="bit-rule" />
-							<p>{formatShortDate(event.date)}</p>
+							<InvitationFlourish className="bit-flourish bit-flourish-light" />
+							<p className="bit-opening-date">{dotDate}</p>
+							<p className="bit-opening-lead">
+								{wedding?.openingText ||
+									"Dengan memohon rahmat dan ridho Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i hadir dalam hari bahagia kami."}
+							</p>
+							{event.dresscode && (
+								<span className="bit-chip">Dress code · {event.dresscode}</span>
+							)}
 						</div>
 					</section>
 
 					{wedding?.quote && (
 						<section className="bit-section bit-section-forest">
-							<SectionHead kicker="Sebuah Ayat" title="Quote" />
-							<p className="bit-quote">{wedding.quote}</p>
+							<div className="bit-quote-frame">
+								<span className="bit-monogram">{monogram}</span>
+								<p className="bit-quote">“{wedding.quote}”</p>
+								<InvitationFlourish className="bit-flourish" />
+							</div>
 						</section>
 					)}
 
 					<section className="bit-section bit-section-forest-alt">
-						<SectionHead kicker="Mempelai" title="The Bride & The Groom" />
+						<SectionHead kicker="The Beloved Couple" title="Mempelai" />
 						<div className="bit-couple">
 							<article className="bit-person-card">
 								<p className="bit-kicker bit-kicker-dark">The Bride</p>
 								{flags.fotoProfil && photos.profilBride && (
-									<img src={getImageUrl(photos.profilBride.pathImage)} alt={bride} />
+									<div className="bit-portrait-arch">
+										<img src={getImageUrl(photos.profilBride.pathImage)} alt={bride} />
+									</div>
 								)}
 								<h3>{wedding?.namaLengkapBride || bride}</h3>
 								<p>{wedding?.bioBride}</p>
 								{flags.socialMedia && wedding?.sosmedBride && (
-									<p>
-										<a href={wedding.sosmedBride} target="_blank" rel="noreferrer">
-											Instagram
-										</a>
-									</p>
+									<a
+										className="bit-social"
+										href={wedding.sosmedBride}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<i className="pi pi-instagram" aria-hidden="true" />
+										<span>Instagram</span>
+									</a>
 								)}
 							</article>
 							<span className="bit-couple-and" aria-hidden="true">
@@ -312,16 +342,22 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 							<article className="bit-person-card">
 								<p className="bit-kicker bit-kicker-dark">The Groom</p>
 								{flags.fotoProfil && photos.profilGroom && (
-									<img src={getImageUrl(photos.profilGroom.pathImage)} alt={groom} />
+									<div className="bit-portrait-arch">
+										<img src={getImageUrl(photos.profilGroom.pathImage)} alt={groom} />
+									</div>
 								)}
 								<h3>{wedding?.namaLengkapGroom || groom}</h3>
 								<p>{wedding?.bioGroom}</p>
 								{flags.socialMedia && wedding?.sosmedGroom && (
-									<p>
-										<a href={wedding.sosmedGroom} target="_blank" rel="noreferrer">
-											Instagram
-										</a>
-									</p>
+									<a
+										className="bit-social"
+										href={wedding.sosmedGroom}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<i className="pi pi-instagram" aria-hidden="true" />
+										<span>Instagram</span>
+									</a>
 								)}
 							</article>
 						</div>
@@ -333,25 +369,26 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 
 					{locations.length > 0 && (
 						<section className="bit-section bit-section-moss">
-							<SectionHead kicker="Save The Date" title="Waktu & Tempat" />
+							<SectionHead kicker="Save The Date" title="Rangkaian Acara" />
+							<p className="bit-date-banner">{formatLongDate(event.date)}</p>
 							<div className="bit-loc-grid">
 								{locations.map((loc) => (
 									<article key={loc.id} className="bit-loc-item">
-										<p className="bit-kicker">{loc.name}</p>
+										<span className="bit-loc-tag">{loc.name}</span>
+										<p className="bit-loc-time">
+											{formatTime(loc.startTime)}
+											{loc.endTime ? ` – ${formatTime(loc.endTime)}` : ""} WIB
+										</p>
+										<p className="bit-loc-date">{formatLongDate(loc.date)}</p>
+										<div className="bit-loc-divider" />
 										<div className="bit-loc-card">
 											<h3>{loc.location}</h3>
-											<ul className="bit-meta-list">
-												<li>{formatLongDate(loc.date)}</li>
-												<li>
-													{formatTime(loc.startTime)}
-													{loc.endTime ? ` — ${formatTime(loc.endTime)}` : ""} WIB
-												</li>
-												<li>{loc.alamat}</li>
-											</ul>
+											<p>{loc.alamat}</p>
 										</div>
 										{loc.urlMaps && (
 											<a className="bit-btn" href={loc.urlMaps} target="_blank" rel="noreferrer">
-												Lihat Lokasi
+												<i className="pi pi-map-marker" aria-hidden="true" />
+												<span>Lihat Lokasi</span>
 											</a>
 										)}
 									</article>
@@ -360,56 +397,36 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 							{flags.addToCalendar && calendarUrl && (
 								<p className="bit-calendar-wrap">
 									<a className="bit-btn-ghost" href={calendarUrl} target="_blank" rel="noreferrer">
-										Tambah ke Kalender
+										<i className="pi pi-calendar-plus" aria-hidden="true" />
+										<span>Simpan ke Kalender</span>
 									</a>
 								</p>
 							)}
 						</section>
 					)}
 
-					{gifts.length > 0 && (
-						<section className="bit-section bit-section-soft">
-							<SectionHead kicker="Wedding Gift" title="Amplop Digital" />
-							<p className="bit-quote">
-								Bagi keluarga dan sahabat yang ingin mengirimkan hadiah, silakan melalui rekening berikut.
-							</p>
-							<div className="bit-gift-grid">
-								{gifts.map((gift) => (
-									<article key={gift.id} className="bit-gift-card">
-										<p className="bit-kicker bit-kicker-dark">{gift.provider}</p>
-										<h4>{gift.name}</h4>
-										<p className="bit-gift-num">{gift.nomor}</p>
-										<button type="button" className="bit-btn" onClick={() => copyGift(gift.id, gift.nomor)}>
-											{copiedId === gift.id ? "Tersalin" : "Salin Nomor"}
-										</button>
-									</article>
-								))}
-							</div>
-						</section>
-					)}
-
 					<section className="bit-section bit-section-soft">
-						<SectionHead kicker="Countdown" title="Hari yang Ditunggu" />
+						<SectionHead kicker="Counting Down" title="Menuju Hari Bahagia" />
 						<div className="bit-countdown">
 							<div className="bit-count-box">
 								<strong>{countdown.days}</strong>
-								<span>Day</span>
+								<span>Hari</span>
 							</div>
 							<div className="bit-count-box">
 								<strong>{countdown.hours}</strong>
-								<span>Hour</span>
+								<span>Jam</span>
 							</div>
 							<div className="bit-count-box">
 								<strong>{countdown.minutes}</strong>
-								<span>Min</span>
+								<span>Menit</span>
 							</div>
 							<div className="bit-count-box">
 								<strong>{countdown.seconds}</strong>
-								<span>Sec</span>
+								<span>Detik</span>
 							</div>
 						</div>
 						{featured && (
-							<>
+							<div className="bit-gallery-shell">
 								<div
 									className="bit-gallery-main"
 									style={{ backgroundImage: `url("${getImageUrl(featured.pathImage)}")` }}
@@ -428,34 +445,41 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 										))}
 									</div>
 								)}
-							</>
+							</div>
 						)}
 					</section>
 
 					{flags.video && (prewedding || streaming) && (
 						<section className="bit-section bit-section-moss">
-							<SectionHead kicker="Video" title="Tonton Kisah Kami" />
-							{prewedding && (
-								<iframe className="bit-video" title="Prewedding" src={prewedding} allowFullScreen />
-							)}
-							{streaming && (
-								<iframe className="bit-video" title="Streaming" src={streaming} allowFullScreen />
-							)}
+							<SectionHead kicker="Motion Picture" title="Kisah dalam Layar" />
+							<div className="bit-video-stack">
+								{prewedding && (
+									<iframe className="bit-video" title="Prewedding" src={prewedding} allowFullScreen />
+								)}
+								{streaming && (
+									<iframe className="bit-video" title="Streaming" src={streaming} allowFullScreen />
+								)}
+							</div>
 						</section>
 					)}
 
 					{flags.rsvp && (
 						<section className="bit-section bit-section-cream">
 							<SectionHead kicker="RSVP" title="Konfirmasi Kehadiran" light />
+							<p className="bit-lead-dark">
+								Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila
+								Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.
+							</p>
 							<div className="bit-paper">
 								<div className="bit-form">
 									<p className="bit-note bit-note-tight">
-										Untuk {guestName}. Status: {rsvpStatusLabel(guestRsvpStatus)}
+										Untuk <strong>{guestName}</strong> · Status:{" "}
+										<strong>{rsvpStatusLabel(guestRsvpStatus)}</strong>
 										{guestRsvpStatus === "accepted" && guestRsvpJumlah
 											? ` (${guestRsvpJumlah} orang)`
 											: ""}
 									</p>
-									<label htmlFor="bit-kehadiran">Kehadiran?</label>
+									<label htmlFor="bit-kehadiran">Kehadiran</label>
 									<select
 										id="bit-kehadiran"
 										value={kehadiran}
@@ -515,8 +539,34 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 						</section>
 					)}
 
+					{gifts.length > 0 && (
+						<section className="bit-section bit-section-soft">
+							<SectionHead kicker="Wedding Gift" title="Tanda Kasih" />
+							<p className="bit-quote bit-quote-gap">
+								Bagi keluarga dan sahabat yang ingin mengirimkan hadiah, silakan melalui rekening berikut:
+							</p>
+							<div className="bit-gift-grid">
+								{gifts.map((gift) => (
+									<article key={gift.id} className="bit-gift-card">
+										<div className="bit-gift-top">
+											<span className="bit-kicker bit-kicker-dark">{gift.provider}</span>
+											<i className="pi pi-credit-card" aria-hidden="true" />
+										</div>
+										<p className="bit-gift-label">Nomor Rekening</p>
+										<p className="bit-gift-num">{gift.nomor}</p>
+										<h4>a.n. {gift.name}</h4>
+										<button type="button" className="bit-btn bit-btn-dark" onClick={() => copyGift(gift.id, gift.nomor)}>
+											<i className="pi pi-copy" aria-hidden="true" />
+											<span>{copiedId === gift.id ? "Tersalin" : "Salin Nomor"}</span>
+										</button>
+									</article>
+								))}
+							</div>
+						</section>
+					)}
+
 					<section className="bit-section bit-section-cream bit-section-wishes">
-						<SectionHead kicker="Wishes" title="Ucapan & Doa" light />
+						<SectionHead kicker="Wishes & Prayers" title="Tinggalkan Pesan & Doa" light />
 						<div className="bit-paper">
 							<div className="bit-form">
 								{alreadySent && mode === "live" ? (
@@ -532,7 +582,7 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 											maxLength={255}
 											value={ucapan}
 											onChange={(e) => setUcapan(e.target.value)}
-											placeholder="Tulis pesan"
+											placeholder="Tulis doa terbaik untuk kedua mempelai..."
 											disabled={mode === "preview"}
 										/>
 										<div className="bit-actions">
@@ -588,11 +638,23 @@ const BronzeInvitationTemplate: React.FC<BronzeInvitationProps> = ({
 						)}
 					</section>
 
-					<footer className="bit-footer">
-						<p className="bit-kicker bit-kicker-dark">Terima kasih</p>
+					<footer
+						className="bit-footer"
+						style={
+							photos.akhir
+								? {
+										backgroundImage: `linear-gradient(180deg, rgba(20, 29, 22, 0.72), rgba(14, 21, 16, 0.92)), url("${getImageUrl(photos.akhir.pathImage)}")`,
+									}
+								: undefined
+						}
+					>
+						<span className="bit-monogram">{monogram}</span>
+						<p className="bit-footer-line">
+							Two souls become one, two hearts beat as one
+						</p>
 						<p className="bit-footer-names">{couple}</p>
 						<InvitationFlourish className="bit-flourish" />
-						<p>Merupakan suatu kehormatan apabila Anda berkenan hadir.</p>
+						<p className="bit-footer-thanks">Thank you</p>
 					</footer>
 				</main>
 			</div>
