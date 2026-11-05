@@ -1,46 +1,40 @@
-# Getting Started with Create React App
+# VENTZER Web
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend Vite + React untuk platform event VENTZER. Backend ada di repo terpisah: [ventzer-api](https://github.com/stevanusbilly/ventzer-api).
 
-## Available Scripts
+Frontend tidak terhubung ke database. Semua data lewat HTTP ke API (`VITE_API_URL`).
 
-In the project directory, you can run:
+## Menjalankan
 
-### `npm start`
+```bash
+cp .env.example .env
+npm install
+npm run dev
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Default local: frontend `http://localhost:3001`, API `http://localhost:3000/api`.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+| Script | Fungsi |
+| --- | --- |
+| `npm run dev` | Vite development |
+| `npm run build` | Build production ke `dist/` |
+| `npm start` | Serve `dist/` (Hostinger / production) |
+| `npm run preview` | Preview hasil build |
 
-### `npm test`
+## Environment
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Variabel | Contoh local | Production |
+| --- | --- | --- |
+| `VITE_API_URL` | `http://localhost:3000/api` | URL API termasuk `/api` |
+| `VITE_FRONTEND_URL` | `http://localhost:3001` | `https://ventzer.com` |
+| `VITE_GOOGLE_CLIENT_ID` | Client ID Google tipe Web | Sama dengan `GOOGLE_CLIENT_ID` di API |
 
-### `npm run build`
+File `.env` tidak boleh masuk Git.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Hostinger
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Root aplikasi: root repo ini
+- Node.js 24
+- Build: `npm run build`
+- Start: `npm start`
+- Set `VITE_API_URL` sebelum build, karena Vite menanam nilainya ke bundle
