@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { GOOGLE_CLIENT_ID } from "../../config/env";
 
 type GoogleSignInButtonProps = {
 	onToken: (idToken: string) => void;
@@ -21,7 +22,7 @@ type GoogleAccounts = {
 
 const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({ onToken }) => {
 	const hostRef = useRef<HTMLDivElement>(null);
-	const clientId = String(process.env.REACT_APP_GOOGLE_CLIENT_ID || "").trim();
+	const clientId = GOOGLE_CLIENT_ID;
 
 	useEffect(() => {
 		if (!clientId || !hostRef.current) {

@@ -20,6 +20,7 @@ import LandingPage from "./pages/LandingPage";
 import PricingPage from "./pages/PricingPage";
 import CatalogPage from "./pages/CatalogPage";
 import OrderProcessPage from "./pages/OrderProcessPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import InvitationPage from "./pages/InvitationPage";
 import UsherPage from "./components/Usher/UsherPage";
 import UserList from "./components/Users/UserList";
@@ -187,6 +188,7 @@ const AppContent: React.FC = () => (
 		<Route path="/catalog" element={<CatalogPage />} />
 		<Route path="/order-process" element={<OrderProcessPage />} />
 		<Route path="/" element={<LandingPage />} />
+		<Route path="*" element={<NotFoundPage />} />
 	</Routes>
 );
 

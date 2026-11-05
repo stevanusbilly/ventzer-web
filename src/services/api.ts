@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { API_URL } from "../config/env";
 import { normalizeAxiosError } from "../utils/apiError";
 
-const API_BASE_URL =
-	process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+const API_BASE_URL = API_URL;
 
 const api: AxiosInstance = axios.create({
 	baseURL: API_BASE_URL,

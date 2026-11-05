@@ -155,6 +155,13 @@ export const UI = {
 		"dash.verify":
 			"Lengkapi verifikasi email dan nomor telepon di pengaturan akun.",
 		"dash.verifyCta": "Buka pengaturan",
+		"notfound.kicker": "Halaman tidak ditemukan",
+		"notfound.title": "Alamat ini tidak ada di VENTZER.",
+		"notfound.lead":
+			"Tautan mungkin salah ketik, sudah dipindahkan, atau belum dipublikasikan. Kembali ke beranda atau buka halaman yang masih aktif.",
+		"notfound.home": "Kembali ke beranda",
+		"notfound.pricing": "Lihat paket",
+		"notfound.dashboard": "Buka dashboard",
 	},
 	en: {
 		"lang.label": "Choose language",
@@ -306,6 +313,13 @@ export const UI = {
 		"dash.logoutAria": "Sign out",
 		"dash.verify": "Complete email and phone verification in account settings.",
 		"dash.verifyCta": "Open settings",
+		"notfound.kicker": "Page not found",
+		"notfound.title": "This address is not on VENTZER.",
+		"notfound.lead":
+			"The link may be mistyped, moved, or not published yet. Go back home or open a page that is still live.",
+		"notfound.home": "Back to home",
+		"notfound.pricing": "See packages",
+		"notfound.dashboard": "Open dashboard",
 	},
 } as const satisfies Record<Locale, Record<string, string>>;
 

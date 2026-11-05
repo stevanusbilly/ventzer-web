@@ -18,6 +18,7 @@ import { categoryPhotoService } from "../../services/categoryPhotoService";
 import { CategoryPhoto, Event, EventPhoto } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
+import { API_URL } from "../../config/env";
 import { isLoveStoryCategory } from "../../utils/loveStory";
 
 const getImageUrl = (path: string): string => {
@@ -30,7 +31,7 @@ const getImageUrl = (path: string): string => {
 	) {
 		return path;
 	}
-	const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+	const apiUrl = API_URL;
 	const baseUrl = apiUrl.replace(/\/api\/?$/, "");
 	return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };

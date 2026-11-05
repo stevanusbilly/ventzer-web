@@ -1,5 +1,7 @@
+import { FRONTEND_URL } from "../config/env";
+
 export function getFrontendBaseUrl(): string {
-	const env = process.env.REACT_APP_FRONTEND_URL;
+	const env = FRONTEND_URL;
 	if (env && env.trim()) {
 		return env.replace(/\/$/, "");
 	}

@@ -1,3 +1,5 @@
+import { isProduction } from "../config/env";
+
 type ApiErrorBody = {
 	message?: string;
 	error?: string;
@@ -76,7 +78,7 @@ export function getApiErrorMessage(
 	}
 
 	if (typeof data?.message === "string" && data.message.trim()) {
-		if (process.env.NODE_ENV !== "production" && data.debug) {
+		if (!isProduction && data.debug) {
 			return `${data.message} (${data.debug})`;
 		}
 		return data.message;

@@ -1058,3 +1058,70 @@
 		padding: 1.3rem 1.15rem 1.2rem;
 	}
 }
+
+.mkt-notfound {
+	min-height: calc(100vh - 4.5rem);
+	display: flex;
+	align-items: center;
+}
+
+.mkt-notfound-grid {
+	display: grid;
+	grid-template-columns: 1.1fr 0.9fr;
+	gap: 3rem;
+	align-items: center;
+}
+
+.mkt-notfound-path {
+	margin: 1.1rem 0 0;
+	color: rgba(245, 247, 252, 0.62);
+	font-size: 0.88rem;
+}
+
+.mkt-notfound-path code {
+	display: inline-block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0.35rem 0.7rem;
+	border-radius: 999px;
+	border: 1px solid rgba(245, 247, 252, 0.14);
+	background: rgba(245, 247, 252, 0.06);
+	color: #c9d7ff;
+}
+
+.mkt-notfound-mark {
+	display: grid;
+	place-items: center;
+	min-height: 18rem;
+	border-radius: 2rem;
+	border: 1px solid rgba(245, 247, 252, 0.12);
+	background:
+		radial-gradient(circle at 30% 25%, rgba(23, 105, 245, 0.35), transparent 42%),
+		radial-gradient(circle at 78% 78%, rgba(105, 56, 232, 0.4), transparent 46%),
+		rgba(8, 15, 43, 0.35);
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.mkt-notfound-mark span {
+	font-family: Sora, Manrope, "Segoe UI", sans-serif;
+	font-size: clamp(5rem, 12vw, 8.2rem);
+	font-weight: 700;
+	letter-spacing: -0.06em;
+	background: linear-gradient(135deg, #f5f7fc 0%, #9ec2ff 48%, #c4b5fd 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+@media (max-width: 700px) {
+	.mkt-notfound-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.mkt-notfound-mark {
+		min-height: 12rem;
+		order: -1;
+	}
+}

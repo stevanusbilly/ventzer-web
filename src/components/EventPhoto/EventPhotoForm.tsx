@@ -14,6 +14,7 @@ import { CategoryPhoto, Event, EventPhoto } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { getApiErrorMessage, getApiSuccessMessage } from "../../utils/apiError";
 import { isLoveStoryCategory } from "../../utils/loveStory";
+import { API_URL } from "../../config/env";
 
 interface EventPhotoFormProps {
 	eventPhoto: EventPhoto | null;
@@ -89,7 +90,7 @@ const EventPhotoForm: React.FC<EventPhotoFormProps> = ({ eventPhoto, onSuccess, 
 		) {
 			return path;
 		}
-		const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+		const apiUrl = API_URL;
 		const baseUrl = apiUrl.replace(/\/api\/?$/, "");
 		return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 	};

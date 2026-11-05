@@ -1,3 +1,5 @@
+import { API_URL } from "../../config/env";
+
 const DAYS = [
 	"Minggu",
 	"Senin",
@@ -32,7 +34,7 @@ export const getImageUrl = (path?: string | null): string => {
 	) {
 		return path;
 	}
-	const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+	const apiUrl = API_URL;
 	const baseUrl = apiUrl.replace(/\/api\/?$/, "");
 	return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };
