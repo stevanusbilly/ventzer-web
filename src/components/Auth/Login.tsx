@@ -5,13 +5,15 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Navigate, Link } from "react-router-dom";
-import InvitationFlourish from "../../invitation-templates/InvitationFlourish";
-import LoginFlorals from "./LoginFlorals";
+import VentzerLogo from "../Brand/VentzerLogo";
+import LanguageTabber from "../Brand/LanguageTabber";
 import GoogleSignInButton from "./GoogleSignInButton";
 import { customerRegisterPath, homePathForRole } from "../../utils/authPaths";
+import { useI18n } from "../../i18n/I18nContext";
 import "./Login.css";
 
 const Login: React.FC = () => {
+	const { t } = useI18n();
 	const [username, setUsername] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
@@ -28,11 +30,11 @@ const Login: React.FC = () => {
 			if (result.success) {
 				navigate(homePathForRole());
 			} else {
-				setError(result.message || "Login Google gagal");
+				setError(result.message || t("auth.login.googleFail"));
 			}
 			setLoading(false);
 		},
-		[loginGoogle, navigate],
+		[loginGoogle, navigate, t],
 	);
 
 	if (isAuthenticated) {
@@ -47,7 +49,7 @@ const Login: React.FC = () => {
 		if (result.success) {
 			navigate(homePathForRole());
 		} else {
-			setError(result.message || "Login gagal");
+			setError(result.message || t("auth.login.fail"));
 		}
 		setLoading(false);
 	};
@@ -55,26 +57,25 @@ const Login: React.FC = () => {
 	return (
 		<div className="login-page">
 			<aside className="login-aside">
-				<LoginFlorals />
 				<div className="login-aside-copy">
-					<p className="login-kicker">Untuk pelanggan</p>
-					<h1>Undangan digital untuk hari bahagia Anda.</h1>
-					<InvitationFlourish className="login-flourish" />
-					<p>Masuk untuk melihat pesanan dan desain undangan Anda.</p>
+					<LanguageTabber />
+					<VentzerLogo />
+					<p className="login-kicker">{t("auth.customer")}</p>
+					<h1>{t("auth.tagline")}</h1>
+					<p>{t("auth.login.aside")}</p>
 				</div>
 			</aside>
 			<main className="login-main">
 				<section className="login-card">
-					<p className="login-kicker">Selamat datang</p>
-					<h1>Masuk</h1>
-					<InvitationFlourish className="login-flourish" />
-					<p className="login-lead">Gunakan akun pelanggan Anda, atau masuk dengan Google.</p>
+					<p className="login-kicker">{t("auth.welcome")}</p>
+					<h1>{t("auth.login.title")}</h1>
+					<p className="login-lead">{t("auth.login.lead")}</p>
 					{error && (
 						<Message severity="error" text={error} className="w-full mb-3 login-error" />
 					)}
 					<form onSubmit={handleSubmit} className="login-form">
 						<div>
-							<label htmlFor="username">Email atau username</label>
+							<label htmlFor="username">{t("auth.login.user")}</label>
 							<InputText
 								id="username"
 								value={username}
@@ -87,7 +88,7 @@ const Login: React.FC = () => {
 							/>
 						</div>
 						<div>
-							<label htmlFor="password">Password</label>
+							<label htmlFor="password">{t("auth.login.password")}</label>
 							<Password
 								id="password"
 								value={password}
@@ -104,7 +105,7 @@ const Login: React.FC = () => {
 						</div>
 						<Button
 							type="submit"
-							label="Masuk"
+							label={t("auth.login.submit")}
 							icon="pi pi-sign-in"
 							loading={loading}
 							className="login-submit mt-2"
@@ -112,7 +113,7 @@ const Login: React.FC = () => {
 					</form>
 					<GoogleSignInButton onToken={(token) => void handleGoogle(token)} />
 					<p className="login-switch">
-						Belum punya akun? <Link to={customerRegisterPath}>Daftar</Link>
+						{t("auth.login.switch")} <Link to={customerRegisterPath}>{t("nav.register")}</Link>
 					</p>
 				</section>
 			</main>

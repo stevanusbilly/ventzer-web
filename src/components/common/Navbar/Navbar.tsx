@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./Navbar.css";
 import { Link, NavLink } from "react-router-dom";
-
-const links = [
-	{ to: "/", label: "Beranda" },
-	{ to: "/pricing", label: "Harga" },
-	{ to: "/catalog", label: "Katalog" },
-	{ to: "/order-process", label: "Proses Pesan" },
-];
+import VentzerLogo from "../../Brand/VentzerLogo";
+import LanguageTabber from "../../Brand/LanguageTabber";
+import { useI18n } from "../../../i18n/I18nContext";
 
 const Navbar: React.FC = () => {
 	const [open, setOpen] = useState(false);
+	const { t } = useI18n();
 
 	useEffect(() => {
 		document.body.classList.toggle("nav-lock", open);
@@ -19,14 +16,18 @@ const Navbar: React.FC = () => {
 
 	const close = (): void => setOpen(false);
 
+	const links = [
+		{ to: "/", label: t("nav.home") },
+		{ to: "/pricing", label: t("nav.pricing") },
+		{ to: "/catalog", label: t("nav.catalog") },
+		{ to: "/order-process", label: t("nav.order") },
+	];
+
 	return (
 		<header className="landing-navbar">
 			<div className="landing-navbar__container">
-				<Link to="/" className="landing-navbar__logo" onClick={close}>
-					<img
-						src="https://nstory.id/wp-content/uploads/2026/01/logoNS-newcolor.png"
-						alt="NStory"
-					/>
+				<Link to="/" className="landing-navbar__logo" onClick={close} aria-label="VENTZER">
+					<VentzerLogo />
 				</Link>
 
 				<nav className="landing-navbar__menu">
@@ -38,23 +39,27 @@ const Navbar: React.FC = () => {
 				</nav>
 
 				<div className="landing-navbar__actions">
+					<LanguageTabber />
 					<Link to="/login" className="landing-navbar__ghost">
-						Masuk
+						{t("nav.login")}
 					</Link>
 					<Link to="/daftar" className="landing-navbar__cta">
-						Daftar
+						{t("nav.register")}
 					</Link>
 				</div>
 
-				<button
-					type="button"
-					className="landing-navbar__toggle"
-					aria-label={open ? "Tutup menu" : "Buka menu"}
-					aria-expanded={open}
-					onClick={() => setOpen((value) => !value)}
-				>
-					<i className={open ? "pi pi-times" : "pi pi-bars"} />
-				</button>
+				<div className="landing-navbar__mobile-tools">
+					<LanguageTabber />
+					<button
+						type="button"
+						className="landing-navbar__toggle"
+						aria-label={open ? t("nav.close") : t("nav.open")}
+						aria-expanded={open}
+						onClick={() => setOpen((value) => !value)}
+					>
+						<i className={open ? "pi pi-times" : "pi pi-bars"} />
+					</button>
+				</div>
 			</div>
 
 			<div className={`landing-navbar__drawer ${open ? "is-open" : ""}`}>
@@ -72,10 +77,10 @@ const Navbar: React.FC = () => {
 				</nav>
 				<div className="landing-navbar__drawer-actions">
 					<Link to="/login" className="landing-navbar__ghost" onClick={close}>
-						Masuk
+						{t("nav.login")}
 					</Link>
 					<Link to="/daftar" className="landing-navbar__cta" onClick={close}>
-						Daftar
+						{t("nav.register")}
 					</Link>
 				</div>
 			</div>

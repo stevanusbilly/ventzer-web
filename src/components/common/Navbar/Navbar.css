@@ -1,25 +1,21 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Outfit:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap");
+@import "../../Brand/ventzer.css";
 
 .landing-navbar {
-	--nav-paper: rgba(255, 253, 248, 0.9);
-	--nav-ink: #2b332c;
-	--nav-muted: #7a8476;
-	--nav-forest: #1c3a2f;
-	--nav-gold: #c9a36a;
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	z-index: 999;
-	background: var(--nav-paper);
-	backdrop-filter: blur(16px);
-	border-bottom: 1px solid rgba(201, 163, 106, 0.22);
-	font-family: Outfit, "Segoe UI", sans-serif;
+	background: rgba(8, 15, 43, 0.78);
+	backdrop-filter: blur(20px);
+	border-bottom: 1px solid rgba(245, 247, 252, 0.08);
+	font-family: Manrope, "Segoe UI", sans-serif;
 }
 
 .landing-navbar__container {
 	width: min(1240px, calc(100% - 2rem));
-	height: 4.75rem;
+	height: 4.6rem;
 	margin: 0 auto;
 	display: flex;
 	align-items: center;
@@ -30,10 +26,7 @@
 	display: flex;
 	align-items: center;
 	margin-right: auto;
-}
-
-.landing-navbar__logo img {
-	height: 40px;
+	text-decoration: none;
 }
 
 .landing-navbar__menu {
@@ -45,17 +38,16 @@
 .landing-navbar__menu a,
 .landing-navbar__drawer a {
 	text-decoration: none;
-	color: var(--nav-ink);
-	font-size: 0.92rem;
+	color: rgba(245, 247, 252, 0.78);
+	font-size: 0.9rem;
 	font-weight: 500;
-	letter-spacing: 0.01em;
 }
 
 .landing-navbar__menu a:hover,
 .landing-navbar__drawer a:hover,
 .landing-navbar__menu a.active,
 .landing-navbar__drawer a.active {
-	color: var(--nav-forest);
+	color: #f5f7fc;
 }
 
 .landing-navbar__actions {
@@ -79,22 +71,20 @@
 }
 
 .landing-navbar__ghost {
-	color: var(--nav-forest);
-	border: 1px solid rgba(28, 58, 47, 0.18);
+	color: #f5f7fc;
+	border: 1px solid rgba(245, 247, 252, 0.16);
 	background: transparent;
 }
 
 .landing-navbar__cta {
-	color: #f6f1e8;
-	background: var(--nav-forest);
+	color: #f5f7fc;
+	background: linear-gradient(135deg, #1769f5 0%, #6938e8 100%);
 }
 
-.landing-navbar__drawer .landing-navbar__cta {
-	color: #f6f1e8;
-}
-
-.landing-navbar__drawer .landing-navbar__ghost {
-	color: var(--nav-forest);
+.landing-navbar__mobile-tools {
+	display: none;
+	align-items: center;
+	gap: 0.55rem;
 }
 
 .landing-navbar__toggle {
@@ -103,8 +93,8 @@
 	height: 2.5rem;
 	border: 0;
 	border-radius: 999px;
-	background: var(--nav-forest);
-	color: #f6f1e8;
+	background: linear-gradient(135deg, #1769f5 0%, #6938e8 100%);
+	color: #f5f7fc;
 	cursor: pointer;
 }
 
@@ -122,6 +112,10 @@
 		display: none;
 	}
 
+	.landing-navbar__mobile-tools {
+		display: inline-flex;
+	}
+
 	.landing-navbar__toggle {
 		display: inline-flex;
 		align-items: center;
@@ -134,14 +128,14 @@
 		max-height: 0;
 		overflow: hidden;
 		padding: 0 1rem;
-		background: #fffdf8;
+		background: #080f2b;
 		transition: max-height 0.28s ease, padding 0.28s ease;
 	}
 
 	.landing-navbar__drawer.is-open {
 		max-height: 28rem;
 		padding: 0.4rem 1rem 1.3rem;
-		border-top: 1px solid rgba(201, 163, 106, 0.18);
+		border-top: 1px solid rgba(245, 247, 252, 0.08);
 	}
 
 	.landing-navbar__drawer nav {
@@ -151,9 +145,9 @@
 
 	.landing-navbar__drawer nav a {
 		padding: 0.85rem 0.2rem;
-		border-bottom: 1px solid rgba(43, 51, 44, 0.06);
-		font-family: "Cormorant Garamond", Georgia, serif;
-		font-size: 1.35rem;
+		border-bottom: 1px solid rgba(245, 247, 252, 0.08);
+		font-family: Sora, Manrope, sans-serif;
+		font-size: 1.15rem;
 		font-weight: 600;
 	}
 

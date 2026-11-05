@@ -5,12 +5,14 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Navigate } from "react-router-dom";
-import InvitationFlourish from "../../invitation-templates/InvitationFlourish";
-import LoginFlorals from "./LoginFlorals";
+import VentzerLogo from "../Brand/VentzerLogo";
+import LanguageTabber from "../Brand/LanguageTabber";
 import { homePathForRole } from "../../utils/authPaths";
+import { useI18n } from "../../i18n/I18nContext";
 import "./Login.css";
 
 const StaffLogin: React.FC = () => {
+	const { t } = useI18n();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -30,7 +32,7 @@ const StaffLogin: React.FC = () => {
 		if (result.success) {
 			navigate("/dashboard");
 		} else {
-			setError(result.message || "Login gagal");
+			setError(result.message || t("auth.login.fail"));
 		}
 		setLoading(false);
 	};
@@ -38,29 +40,25 @@ const StaffLogin: React.FC = () => {
 	return (
 		<div className="login-page">
 			<aside className="login-aside">
-				<LoginFlorals />
 				<div className="login-aside-copy">
-					<p className="login-kicker">RSVP Portal</p>
-					<h1>Masuk sebagai tim undangan.</h1>
-					<InvitationFlourish className="login-flourish" />
-					<p>Admin dan panitia memakai pintu yang sama. Hak akses mengikuti role akun.</p>
+					<LanguageTabber />
+					<VentzerLogo />
+					<p className="login-kicker">{t("auth.staff.kicker")}</p>
+					<h1>{t("auth.staff.asideTitle")}</h1>
+					<p>{t("auth.staff.aside")}</p>
 				</div>
 			</aside>
 			<main className="login-main">
 				<section className="login-card">
-					<p className="login-kicker">Tim undangan</p>
-					<h1>Masuk</h1>
-					<InvitationFlourish className="login-flourish" />
-					<p className="login-lead">
-						Halaman ini untuk admin dan panitia. Menu di dalam dashboard menyesuaikan
-						wewenang masing-masing.
-					</p>
+					<p className="login-kicker">{t("auth.staff.welcome")}</p>
+					<h1>{t("auth.login.title")}</h1>
+					<p className="login-lead">{t("auth.staff.lead")}</p>
 					{error && (
 						<Message severity="error" text={error} className="w-full mb-3 login-error" />
 					)}
 					<form onSubmit={handleSubmit} className="login-form">
 						<div>
-							<label htmlFor="staff-username">Username</label>
+							<label htmlFor="staff-username">{t("auth.staff.user")}</label>
 							<InputText
 								id="staff-username"
 								value={username}
@@ -71,7 +69,7 @@ const StaffLogin: React.FC = () => {
 							/>
 						</div>
 						<div>
-							<label htmlFor="staff-password">Password</label>
+							<label htmlFor="staff-password">{t("auth.login.password")}</label>
 							<Password
 								id="staff-password"
 								value={password}
@@ -86,7 +84,7 @@ const StaffLogin: React.FC = () => {
 						</div>
 						<Button
 							type="submit"
-							label="Masuk"
+							label={t("auth.login.submit")}
 							icon="pi pi-sign-in"
 							loading={loading}
 							className="login-submit mt-2"

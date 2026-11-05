@@ -1,0 +1,66 @@
+.vz-logo {
+	display: block;
+	height: 2.15rem;
+	width: auto;
+}
+
+.login-aside-copy .vz-logo {
+	height: 2.7rem;
+}
+
+.landing-footer .vz-logo {
+	height: 2.35rem;
+}
+
+.dash-nav-brand .vz-logo {
+	height: 1.9rem;
+}
+
+.vz-lang {
+	display: inline-flex;
+	padding: 0.18rem;
+	border-radius: 999px;
+	gap: 0.1rem;
+	flex: 0 0 auto;
+}
+
+.vz-lang button {
+	min-width: 2.35rem;
+	border: 0;
+	border-radius: 999px;
+	padding: 0.38rem 0.7rem;
+	background: transparent;
+	font: inherit;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	cursor: pointer;
+	transition: background 0.22s ease, color 0.22s ease;
+}
+
+.vz-lang-light {
+	background: rgba(245, 247, 252, 0.12);
+}
+
+.vz-lang-light button {
+	color: #f5f7fc;
+}
+
+.vz-lang-light button.is-on {
+	background: #f5f7fc;
+	color: #080f2b;
+}
+
+.vz-lang-dark {
+	background: rgba(8, 15, 43, 0.08);
+}
+
+.vz-lang-dark button {
+	color: #080f2b;
+}
+
+.vz-lang-dark button.is-on {
+	background: #080f2b;
+	color: #f5f7fc;
+}
+

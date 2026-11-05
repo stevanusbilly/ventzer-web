@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { MarketingPackage } from "../../data/marketing";
+import { useI18n } from "../../i18n/I18nContext";
 
 const PackageCard: React.FC<{ pack: MarketingPackage; compact?: boolean }> = ({
 	pack,
 	compact,
 }) => {
+	const { t } = useI18n();
 	const features = compact ? pack.features.slice(0, 5) : pack.features;
 	return (
 		<article className={`mkt-card ${pack.highlight ? "is-hot" : ""}`}>
@@ -22,12 +24,12 @@ const PackageCard: React.FC<{ pack: MarketingPackage; compact?: boolean }> = ({
 					<li key={item}>{item}</li>
 				))}
 				{compact && pack.features.length > features.length && (
-					<li>+{pack.features.length - features.length} fitur lain</li>
+					<li>+{pack.features.length - features.length} {t("pack.more")}</li>
 				)}
 			</ul>
 			{pack.bonus && <div className="mkt-bonus">{pack.bonus}</div>}
 			<Link className="mkt-btn mkt-btn-primary" to="/daftar">
-				Pesan paket ini
+				{t("pack.order")}
 			</Link>
 		</article>
 	);

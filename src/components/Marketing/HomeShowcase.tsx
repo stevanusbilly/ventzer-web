@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { HOME_PRODUCTS } from "../../data/marketing";
+import { useI18n } from "../../i18n/I18nContext";
+import { useMarketing } from "../../i18n/marketing";
 
 const HomeShowcase = () => {
+	const { t } = useI18n();
+	const { homeProducts } = useMarketing();
 	const [tab, setTab] = useState(0);
 	const [open, setOpen] = useState<Record<string, number>>({
 		"undangan-digital": 0,
@@ -19,13 +22,10 @@ const HomeShowcase = () => {
 		<>
 			<section className="mkt-platform">
 				<div className="mkt-wrap mkt-center">
-					<h2>Satu platform untuk semua kebutuhan acaramu</h2>
-					<p>
-						Pengalaman acara yang lebih interaktif: undangan digital, buku tamu
-						di lokasi, dan siaran langsung untuk keluarga yang jauh.
-					</p>
+					<h2>{t("home.showcase.title")}</h2>
+					<p>{t("home.showcase.lead")}</p>
 					<div className="mkt-tabbar mkt-tabbar-light" role="tablist">
-						{HOME_PRODUCTS.map((product, index) => (
+						{homeProducts.map((product, index) => (
 							<button
 								key={product.id}
 								type="button"
@@ -42,7 +42,7 @@ const HomeShowcase = () => {
 				<div className="mkt-wrap">
 					<div className="mkt-slider mkt-platform-slider">
 						<div className="mkt-slider-track" style={trackStyle}>
-							{HOME_PRODUCTS.map((product) => {
+							{homeProducts.map((product) => {
 								const active = open[product.id] ?? 0;
 								const point = product.features[active];
 								return (
@@ -74,10 +74,10 @@ const HomeShowcase = () => {
 												<p>{point?.desc || product.summary}</p>
 												<div className="mkt-actions">
 													<Link className="mkt-btn mkt-btn-primary" to="/daftar">
-														Pesan sekarang
+														{t("home.cta.order")}
 													</Link>
 													<Link className="mkt-btn mkt-btn-ghost" to={product.href}>
-														Lihat detail
+														{t("home.showcase.detail")}
 													</Link>
 												</div>
 											</div>
@@ -90,7 +90,7 @@ const HomeShowcase = () => {
 				</div>
 			</section>
 
-			{HOME_PRODUCTS.map((product, index) => {
+			{homeProducts.map((product, index) => {
 				const active = open[product.id] ?? 0;
 				return (
 					<section
@@ -134,10 +134,10 @@ const HomeShowcase = () => {
 								</div>
 								<div className="mkt-actions">
 									<Link className="mkt-btn mkt-btn-primary" to="/daftar">
-										Pesan sekarang
+										{t("home.cta.order")}
 									</Link>
 									<Link className="mkt-btn mkt-btn-ghost" to={product.href}>
-										Lihat paket
+										{t("home.showcase.packages")}
 									</Link>
 								</div>
 							</div>

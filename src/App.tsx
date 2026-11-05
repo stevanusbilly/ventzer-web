@@ -7,6 +7,7 @@ import {
 	useParams,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { I18nProvider } from "./i18n/I18nContext";
 import AppLayout from "./components/Layout/AppLayout";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -24,6 +25,7 @@ import UsherPage from "./components/Usher/UsherPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
 import CategoryPhotoList from "./components/CategoryPhoto/CategoryPhotoList";
+import CategoryTemplateList from "./components/CategoryTemplate/CategoryTemplateList";
 import { UserRole } from "./types";
 import {
 	customerLoginPath,
@@ -125,6 +127,18 @@ const AppContent: React.FC = () => (
 			}
 		/>
 		<Route
+			path="/category_template"
+			element={
+				<StaffRoute>
+					<RoleRoute roles={["admin"]}>
+						<AppLayout>
+							<CategoryTemplateList />
+						</AppLayout>
+					</RoleRoute>
+				</StaffRoute>
+			}
+		/>
+		<Route
 			path="/templates"
 			element={
 				<StaffRoute>
@@ -177,11 +191,13 @@ const AppContent: React.FC = () => (
 );
 
 const App: React.FC = () => (
-	<AuthProvider>
-		<Router>
-			<AppContent />
-		</Router>
-	</AuthProvider>
+	<I18nProvider>
+		<AuthProvider>
+			<Router>
+				<AppContent />
+			</Router>
+		</AuthProvider>
+	</I18nProvider>
 );
 
 export default App;

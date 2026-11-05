@@ -5,13 +5,15 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, Navigate, Link } from "react-router-dom";
-import InvitationFlourish from "../../invitation-templates/InvitationFlourish";
-import LoginFlorals from "./LoginFlorals";
+import VentzerLogo from "../Brand/VentzerLogo";
+import LanguageTabber from "../Brand/LanguageTabber";
 import GoogleSignInButton from "./GoogleSignInButton";
 import { customerLoginPath, homePathForRole } from "../../utils/authPaths";
+import { useI18n } from "../../i18n/I18nContext";
 import "./Login.css";
 
 const Register: React.FC = () => {
+	const { t } = useI18n();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
@@ -31,11 +33,11 @@ const Register: React.FC = () => {
 			if (result.success) {
 				navigate(homePathForRole());
 			} else {
-				setError(result.message || "Login Google gagal");
+				setError(result.message || t("auth.login.googleFail"));
 			}
 			setLoading(false);
 		},
-		[loginGoogle, navigate],
+		[loginGoogle, navigate, t],
 	);
 
 	if (isAuthenticated) {
@@ -45,7 +47,7 @@ const Register: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent): Promise<void> => {
 		e.preventDefault();
 		if (password !== confirm) {
-			setError("Konfirmasi password tidak sama");
+			setError(t("auth.register.mismatch"));
 			return;
 		}
 		setLoading(true);
@@ -54,7 +56,7 @@ const Register: React.FC = () => {
 		if (result.success) {
 			navigate(homePathForRole());
 		} else {
-			setError(result.message || "Pendaftaran gagal");
+			setError(result.message || t("auth.register.fail"));
 		}
 		setLoading(false);
 	};
@@ -62,26 +64,25 @@ const Register: React.FC = () => {
 	return (
 		<div className="login-page">
 			<aside className="login-aside">
-				<LoginFlorals />
 				<div className="login-aside-copy">
-					<p className="login-kicker">Untuk pelanggan</p>
-					<h1>Buat akun untuk hari bahagia Anda.</h1>
-					<InvitationFlourish className="login-flourish" />
-					<p>Daftar dengan email dan nomor telepon, atau langsung dengan Google.</p>
+					<LanguageTabber />
+					<VentzerLogo />
+					<p className="login-kicker">{t("auth.customer")}</p>
+					<h1>{t("auth.register.asideTitle")}</h1>
+					<p>{t("auth.register.aside")}</p>
 				</div>
 			</aside>
 			<main className="login-main">
 				<section className="login-card">
-					<p className="login-kicker">Selamat datang</p>
-					<h1>Daftar</h1>
-					<InvitationFlourish className="login-flourish" />
-					<p className="login-lead">Akun ini khusus pelanggan, bukan tim undangan.</p>
+					<p className="login-kicker">{t("auth.welcome")}</p>
+					<h1>{t("auth.register.title")}</h1>
+					<p className="login-lead">{t("auth.register.lead")}</p>
 					{error && (
 						<Message severity="error" text={error} className="w-full mb-3 login-error" />
 					)}
 					<form onSubmit={handleSubmit} className="login-form">
 						<div>
-							<label htmlFor="register-name">Nama</label>
+							<label htmlFor="register-name">{t("auth.register.name")}</label>
 							<InputText
 								id="register-name"
 								value={name}
@@ -92,7 +93,7 @@ const Register: React.FC = () => {
 							/>
 						</div>
 						<div>
-							<label htmlFor="register-email">Email</label>
+							<label htmlFor="register-email">{t("auth.register.email")}</label>
 							<InputText
 								id="register-email"
 								type="email"
@@ -104,7 +105,7 @@ const Register: React.FC = () => {
 							/>
 						</div>
 						<div>
-							<label htmlFor="register-phone">Nomor telepon</label>
+							<label htmlFor="register-phone">{t("auth.register.phone")}</label>
 							<InputText
 								id="register-phone"
 								value={phone}
@@ -116,7 +117,7 @@ const Register: React.FC = () => {
 							/>
 						</div>
 						<div>
-							<label htmlFor="register-password">Password</label>
+							<label htmlFor="register-password">{t("auth.register.password")}</label>
 							<Password
 								id="register-password"
 								value={password}
@@ -129,7 +130,7 @@ const Register: React.FC = () => {
 							/>
 						</div>
 						<div>
-							<label htmlFor="register-confirm">Konfirmasi password</label>
+							<label htmlFor="register-confirm">{t("auth.register.confirm")}</label>
 							<Password
 								id="register-confirm"
 								value={confirm}
@@ -144,7 +145,7 @@ const Register: React.FC = () => {
 						</div>
 						<Button
 							type="submit"
-							label="Daftar"
+							label={t("auth.register.submit")}
 							icon="pi pi-user-plus"
 							loading={loading}
 							className="login-submit mt-2"
@@ -152,7 +153,7 @@ const Register: React.FC = () => {
 					</form>
 					<GoogleSignInButton onToken={(token) => void handleGoogle(token)} />
 					<p className="login-switch">
-						Sudah punya akun? <Link to={customerLoginPath}>Masuk</Link>
+						{t("auth.register.switch")} <Link to={customerLoginPath}>{t("nav.login")}</Link>
 					</p>
 				</section>
 			</main>

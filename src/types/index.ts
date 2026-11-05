@@ -18,9 +18,16 @@ export interface CategoryPhoto {
 	name: string;
 }
 
+export interface CategoryTemplate {
+	id: number;
+	name: string;
+}
+
 export interface Template {
 	id: number;
 	name: string;
+	categoryTemplateId: number;
+	categoryTemplateName?: string;
 }
 
 export interface Event {

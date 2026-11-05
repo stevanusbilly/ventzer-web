@@ -6,28 +6,28 @@
 
 .settings-page h2 {
 	margin: 0;
-	font-family: "Cormorant Garamond", Georgia, serif;
+	font-family: Sora, Manrope, sans-serif;
 	font-size: 2rem;
-	color: #1c3a2f;
+	color: #080f2b;
 }
 
 .settings-page > div > p,
 .settings-lead {
 	margin: 0.35rem 0 0;
-	color: #7a8476;
+	color: #5b647a;
 	line-height: 1.6;
 }
 
 .settings-card {
 	padding: 1.4rem 1.5rem 1.5rem;
-	background: #fffdf8;
-	border: 1px solid rgba(201, 163, 106, 0.24);
+	background: #ffffff;
+	border: 1px solid rgba(23, 105, 245, 0.12);
 	border-radius: 20px;
 }
 
 .settings-card h3 {
 	margin: 0 0 1rem;
-	font-family: "Cormorant Garamond", Georgia, serif;
+	font-family: Sora, Manrope, sans-serif;
 	font-size: 1.4rem;
 }
 

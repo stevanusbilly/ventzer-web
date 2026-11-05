@@ -1,18 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap");
+@import "../Brand/ventzer.css";
 
 .login-page {
-	--login-paper: #f6f1e8;
-	--login-card: #fffdf8;
-	--login-ink: #2b332c;
-	--login-muted: #7a8476;
-	--login-forest: #1c3a2f;
-	--login-gold: #c9a36a;
+	position: relative;
+	--login-paper: #f5f7fc;
+	--login-card: #ffffff;
+	--login-ink: #080f2b;
+	--login-muted: #5b647a;
+	--login-forest: #080f2b;
+	--login-gold: #1769f5;
 	min-height: 100dvh;
 	display: grid;
 	grid-template-columns: minmax(16rem, 1.05fr) minmax(20rem, 1fr);
 	background: var(--login-paper);
 	color: var(--login-ink);
-	font-family: Outfit, "Segoe UI", sans-serif;
+	font-family: Manrope, "Segoe UI", sans-serif;
 }
 
 .login-aside {
@@ -22,9 +24,10 @@
 	align-items: center;
 	padding: 3.2rem 2.6rem;
 	background:
-		radial-gradient(circle at 20% 15%, rgba(201, 163, 106, 0.18), transparent 18rem),
-		linear-gradient(180deg, #244a3c 0%, #1c3a2f 100%);
-	color: #f6f1e8;
+		radial-gradient(circle at 80% 10%, rgba(105, 56, 232, 0.34), transparent 18rem),
+		radial-gradient(circle at 10% 90%, rgba(23, 105, 245, 0.26), transparent 16rem),
+		linear-gradient(180deg, #080f2b 0%, #0b173d 100%);
+	color: #f5f7fc;
 }
 
 .login-floral {
@@ -52,18 +55,26 @@
 	max-width: 22rem;
 }
 
+.login-aside-copy .vz-logo {
+	margin-bottom: 1.4rem;
+}
+
+.login-aside-copy .vz-lang {
+	margin-bottom: 1.15rem;
+}
+
 .login-kicker {
 	margin: 0 0 0.55rem;
 	letter-spacing: 0.28em;
 	text-transform: uppercase;
 	font-size: 0.7rem;
-	color: var(--login-gold);
+	color: #9ec2ff;
 }
 
 .login-aside-copy h1,
 .login-card h1 {
 	margin: 0 0 0.7rem;
-	font-family: "Cormorant Garamond", Georgia, serif;
+	font-family: Sora, Manrope, sans-serif;
 	font-weight: 600;
 }
 
@@ -88,7 +99,7 @@
 	margin: 0;
 	max-width: 18rem;
 	line-height: 1.7;
-	color: rgba(246, 241, 232, 0.78);
+	color: rgba(245, 247, 252, 0.74);
 }
 
 .login-main {
@@ -101,11 +112,9 @@
 	width: min(26rem, 100%);
 	padding: 2.2rem 1.8rem 1.9rem;
 	background: var(--login-card);
-	border: 1px solid rgba(201, 163, 106, 0.24);
+	border: 1px solid rgba(23, 105, 245, 0.12);
 	border-radius: 24px;
-	box-shadow:
-		0 22px 50px rgba(43, 51, 44, 0.07),
-		inset 0 0 0 8px rgba(201, 163, 106, 0.07);
+	box-shadow: 0 22px 50px rgba(8, 15, 43, 0.08);
 }
 
 .login-card h1 {
@@ -165,7 +174,7 @@
 
 .login-form .p-inputtext:enabled:focus,
 .login-form .p-password-input:enabled:focus {
-	box-shadow: 0 0 0 3px rgba(201, 163, 106, 0.22);
+	box-shadow: 0 0 0 3px rgba(23, 105, 245, 0.18);
 	border-color: var(--login-gold);
 }
 
@@ -177,16 +186,16 @@
 	width: 100%;
 	border: 0;
 	border-radius: 999px;
-	background: var(--login-forest);
-	border-color: var(--login-forest);
-	color: #f6f1e8;
+	background: linear-gradient(135deg, #1769f5 0%, #6938e8 100%);
+	border-color: transparent;
+	color: #f5f7fc;
 	font-weight: 500;
 	letter-spacing: 0.04em;
 }
 
 .login-submit.p-button:hover {
-	background: #244a3c;
-	border-color: #244a3c;
+	background: #155ee0;
+	border-color: #155ee0;
 }
 
 .login-google {

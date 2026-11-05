@@ -93,7 +93,7 @@ export const CUSTOM_RSVP: MarketingPackage = {
 	name: "Custom Desain",
 	eyebrow: "Desain by request",
 	description:
-		"Wujudkan undangan yang paling unik dan paling kamu banget, dengan seluruh fitur NgantenStory.",
+		"Wujudkan undangan yang paling unik, dengan seluruh fitur VENTZER.",
 	price: { current: "Rp 550.000" },
 	features: [
 		"Seluruh fitur Diamond",
@@ -421,12 +421,35 @@ export const HOME_QUOTES = [
 	},
 ];
 
+export const HOME_PILLARS = [
+	{
+		icon: "pi pi-send",
+		title: "Digital Invitation & RSVP",
+		desc: "Undang tamu secara personal, kumpulkan konfirmasi kehadiran, dan pantau semuanya dari satu dashboard.",
+	},
+	{
+		icon: "pi pi-users",
+		title: "Guest Management",
+		desc: "Kelola daftar tamu, meja, dan status RSVP tanpa spreadsheet yang berceceran.",
+	},
+	{
+		icon: "pi pi-qrcode",
+		title: "Event Check-in",
+		desc: "Scan QR di pintu, sapa tamu, dan catat kehadiran secara real-time.",
+	},
+	{
+		icon: "pi pi-video",
+		title: "Live Streaming",
+		desc: "Siarkan acara ke YouTube atau Instagram, lengkap dengan rekaman untuk keluarga yang jauh.",
+	},
+];
+
 export const HOME_TRUST = [
-	"Dipercaya sejak 2019",
-	"Tanpa DP, sekali bayar",
-	"Revisi sampai final",
-	"Garansi hingga hari H",
-	"Masa aktif 6 bulan",
+	"One platform, every event",
+	"Invitation, RSVP, check-in",
+	"Guest management realtime",
+	"Live streaming ready",
+	"Tema undangan tetap fleksibel",
 ];
 
 export const MARKETING_FAQS = [

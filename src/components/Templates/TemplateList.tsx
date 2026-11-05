@@ -132,11 +132,18 @@ const TemplateList: React.FC = () => {
 				emptyMessage="No templates found"
 			>
 				<Column
-					field="name"
-					header="Name"
+					field="categoryTemplateName"
+					header="Kategori"
 					sortable
 					filter
-					filterPlaceholder="Search by Name"
+					filterPlaceholder="Cari kategori"
+				/>
+				<Column
+					field="name"
+					header="Nama template"
+					sortable
+					filter
+					filterPlaceholder="Cari template"
 				/>
 				{isAdmin && <Column body={actionBodyTemplate} header="Actions" />}
 			</DataTable>

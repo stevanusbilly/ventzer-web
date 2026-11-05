@@ -2,20 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import MarketingShell from "../components/Marketing/MarketingShell";
 import PackageCard from "../components/Marketing/PackageCard";
-import {
-	ADDONS,
-	CUSTOM_RSVP,
-	GUESTBOOK_PACKAGE,
-	LIVE_STREAM_PACKAGES,
-	RSVP_PACKAGES,
-	STARTER_FEATURES,
-} from "../data/marketing";
+import { useI18n } from "../i18n/I18nContext";
+import { useMarketing } from "../i18n/marketing";
+import { UiKey } from "../i18n/ui";
 
-const TABS = [
-	{ id: "undangan", label: "Undangan Digital" },
-	{ id: "tamu-digital", label: "Buku Tamu Digital" },
-	{ id: "live-streaming", label: "Live Streaming" },
-] as const;
+const TABS: { id: string; label: UiKey }[] = [
+	{ id: "undangan", label: "pricing.tab.invitation" },
+	{ id: "tamu-digital", label: "pricing.tab.guestbook" },
+	{ id: "live-streaming", label: "pricing.tab.live" },
+];
 
 const tabFromHash = (hash: string): number => {
 	if (hash.includes("live-streaming")) {
@@ -29,6 +24,8 @@ const tabFromHash = (hash: string): number => {
 
 const PricingPage = () => {
 	const location = useLocation();
+	const { t } = useI18n();
+	const marketing = useMarketing();
 	const [tab, setTab] = useState(() => tabFromHash(location.hash));
 
 	useEffect(() => {
@@ -54,13 +51,10 @@ const PricingPage = () => {
 		<MarketingShell>
 			<section className="mkt-hero">
 				<div className="mkt-wrap mkt-center">
-					<span className="mkt-kicker">Pricelist</span>
-					<h1>Pilih paket yang paling pas untuk hari bahagiamu.</h1>
-					<p className="mkt-lead">
-						Kami menawarkan berbagai pilihan paket yang dapat disesuaikan dengan
-						gaya dan anggaranmu.
-					</p>
-					<div className="mkt-tabbar" role="tablist" aria-label="Kategori paket">
+					<span className="mkt-kicker">{t("pricing.kicker")}</span>
+					<h1>{t("pricing.title")}</h1>
+					<p className="mkt-lead">{t("pricing.lead")}</p>
+					<div className="mkt-tabbar mkt-tabbar-light" role="tablist" aria-label={t("lang.label")}>
 						{TABS.map((item, index) => (
 							<button
 								key={item.id}
@@ -70,7 +64,7 @@ const PricingPage = () => {
 								className={tab === index ? "is-on" : ""}
 								onClick={() => selectTab(index)}
 							>
-								{item.label}
+								{t(item.label)}
 							</button>
 						))}
 					</div>
@@ -83,14 +77,11 @@ const PricingPage = () => {
 						<div className="mkt-slider-track" style={trackStyle}>
 							<div className="mkt-slide" role="tabpanel">
 								<div className="mkt-center mkt-slide-intro">
-									<h2>Paket RSVP</h2>
-									<p className="mkt-lead">
-										Starter fitur ada di semua paket: nama tamu, sebar undangan,
-										galeri, maps, musik, amplop digital, dan kolom ucapan.
-									</p>
+									<h2>{t("pricing.rsvp.title")}</h2>
+									<p className="mkt-lead">{t("pricing.rsvp.lead")}</p>
 								</div>
 								<div className="mkt-chips" style={{ marginBottom: "1.6rem" }}>
-									{STARTER_FEATURES.map((item) => (
+									{marketing.starterFeatures.map((item) => (
 										<div className="mkt-chip" key={item}>
 											<i className="pi pi-check" />
 											<span>{item}</span>
@@ -98,16 +89,16 @@ const PricingPage = () => {
 									))}
 								</div>
 								<div className="mkt-grid mkt-grid-4">
-									{RSVP_PACKAGES.map((pack) => (
+									{marketing.rsvpPackages.map((pack) => (
 										<PackageCard key={pack.id} pack={pack} />
 									))}
 								</div>
 								<div className="mkt-grid mkt-grid-2" style={{ marginTop: "1.1rem" }}>
-									<PackageCard pack={CUSTOM_RSVP} />
+									<PackageCard pack={marketing.customRsvp} />
 									<div className="mkt-grid">
-										{ADDONS.map((item) => (
+										{marketing.addons.map((item) => (
 											<article className="mkt-card" key={item.title}>
-												<small>Add-on</small>
+												<small>{t("pricing.addon")}</small>
 												<h3>{item.title}</h3>
 												<p>{item.detail}</p>
 												<div className="mkt-price">
@@ -121,27 +112,21 @@ const PricingPage = () => {
 
 							<div className="mkt-slide" id="tamu-digital" role="tabpanel">
 								<div className="mkt-center mkt-slide-intro">
-									<h2>Buku Tamu Digital</h2>
-									<p className="mkt-lead">
-										Paket di lokasi dengan undangan tak terbatas, RSVP, QR, meja,
-										e-gift, tablet, modem, dan crew.
-									</p>
+									<h2>{t("pricing.guestbook.title")}</h2>
+									<p className="mkt-lead">{t("pricing.guestbook.lead")}</p>
 								</div>
 								<div style={{ maxWidth: "36rem", margin: "0 auto" }}>
-									<PackageCard pack={GUESTBOOK_PACKAGE} />
+									<PackageCard pack={marketing.guestbook} />
 								</div>
 							</div>
 
 							<div className="mkt-slide" id="live-streaming" role="tabpanel">
 								<div className="mkt-center mkt-slide-intro">
-									<h2>Live Streaming</h2>
-									<p className="mkt-lead">
-										Semua paket mencakup jam siaran, YouTube/Instagram, rekaman,
-										modem, frame, live cam to screen, camera movement, dan crew.
-									</p>
+									<h2>{t("pricing.live.title")}</h2>
+									<p className="mkt-lead">{t("pricing.live.lead")}</p>
 								</div>
 								<div className="mkt-grid mkt-grid-3">
-									{LIVE_STREAM_PACKAGES.map((pack) => (
+									{marketing.livePackages.map((pack) => (
 										<PackageCard key={pack.id} pack={pack} />
 									))}
 								</div>
@@ -151,7 +136,7 @@ const PricingPage = () => {
 
 					<div className="mkt-actions" style={{ justifyContent: "center" }}>
 						<Link className="mkt-btn mkt-btn-ghost" to="/order-process">
-							Lihat proses pemesanan
+							{t("pricing.process")}
 						</Link>
 					</div>
 				</div>

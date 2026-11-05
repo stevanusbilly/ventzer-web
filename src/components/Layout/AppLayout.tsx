@@ -3,6 +3,10 @@ import { Avatar } from "primereact/avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { loginPathForRole, settingsPath } from "../../utils/authPaths";
+import VentzerLogo from "../Brand/VentzerLogo";
+import LanguageTabber from "../Brand/LanguageTabber";
+import { useI18n } from "../../i18n/I18nContext";
+import { UiKey } from "../../i18n/ui";
 import "./AppLayout.css";
 
 interface AppLayoutProps {
@@ -10,34 +14,41 @@ interface AppLayoutProps {
 }
 
 interface NavItem {
-	label: string;
+	label: UiKey;
 	icon: string;
 	path: string;
 	roles?: ("admin" | "panitia" | "viewer")[];
 }
 
 const ALL_NAV: NavItem[] = [
-	{ label: "Dasbor", icon: "pi pi-home", path: "/dashboard" },
-	{ label: "Event", icon: "pi pi-calendar", path: "/events" },
-	{ label: "Pengguna", icon: "pi pi-user", path: "/users", roles: ["admin"] },
+	{ label: "dash.nav.dashboard", icon: "pi pi-home", path: "/dashboard" },
+	{ label: "dash.nav.events", icon: "pi pi-calendar", path: "/events" },
+	{ label: "dash.nav.users", icon: "pi pi-user", path: "/users", roles: ["admin"] },
 	{
-		label: "Kategori Foto",
+		label: "dash.nav.photos",
 		icon: "pi pi-images",
 		path: "/category_photo",
 		roles: ["admin"],
 	},
 	{
-		label: "Template",
+		label: "dash.nav.templateCategories",
+		icon: "pi pi-tags",
+		path: "/category_template",
+		roles: ["admin"],
+	},
+	{
+		label: "dash.nav.templates",
 		icon: "pi pi-th-large",
 		path: "/templates",
 		roles: ["admin", "panitia"],
 	},
-	{ label: "Pengaturan", icon: "pi pi-cog", path: settingsPath },
+	{ label: "dash.nav.settings", icon: "pi pi-cog", path: settingsPath },
 ];
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const { user, logout, isAuthenticated, isViewer } = useAuth();
+	const { t } = useI18n();
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -70,7 +81,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 						onClick={() => handleNavigate(item.path)}
 					>
 						<i className={item.icon} />
-						{item.label}
+						{t(item.label)}
 					</button>
 				);
 			})}
@@ -83,7 +94,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 				<button
 					type="button"
 					className="dash-nav-toggle"
-					aria-label="Buka menu"
+					aria-label={t("dash.open")}
 					onClick={() => setMenuOpen(true)}
 				>
 					<i className="pi pi-bars" />
@@ -93,13 +104,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 					className="dash-nav-brand"
 					onClick={() => handleNavigate("/dashboard")}
 				>
-					<img
-						src="https://nstory.id/wp-content/uploads/2026/01/logoNS-newcolor.png"
-						alt="NStory"
-					/>
-					<span>RSVP Portal</span>
+					<VentzerLogo variant="dark" />
+					<span>{t("dash.portal")}</span>
 				</button>
 				<nav className="dash-nav-links">{navButtons}</nav>
+				<LanguageTabber variant="dark" />
 				{isAuthenticated && user && (
 					<div className="dash-nav-user">
 						<div className="dash-nav-user-meta">
@@ -110,7 +119,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 						<button
 							type="button"
 							className="dash-nav-icon"
-							aria-label="Pengaturan"
+							aria-label={t("dash.settingsAria")}
 							onClick={() => handleNavigate(settingsPath)}
 						>
 							<i className="pi pi-cog" />
@@ -118,7 +127,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 						<button
 							type="button"
 							className="dash-nav-icon"
-							aria-label="Keluar"
+							aria-label={t("dash.logoutAria")}
 							onClick={handleLogout}
 						>
 							<i className="pi pi-sign-out" />
@@ -131,11 +140,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 				<div className="dash-drawer-mask" onClick={() => setMenuOpen(false)}>
 					<aside className="dash-drawer" onClick={(event) => event.stopPropagation()}>
 						<div className="dash-drawer-head">
-							<strong>Menu</strong>
+							<strong>{t("dash.menu")}</strong>
 							<button
 								type="button"
 								className="dash-nav-icon"
-								aria-label="Tutup menu"
+								aria-label={t("dash.close")}
 								onClick={() => setMenuOpen(false)}
 							>
 								<i className="pi pi-times" />
@@ -151,7 +160,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 									/>
 									<div className="dash-nav-user-meta" style={{ textAlign: "left" }}>
 										<strong>{user.name}</strong>
-										<small>{user.role}</small>
+										{!isViewer && <small>{user.role}</small>}
 									</div>
 								</div>
 								<button
@@ -160,11 +169,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 									onClick={() => handleNavigate(settingsPath)}
 								>
 									<i className="pi pi-cog" />
-									Pengaturan
+									{t("dash.nav.settings")}
 								</button>
 								<button type="button" className="dash-nav-link" onClick={handleLogout}>
 									<i className="pi pi-sign-out" />
-									Keluar
+									{t("dash.logout")}
 								</button>
 							</div>
 						)}
@@ -176,9 +185,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 				location.pathname !== settingsPath &&
 				(!user?.emailVerified || !user?.phoneVerified) && (
 				<div className="dash-banner">
-					<span>Lengkapi verifikasi email dan nomor telepon di pengaturan akun.</span>
+					<span>{t("dash.verify")}</span>
 					<button type="button" onClick={() => handleNavigate(settingsPath)}>
-						Buka pengaturan
+						{t("dash.verifyCta")}
 					</button>
 				</div>
 			)}
