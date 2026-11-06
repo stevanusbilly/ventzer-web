@@ -153,7 +153,7 @@ export const UI = {
 		"dash.settingsAria": "Pengaturan",
 		"dash.logoutAria": "Keluar",
 		"dash.verify":
-			"Lengkapi verifikasi email dan nomor telepon di pengaturan akun.",
+			"Lengkapi verifikasi email di pengaturan akun.",
 		"dash.verifyCta": "Buka pengaturan",
 		"notfound.kicker": "Halaman tidak ditemukan",
 		"notfound.title": "Alamat ini tidak ada di VENTZER.",
@@ -311,7 +311,7 @@ export const UI = {
 		"dash.close": "Close menu",
 		"dash.settingsAria": "Settings",
 		"dash.logoutAria": "Sign out",
-		"dash.verify": "Complete email and phone verification in account settings.",
+		"dash.verify": "Complete email verification in account settings.",
 		"dash.verifyCta": "Open settings",
 		"notfound.kicker": "Page not found",
 		"notfound.title": "This address is not on VENTZER.",

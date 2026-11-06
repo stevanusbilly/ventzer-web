@@ -23,4 +23,11 @@ export const GOOGLE_CLIENT_ID = readEnv([
 	"REACT_APP_GOOGLE_CLIENT_ID",
 ]);
 
+export const WHATSAPP_NUMBER = readEnv(["VITE_WHATSAPP_NUMBER"]);
+
+export const WHATSAPP_TEXT = readEnv(
+	["VITE_WHATSAPP_TEXT"],
+	"Halo VENTZER, saya ingin bertanya tentang undangan digital.",
+);
+
 export const isProduction = import.meta.env.PROD;

@@ -10,7 +10,6 @@ export interface User {
 	phone?: string;
 	role: UserRole;
 	emailVerified?: boolean;
-	phoneVerified?: boolean;
 }
 
 export interface CategoryPhoto {

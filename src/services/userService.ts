@@ -22,6 +22,7 @@ export const userService = {
 	updMe: async (payload: {
 		name: string;
 		email?: string;
+		phone?: string;
 		change_password?: number;
 		password?: string;
 	}): Promise<{ message?: string; user: User }> => {

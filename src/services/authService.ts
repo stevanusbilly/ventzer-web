@@ -8,14 +8,8 @@ import {
 
 type VerifySendResponse = {
 	message: string;
-	previewCode?: string;
 	previewUrl?: string;
 	user?: User;
-};
-
-type VerifyConfirmResponse = {
-	message: string;
-	user: User;
 };
 
 export const authService = {
@@ -41,16 +35,6 @@ export const authService = {
 
 	sendEmailCode: async (): Promise<VerifySendResponse> => {
 		const response = await api.post<VerifySendResponse>("/auth/verify/email/send");
-		return response.data;
-	},
-
-	sendPhoneCode: async (phone?: string): Promise<VerifySendResponse> => {
-		const response = await api.post<VerifySendResponse>("/auth/verify/phone/send", { phone });
-		return response.data;
-	},
-
-	confirmPhone: async (code: string): Promise<VerifyConfirmResponse> => {
-		const response = await api.post<VerifyConfirmResponse>("/auth/verify/phone", { code });
 		return response.data;
 	},
 };

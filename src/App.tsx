@@ -21,6 +21,7 @@ import PricingPage from "./pages/PricingPage";
 import CatalogPage from "./pages/CatalogPage";
 import OrderProcessPage from "./pages/OrderProcessPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import WhatsAppFab from "./components/common/WhatsAppFab/WhatsAppFab";
 import InvitationPage from "./pages/InvitationPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import UsherPage from "./components/Usher/UsherPage";
@@ -199,6 +200,7 @@ const App: React.FC = () => (
 		<AuthProvider>
 			<Router>
 				<AppContent />
+				<WhatsAppFab />
 			</Router>
 		</AuthProvider>
 	</I18nProvider>

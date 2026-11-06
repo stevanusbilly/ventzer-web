@@ -14,6 +14,7 @@ const AccountSettings: React.FC = () => {
 	const { user, updateUser, refreshUser, isViewer } = useAuth();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
+	const [phone, setPhone] = useState("");
 	const [changePassword, setChangePassword] = useState(false);
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ const AccountSettings: React.FC = () => {
 		if (user) {
 			setName(user.name || "");
 			setEmail(user.email || "");
+			setPhone(user.phone || "");
 		}
 	}, [user]);
 
@@ -40,6 +42,7 @@ const AccountSettings: React.FC = () => {
 			const data = await userService.updMe({
 				name,
 				email,
+				phone,
 				change_password: changePassword ? 1 : 0,
 				password: changePassword ? password : "",
 			});
@@ -97,6 +100,15 @@ const AccountSettings: React.FC = () => {
 							id="settings-email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
+						/>
+					</div>
+					<div className="field">
+						<label htmlFor="settings-phone">Nomor telepon</label>
+						<InputText
+							id="settings-phone"
+							value={phone}
+							onChange={(e) => setPhone(e.target.value)}
+							placeholder="08xxxxxxxxxx"
 						/>
 					</div>
 					<div className="field-checkbox mb-3">

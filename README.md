@@ -28,6 +28,8 @@ Default local: frontend `http://localhost:3001`, API `http://localhost:3000/api`
 | `VITE_API_URL` | `http://localhost:3000/api` | URL API termasuk `/api` |
 | `VITE_FRONTEND_URL` | `http://localhost:3001` | `https://ventzer.com` |
 | `VITE_GOOGLE_CLIENT_ID` | Client ID Google tipe Web | Sama dengan `GOOGLE_CLIENT_ID` di API |
+| `VITE_WHATSAPP_NUMBER` | `62xxxxxxxxxxx` | Nomor WhatsApp bisnis; tombol kanan bawah hanya muncul jika terisi |
+| `VITE_WHATSAPP_TEXT` | teks sapaan opsional | Pesan awal saat tombol WhatsApp diklik |
 
 File `.env` tidak boleh masuk Git.
 

@@ -183,7 +183,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
 			{isViewer &&
 				location.pathname !== settingsPath &&
-				(!user?.emailVerified || !user?.phoneVerified) && (
+				!user?.emailVerified && (
 				<div className="dash-banner">
 					<span>{t("dash.verify")}</span>
 					<button type="button" onClick={() => handleNavigate(settingsPath)}>
