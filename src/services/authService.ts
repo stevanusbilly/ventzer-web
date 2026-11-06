@@ -9,6 +9,7 @@ import {
 type VerifySendResponse = {
 	message: string;
 	previewCode?: string;
+	previewUrl?: string;
 	user?: User;
 };
 
@@ -40,11 +41,6 @@ export const authService = {
 
 	sendEmailCode: async (): Promise<VerifySendResponse> => {
 		const response = await api.post<VerifySendResponse>("/auth/verify/email/send");
-		return response.data;
-	},
-
-	confirmEmail: async (code: string): Promise<VerifyConfirmResponse> => {
-		const response = await api.post<VerifyConfirmResponse>("/auth/verify/email", { code });
 		return response.data;
 	},
 

@@ -22,6 +22,7 @@ import CatalogPage from "./pages/CatalogPage";
 import OrderProcessPage from "./pages/OrderProcessPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import InvitationPage from "./pages/InvitationPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 import UsherPage from "./components/Usher/UsherPage";
 import UserList from "./components/Users/UserList";
 import TemplateList from "./components/Templates/TemplateList";
@@ -88,6 +89,7 @@ const AppContent: React.FC = () => (
 				</AuthRoute>
 			}
 		/>
+		<Route path="/verify-email" element={<VerifyEmailPage />} />
 		<Route path="/invitation/:token" element={<InvitationPage />} />
 		<Route
 			path="/invitation/:eventId/:token"

@@ -95,3 +95,8 @@
 	margin-top: 0.8rem;
 	font-size: 0.88rem;
 }
+
+.verify-hint a {
+	color: #1769f5;
+	word-break: break-all;
+}
