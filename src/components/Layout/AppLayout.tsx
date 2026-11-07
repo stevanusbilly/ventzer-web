@@ -104,11 +104,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 					className="dash-nav-brand"
 					onClick={() => handleNavigate("/dashboard")}
 				>
-					<VentzerLogo variant="dark" />
+					<VentzerLogo variant="light" />
 					<span>{t("dash.portal")}</span>
 				</button>
 				<nav className="dash-nav-links">{navButtons}</nav>
-				<LanguageTabber variant="dark" />
+				<LanguageTabber variant="light" />
 				{isAuthenticated && user && (
 					<div className="dash-nav-user">
 						<div className="dash-nav-user-meta">
@@ -119,15 +119,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 						<button
 							type="button"
 							className="dash-nav-icon"
-							aria-label={t("dash.settingsAria")}
-							onClick={() => handleNavigate(settingsPath)}
-						>
-							<i className="pi pi-cog" />
-						</button>
-						<button
-							type="button"
-							className="dash-nav-icon"
 							aria-label={t("dash.logoutAria")}
+							title={t("dash.logout")}
 							onClick={handleLogout}
 						>
 							<i className="pi pi-sign-out" />
@@ -163,14 +156,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 										{!isViewer && <small>{user.role}</small>}
 									</div>
 								</div>
-								<button
-									type="button"
-									className="dash-nav-link"
-									onClick={() => handleNavigate(settingsPath)}
-								>
-									<i className="pi pi-cog" />
-									{t("dash.nav.settings")}
-								</button>
 								<button type="button" className="dash-nav-link" onClick={handleLogout}>
 									<i className="pi pi-sign-out" />
 									{t("dash.logout")}

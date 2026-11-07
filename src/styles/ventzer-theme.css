@@ -1,0 +1,291 @@
+/* VENTZER theme layer on top of PrimeReact (lara-light-cyan).
+   Navy #080f2b, blue #1769f5, purple #6938e8, Sora headings, Manrope body. */
+
+:root {
+	--font-family: Manrope, "Segoe UI", sans-serif;
+	--primary-color: #1769f5;
+	--primary-color-text: #ffffff;
+	--primary-50: #eef4ff;
+	--primary-100: #d9e6ff;
+	--primary-200: #b6d0ff;
+	--primary-300: #86b1ff;
+	--primary-400: #4f8bfa;
+	--primary-500: #1769f5;
+	--primary-600: #1257cf;
+	--primary-700: #0f46a8;
+	--primary-800: #0c3787;
+	--primary-900: #0a2a68;
+	--highlight-bg: #eef4ff;
+	--highlight-text-color: #1257cf;
+	--focus-ring: 0 0 0 0.2rem rgba(23, 105, 245, 0.2);
+	--surface-ground: #f5f7fc;
+	--vz-ink: #080f2b;
+	--vz-muted: #5b647a;
+	--vz-line: rgba(23, 105, 245, 0.12);
+	--vz-grad: linear-gradient(135deg, #1769f5 0%, #6938e8 100%);
+	--vz-shadow: 0 12px 32px rgba(8, 15, 43, 0.07);
+}
+
+/* ---------- Buttons ---------- */
+.p-button {
+	border-radius: 12px;
+	font-family: inherit;
+	font-weight: 600;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease,
+		background 0.18s ease;
+}
+
+.p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-button-rounded) {
+	border: 0;
+	background: var(--vz-grad);
+	color: #ffffff;
+	box-shadow: 0 6px 16px rgba(23, 105, 245, 0.28);
+}
+
+.p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-button-rounded):enabled:hover {
+	background: var(--vz-grad);
+	border: 0;
+	filter: brightness(1.08);
+	transform: translateY(-1px);
+	box-shadow: 0 10px 22px rgba(23, 105, 245, 0.34);
+}
+
+.p-button:focus {
+	box-shadow: var(--focus-ring);
+}
+
+.p-button.p-button-outlined:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger),
+.p-button.p-button-text:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger) {
+	color: #1769f5;
+}
+
+.p-button.p-button-outlined:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger) {
+	border: 1px solid rgba(23, 105, 245, 0.45);
+	background: transparent;
+}
+
+.p-button.p-button-outlined:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):enabled:hover,
+.p-button.p-button-text:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):enabled:hover {
+	background: rgba(23, 105, 245, 0.08);
+	color: #1257cf;
+}
+
+/* ---------- Inputs ---------- */
+.p-inputtext,
+.p-dropdown,
+.p-multiselect,
+.p-calendar .p-inputtext,
+.p-password-input {
+	border-radius: 12px;
+	border-color: #d7dff0;
+	font-family: inherit;
+}
+
+.p-inputtext:enabled:hover,
+.p-dropdown:not(.p-disabled):hover,
+.p-multiselect:not(.p-disabled):hover {
+	border-color: #1769f5;
+}
+
+.p-inputtext:enabled:focus,
+.p-dropdown:not(.p-disabled).p-focus,
+.p-multiselect:not(.p-disabled).p-focus {
+	border-color: #1769f5;
+	box-shadow: var(--focus-ring);
+}
+
+.p-datepicker-trigger.p-button {
+	border-radius: 0 12px 12px 0;
+}
+
+.p-checkbox.p-checkbox-checked .p-checkbox-box,
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover,
+.p-checkbox .p-checkbox-box.p-highlight,
+.p-radiobutton .p-radiobutton-box.p-highlight {
+	border-color: #1769f5;
+	background: #1769f5;
+}
+
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus,
+.p-radiobutton:not(.p-radiobutton-disabled) .p-radiobutton-box.p-focus {
+	border-color: #1769f5;
+	box-shadow: var(--focus-ring);
+}
+
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+	background: #1769f5;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+	background: #eef4ff;
+	color: #1257cf;
+}
+
+.p-datepicker table td > span.p-highlight {
+	background: #1769f5;
+	color: #ffffff;
+}
+
+.p-datepicker {
+	border-radius: 16px;
+}
+
+/* ---------- Cards, panels, tabs ---------- */
+.p-card {
+	border: 1px solid var(--vz-line);
+	border-radius: 20px;
+	background: #ffffff;
+	box-shadow: var(--vz-shadow);
+}
+
+.p-card .p-card-title {
+	margin-bottom: 0.6rem;
+	font-family: Sora, Manrope, sans-serif;
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: var(--vz-ink);
+}
+
+.p-card .p-card-body {
+	padding: 1.4rem 1.5rem;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+	border-color: #1769f5;
+	color: #1769f5;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+	font-weight: 600;
+}
+
+.p-tag {
+	border-radius: 999px;
+	padding: 0.25rem 0.7rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+/* ---------- Data tables ---------- */
+.p-datatable .p-datatable-thead > tr > th {
+	background: #f5f7fc;
+	color: var(--vz-muted);
+	border-color: rgba(23, 105, 245, 0.1);
+	font-family: inherit;
+	font-size: 0.74rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+	border-color: rgba(23, 105, 245, 0.08);
+	color: var(--vz-ink);
+}
+
+.p-datatable .p-datatable-tbody > tr:not(.p-highlight):hover {
+	background: #f7f9ff;
+}
+
+.p-datatable .p-sortable-column:not(.p-highlight):hover {
+	background: #eef4ff;
+	color: #1257cf;
+}
+
+.p-datatable .p-sortable-column.p-highlight {
+	background: #eef4ff;
+	color: #1257cf;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+	color: #1257cf;
+}
+
+.p-paginator {
+	border: 0;
+	background: transparent;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page {
+	border-radius: 10px;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+	background: #1769f5;
+	color: #ffffff;
+}
+
+.p-datatable .p-datatable-wrapper {
+	border-radius: 14px;
+}
+
+/* ---------- Dialogs, toasts ---------- */
+.p-dialog-mask.p-component-overlay {
+	background: rgba(8, 15, 43, 0.5);
+	backdrop-filter: blur(3px);
+}
+
+.p-dialog {
+	border: 1px solid var(--vz-line);
+	border-radius: 22px;
+	overflow: hidden;
+	box-shadow: 0 30px 70px rgba(8, 15, 43, 0.28);
+}
+
+.p-dialog .p-dialog-header {
+	padding: 1.2rem 1.5rem;
+	border-bottom: 1px solid var(--vz-line);
+	background: #ffffff;
+	color: var(--vz-ink);
+}
+
+.p-dialog .p-dialog-header .p-dialog-title {
+	font-family: Sora, Manrope, sans-serif;
+	font-size: 1.2rem;
+	font-weight: 700;
+}
+
+.p-dialog .p-dialog-content {
+	color: var(--vz-ink);
+}
+
+.p-dialog .p-dialog-footer {
+	border-top: 1px solid var(--vz-line);
+}
+
+.p-toast .p-toast-message {
+	border-radius: 14px;
+	box-shadow: 0 14px 34px rgba(8, 15, 43, 0.16);
+}
+
+.p-progress-spinner-circle {
+	stroke: #1769f5 !important;
+}
+
+/* ---------- Page panels inside the dashboard shell ---------- */
+.dash-main > .card {
+	padding: 1.6rem 1.7rem;
+	border: 1px solid var(--vz-line);
+	border-radius: 22px;
+	background: #ffffff;
+	box-shadow: var(--vz-shadow);
+}
+
+.dash-main > .card > .flex:first-of-type h2,
+.dash-main > .card h2 {
+	margin: 0;
+	font-family: Sora, Manrope, sans-serif;
+	font-size: 1.6rem;
+	font-weight: 700;
+	color: var(--vz-ink);
+}
+
+.dash-main > .card label.font-semibold {
+	color: var(--vz-muted);
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+}

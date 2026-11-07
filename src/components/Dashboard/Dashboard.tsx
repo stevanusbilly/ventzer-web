@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "primereact/card";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
@@ -12,6 +11,7 @@ import { eventService } from "../../services/eventService";
 import { Guest, Event, EventSummary } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { currentMonthRange, toDateQueryParams } from "../../utils/dateRange";
+import "./Dashboard.css";
 
 const emptySummary: EventSummary = {
 	totalGuests: 0,
@@ -20,6 +20,12 @@ const emptySummary: EventSummary = {
 	declined: 0,
 	checkedIn: 0,
 	eventCount: 0,
+};
+
+const RSVP_COLORS = {
+	accepted: "#1769f5",
+	pending: "#f5b83d",
+	declined: "#e5484d",
 };
 
 const Dashboard: React.FC = () => {
@@ -40,20 +46,26 @@ const Dashboard: React.FC = () => {
 		const pending = Number(s.pending) || 0;
 		const accepted = Number(s.accepted) || 0;
 		const declined = Number(s.declined) || 0;
+		const empty = pending + accepted + declined === 0;
 		setChartData({
 			labels: ["Accepted", "Pending", "Declined"],
 			datasets: [
 				{
-					data: [accepted, pending, declined],
-					backgroundColor: ["#22c55e", "#eab308", "#ef4444"],
-					hoverBackgroundColor: ["#16a34a", "#ca8a04", "#dc2626"],
-					borderWidth: 2,
+					data: empty ? [1] : [accepted, pending, declined],
+					backgroundColor: empty
+						? ["#e6ebf7"]
+						: [RSVP_COLORS.accepted, RSVP_COLORS.pending, RSVP_COLORS.declined],
+					hoverBackgroundColor: empty
+						? ["#e6ebf7"]
+						: ["#1257cf", "#e0a420", "#cc2f34"],
+					borderWidth: 3,
 					borderColor: "#ffffff",
 				},
 			],
 		});
 		setChartOptions({
-			plugins: { legend: { position: "bottom" } },
+			cutout: "68%",
+			plugins: { legend: { display: false }, tooltip: { enabled: !empty } },
 			maintainAspectRatio: false,
 			responsive: true,
 		});
@@ -145,18 +157,35 @@ const Dashboard: React.FC = () => {
 		value: event.id,
 	}));
 
+	const firstName = (user?.name || "").trim().split(/\s+/)[0] || "";
+	const accepted = Number(summary?.accepted) || 0;
+	const pending = Number(summary?.pending) || 0;
+	const declined = Number(summary?.declined) || 0;
+
+	const stats = [
+		{ label: "Total Tamu", value: guestCount, icon: "pi pi-users", tone: "blue" },
+		{ label: "Total Event", value: eventCount, icon: "pi pi-calendar", tone: "purple" },
+		{ label: "RSVP Diterima", value: accepted, icon: "pi pi-check-circle", tone: "green" },
+		{ label: "Sudah Check-in", value: checkInCount, icon: "pi pi-qrcode", tone: "navy" },
+	];
+
+	const legend = [
+		{ label: "Diterima", value: accepted, color: RSVP_COLORS.accepted },
+		{ label: "Menunggu", value: pending, color: RSVP_COLORS.pending },
+		{ label: "Ditolak", value: declined, color: RSVP_COLORS.declined },
+	];
+
 	return (
-		<div className="flex flex-column gap-4">
-			<div className="flex justify-content-between align-items-end flex-wrap gap-3">
-				<div>
-					<h2 className="text-2xl font-bold text-900 m-0">Dashboard</h2>
-					<p className="text-500 m-0 mt-1">Ringkasan RSVP dan check-in</p>
+		<div className="vz-dash">
+			<section className="vz-hero">
+				<div className="vz-hero-copy">
+					<span className="vz-hero-eyebrow">Ringkasan</span>
+					<h1>{firstName ? `Halo, ${firstName}` : "Dashboard"}</h1>
+					<p>Pantau RSVP, tamu, dan check-in event kamu dalam satu tempat.</p>
 				</div>
-				<div className="flex gap-2 align-items-end flex-wrap">
-					<div className="flex flex-column gap-1">
-						<label htmlFor="dashboardDateFilter" className="font-semibold">
-							Tanggal event
-						</label>
+				<div className="vz-hero-filters">
+					<div className="vz-field">
+						<label htmlFor="dashboardDateFilter">Tanggal event</label>
 						<Calendar
 							id="dashboardDateFilter"
 							value={dateRange}
@@ -170,13 +199,11 @@ const Dashboard: React.FC = () => {
 							placeholder="Dari — sampai"
 							showButtonBar
 							hideOnRangeSelection
-							className="w-18rem"
+							showIcon
 						/>
 					</div>
-					<div className="flex flex-column gap-1">
-						<label htmlFor="dashboardEventFilter" className="font-semibold">
-							Event
-						</label>
+					<div className="vz-field">
+						<label htmlFor="dashboardEventFilter">Event</label>
 						<Dropdown
 							inputId="dashboardEventFilter"
 							value={selectedEventId}
@@ -191,75 +218,77 @@ const Dashboard: React.FC = () => {
 									: "Pilih rentang tanggal dulu"
 							}
 							disabled={!dateRange[0] || eventOptions.length === 0}
-							className="w-18rem"
 						/>
 					</div>
 					<Button
 						icon="pi pi-refresh"
 						label="Refresh"
-						className="p-button-outlined p-button-sm"
+						className="vz-refresh"
 						onClick={() => void loadData()}
 						disabled={!dateRange[0]}
 					/>
 				</div>
-			</div>
+			</section>
 
-			<div className="grid">
-				<div className="col-12 md:col-4">
-					<div className="surface-card shadow-2 p-3 border-round border-left-3 border-blue-500">
-						<span className="text-500">Total Tamu</span>
-						<div className="text-3xl font-bold">{guestCount}</div>
-					</div>
-				</div>
-				<div className="col-12 md:col-4">
-					<div className="surface-card shadow-2 p-3 border-round border-left-3 border-green-500">
-						<span className="text-500">Total Event</span>
-						<div className="text-3xl font-bold">{eventCount}</div>
-					</div>
-				</div>
-				<div className="col-12 md:col-4">
-					<div className="surface-card shadow-2 p-3 border-round border-left-3 border-purple-500">
-						<span className="text-500">Sudah Check-in</span>
-						<div className="text-3xl font-bold">{checkInCount}</div>
-					</div>
-				</div>
-			</div>
-
-			<div className="grid">
-				<div className="col-12 md:col-5">
-					<Card title="Rekap RSVP" className="shadow-2 h-full">
-						{summary && (
-							<ul className="list-none p-0 m-0 mb-3 line-height-3">
-								<li>Pending: {summary.pending}</li>
-								<li>Accepted: {summary.accepted}</li>
-								<li>Declined: {summary.declined}</li>
-								<li>Check-in: {summary.checkedIn}</li>
-							</ul>
-						)}
-						<div style={{ height: "220px" }}>
-							<Chart type="pie" data={chartData} options={chartOptions} />
+			<section className="vz-stats">
+				{stats.map((stat) => (
+					<article key={stat.label} className={`vz-stat vz-stat-${stat.tone}`}>
+						<span className="vz-stat-icon">
+							<i className={stat.icon} />
+						</span>
+						<div>
+							<span className="vz-stat-label">{stat.label}</span>
+							<strong className="vz-stat-value">{stat.value}</strong>
 						</div>
-					</Card>
-				</div>
-				<div className="col-12 md:col-7">
-					<Card title="Tamu Terbaru" className="shadow-2 h-full">
-						<DataTable
-							value={recentGuests}
-							loading={loading}
-							emptyMessage={
-								dateRange[0]
-									? "Belum ada tamu pada rentang tanggal ini"
-									: "Pilih rentang tanggal untuk menampilkan data"
-							}
-						>
-							<Column field="name" header="Nama" />
-							<Column field="eventName" header="Event" />
-							<Column field="rsvpStatus" header="RSVP" body={statusBodyTemplate} />
-							<Column header="Check-in" body={checkInTemplate} />
-						</DataTable>
-					</Card>
-				</div>
-			</div>
+					</article>
+				))}
+			</section>
+
+			<section className="vz-grid">
+				<article className="vz-panel vz-panel-rsvp">
+					<header>
+						<h2>Rekap RSVP</h2>
+						<span>{accepted + pending + declined} respons</span>
+					</header>
+					<div className="vz-chart">
+						<Chart type="doughnut" data={chartData} options={chartOptions} />
+						<div className="vz-chart-center">
+							<strong>{guestCount}</strong>
+							<span>tamu</span>
+						</div>
+					</div>
+					<ul className="vz-legend">
+						{legend.map((item) => (
+							<li key={item.label}>
+								<i style={{ background: item.color }} />
+								<span>{item.label}</span>
+								<strong>{item.value}</strong>
+							</li>
+						))}
+					</ul>
+				</article>
+
+				<article className="vz-panel vz-panel-guests">
+					<header>
+						<h2>Tamu Terbaru</h2>
+						<span>10 terakhir</span>
+					</header>
+					<DataTable
+						value={recentGuests}
+						loading={loading}
+						emptyMessage={
+							dateRange[0]
+								? "Belum ada tamu pada rentang tanggal ini"
+								: "Pilih rentang tanggal untuk menampilkan data"
+						}
+					>
+						<Column field="name" header="Nama" />
+						<Column field="eventName" header="Event" />
+						<Column field="rsvpStatus" header="RSVP" body={statusBodyTemplate} />
+						<Column header="Check-in" body={checkInTemplate} />
+					</DataTable>
+				</article>
+			</section>
 		</div>
 	);
 };
