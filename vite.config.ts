@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			outDir: "dist",
-			sourcemap: true,
+			sourcemap: false,
 		},
 		optimizeDeps: {
 			include: ["html5-qrcode"],

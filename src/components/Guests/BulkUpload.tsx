@@ -51,13 +51,13 @@ const BulkUpload: React.FC<BulkUploadProps> = ({
 		}
 
 		// Validasi file type - EXCEL ONLY
-		const validExtensions = [".xlsx", ".xls"];
+		const validExtensions = [".xlsx"];
 		const fileExtension = file.name
 			.toLowerCase()
 			.substring(file.name.lastIndexOf("."));
 
 		if (!validExtensions.includes(fileExtension)) {
-			showError("Please select an Excel file (.xlsx, .xls only)");
+			showError("Please select an Excel file (.xlsx only)");
 			return;
 		}
 
@@ -155,11 +155,11 @@ Bob Johnson,bob@example.com,08155555555,declined,3
 				)}
 
 				<div className="field mt-3">
-					<label>Upload Excel File (.xlsx, .xls)</label>
+					<label>Upload Excel File (.xlsx)</label>
 					<FileUpload
 						ref={fileUploadRef}
 						name="file"
-						accept=".xlsx,.xls"
+						accept=".xlsx"
 						maxFileSize={1000000}
 						chooseLabel="Select Excel File"
 						uploadLabel="Upload"
@@ -168,7 +168,7 @@ Bob Johnson,bob@example.com,08155555555,declined,3
 						onSelect={handleUpload}
 						emptyTemplate={
 							<p className="m-0">
-								Drag and drop Excel files (.xlsx, .xls) here to upload.
+								Drag and drop Excel files (.xlsx) here to upload.
 							</p>
 						}
 						disabled={uploading || !selectedEvent}

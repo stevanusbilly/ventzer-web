@@ -30,13 +30,57 @@ const mime = {
 	".woff2": "font/woff2",
 };
 
+const apiOrigin = (() => {
+	try {
+		return new URL(String(process.env.VITE_API_URL || "")).origin;
+	} catch {
+		return "";
+	}
+})();
+
+// Frontend memuat: font Google, Google Sign-In, gambar/musik/video dari URL event (https).
+const csp = [
+	"default-src 'self'",
+	"script-src 'self' https://accounts.google.com",
+	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
+	"font-src 'self' data: https://fonts.gstatic.com",
+	"img-src 'self' data: blob: https:",
+	"media-src 'self' blob: https:",
+	"frame-src https:",
+	`connect-src 'self' ${apiOrigin || "https:"} https://accounts.google.com`,
+	"object-src 'none'",
+	"base-uri 'self'",
+	"form-action 'self'",
+	"frame-ancestors 'none'",
+].join("; ");
+
+const securityHeaders = {
+	"Content-Security-Policy": csp,
+	"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+	"X-Content-Type-Options": "nosniff",
+	"X-Frame-Options": "DENY",
+	"Referrer-Policy": "strict-origin-when-cross-origin",
+	"Permissions-Policy": "camera=(self), microphone=(), geolocation=()",
+};
+
+const cacheControl = (file, ext) => {
+	if (ext === ".html") {
+		return "no-cache";
+	}
+	// Hanya berkas ber-hash di /assets yang aman di-cache lama.
+	if (file.startsWith(`${dist}${path.sep}assets${path.sep}`)) {
+		return "public, max-age=31536000, immutable";
+	}
+	return "public, max-age=3600";
+};
+
 const send = async (res, file, status = 200) => {
 	const ext = path.extname(file).toLowerCase();
 	const body = await fs.readFile(file);
 	res.writeHead(status, {
+		...securityHeaders,
 		"Content-Type": mime[ext] || "application/octet-stream",
-		"Cache-Control":
-			ext === ".html" ? "no-cache" : "public, max-age=31536000, immutable",
+		"Cache-Control": cacheControl(file, ext),
 	});
 	res.end(body);
 };
@@ -46,7 +90,7 @@ const server = http.createServer(async (req, res) => {
 		const url = new URL(req.url || "/", "http://localhost");
 		let relative = decodeURIComponent(url.pathname);
 		if (relative.includes("\0")) {
-			res.writeHead(400).end();
+			res.writeHead(400, securityHeaders).end();
 			return;
 		}
 		if (relative.endsWith("/")) {
@@ -54,7 +98,7 @@ const server = http.createServer(async (req, res) => {
 		}
 		const candidate = path.resolve(dist, `.${relative}`);
 		if (candidate !== dist && !candidate.startsWith(`${dist}${path.sep}`)) {
-			res.writeHead(403).end();
+			res.writeHead(403, securityHeaders).end();
 			return;
 		}
 		try {
@@ -68,7 +112,7 @@ const server = http.createServer(async (req, res) => {
 			await send(res, path.join(dist, "index.html"));
 		}
 	} catch {
-		res.writeHead(500).end("Server error");
+		res.writeHead(500, securityHeaders).end("Server error");
 	}
 });
 
